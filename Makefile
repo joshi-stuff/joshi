@@ -2,9 +2,16 @@ CC = gcc
 DUKTAPE_VERSION = 2.6.0
 LIBS = -lm
 
+OBJECTS = \
+	build/joshi.o \
+	build/duk_console.o \
+	build/duk_module_node.o \
+	build/duktape.o \
+	build/load_file.o
+
 all: joshi
 
-joshi: build/joshi.o build/duktape.o
+joshi: $(OBJECTS)
 	gcc build/*.o -o joshi $(LIBS)
 
 build/duktape.o: src/duktape/duktape.c
@@ -30,5 +37,5 @@ clean:
 
 build/%.o: src/%.c
 	@mkdir -p build
-	$(CC) -o $@ -I src -c $<
+	$(CC) -o $@ -Isrc -Isrc/duktape -c $<
 
