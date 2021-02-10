@@ -10,6 +10,11 @@ BUILTIN joshi_core_builtins[JOSHI_CORE_BUILTINS_COUNT] = {
 		argc: 2
 	},
 	{
+		name: "exit",
+		func: _joshi_exit,
+		argc: 1
+	},
+	{
 		name: "read_file",
 		func: read_file,
 		argc: 1
@@ -27,6 +32,15 @@ duk_ret_t compile_function(duk_context* ctx) {
 	duk_compile(ctx, DUK_COMPILE_FUNCTION);
 
 	return 1;
+}
+
+// [ ... status ] -> X
+duk_ret_t _joshi_exit(duk_context* ctx) {
+	int status = (int)duk_get_number(ctx, 0);
+
+	exit(status);
+
+	return 0;
 }
 
 // [ ... filepath ] -> [ ... contents ]

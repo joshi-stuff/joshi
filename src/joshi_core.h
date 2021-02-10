@@ -9,9 +9,11 @@ typedef struct {
 	int argc;
 } BUILTIN;
 
-#define JOSHI_CORE_BUILTINS_COUNT 3
+#define JOSHI_CORE_BUILTINS_COUNT 4
 
+// TODO: rename all bultin functions (as _joshi_exit) to avoid collisions
 duk_ret_t compile_function(duk_context* ctx);
+duk_ret_t _joshi_exit(duk_context* ctx);
 duk_ret_t read_file(duk_context* ctx);
 duk_ret_t resolve_path(duk_context* ctx);
 
