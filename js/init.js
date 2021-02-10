@@ -1,79 +1,97 @@
-function main(global, j, filepath) {
-	const exports = {};
+// TODO: track caller filename to resolve paths correctly
+// TODO: handle builtin packages (those not starting with .)
+// TODO: point CORE_DIR to /usr/lib/joshi
+// TODO: initialize global object (console)
 
-	// TODO: track caller filename to resolve paths correctly
-	// TODO: handle builtin packages (those not starting with .)
-	function require(filepath) {
-		if (exports[filepath]) {
-			return exports[filepath];
+function init(global, j, filepath) {
+	const CORE_DIR = "/home/ivan/Desarrollo/joshi";
+	const modules_cache = {};
+
+	// Create anchored require() function
+	function createRequire(caller) {
+		const anchoredResolve = function(module) {
+			const i = caller.lastIndexOf('/');
+			const callerDir = caller.substr(0, i+1);
+
+			if (module[0] === '.') {
+				return j.resolve_path(callerDir + module);
+			}
+
+			if (module.indexOf('/') == -1) {
+				module += '/index.js';
+			}
+
+			return CORE_DIR + '/' + module;
 		}
 
-		var contents = j.read_file(filepath);
+		const anchoredRequire = function(module) {
+			const filepath = anchoredResolve(module);
 
-		contents =
-			"function(require){\n" +
-			contents +
-			"\n}";
+			if (modules_cache[filepath]) {
+				return modules_cache[filepath];
+			}
 
-		var fn = j.compile_function(contents, filepath);
+			const source =
+				"function(require){\n" +
+				j.read_file(filepath) +
+				"\n}";
 
-		exports[filepath] = fn(require);
+			var fn = j.compile_function(source, filepath);
 
-		return exports[filepath];
+			modules_cache[filepath] = fn(this);
+
+			return modules_cache[filepath];
+		}
+
+		anchoredRequire.caller = caller;
+		anchoredRequire.resolve = anchoredResolve;
+
+		return anchoredRequire;
 	}
 
-	// TODO: initialize global object (console)
+	// Resolve filepath
+	const mainPath = j.resolve_path(filepath);
 
-	var contents = j.read_file(filepath);
-
-	contents =
+	// Read and compile main
+	const mainSource =
 		"function(argv, require){\n" +
-		contents +
+		j.read_file(mainPath) +
 		"\n}";
 
 	var main;
 
 	try {
-		main = j.compile_function(contents, filepath);
+		main = j.compile_function(mainSource, mainPath);
 	} catch(err) {
 		console.log(err.toString());
-		console.log("  at file", filepath);
-		
-		const lines = contents.split("\n");
-		
-		console.log("  ---------");
-		for(var i=0; i<lines.length; i++) {
-			console.log("  "+i+":", lines[i]);
-		}
-		console.log("  ---------");
+		console.log("  at file", mainPath);
 
 		return -1;
 	}
 
-	const argv = [];
-
-	for(var i=3; i<arguments.length; i++) {
-		argv[i-3] = arguments[i];
-	}
-
-	var retval;
-
+	// Invoke main
 	try {
-		retval = main(argv, require);
+		const argv = [];
+
+		for(var i=3; i<arguments.length; i++) {
+			argv[i-3] = arguments[i];
+		}
+		
+		const retval = main(argv, createRequire(mainPath));
+
+		if (retval === false) {
+			return 1;
+		}
+
+		if (typeof retval === 'number') {
+			return retval;
+		}
 	} catch(err) {
 		console.log(err.toString());
-		console.log("  at file", filepath);
+		console.log("  at file", mainPath);
 		console.log(err.stack);
 
 		return -1;
-	}
-
-	if (retval === false) {
-		return 1;
-	}
-
-	if (typeof retval === 'number') {
-		return retval;
 	}
 
 	return 0;
