@@ -4,7 +4,6 @@
 // TODO: initialize global object (console)
 
 function init(global, j, filepath) {
-	const CORE_DIR = "/home/ivan/Desarrollo/joshi";
 	const modules_cache = {};
 
 	// Create anchored require() function
@@ -21,7 +20,7 @@ function init(global, j, filepath) {
 				module += '/index.js';
 			}
 
-			return CORE_DIR + '/' + module;
+			return j.dir + '/' + module;
 		}
 
 		const anchoredRequire = function(module) {

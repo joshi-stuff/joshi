@@ -26,7 +26,6 @@ void main(int argc, const char *argv[]) {
 
 	// Init built-ins
 	duk_console_init(ctx, 0);
-//	duk_module_node_init(ctx);
 	
 	// Populate joshi object
 	int retval = joshi_run(ctx, argv[1], argc, argv);
@@ -40,8 +39,6 @@ void main(int argc, const char *argv[]) {
 static int joshi_run(
 	duk_context *ctx, const char* filepath, int argc, const char *argv[]) {
 
-	// TODO: change ./js/init.js to /usr/lib/joshi/init.js
-	
 	// Load init.js file
 	duk_push_c_function(ctx, read_file, 1);
 	duk_push_string(ctx, "./js/init.js");
@@ -69,6 +66,10 @@ static int joshi_run(
 		duk_push_c_function(ctx, bin->func, bin->argc);
 		duk_put_prop_string(ctx, idx, bin->name);
 	}
+
+	// TODO: change joshi.dir to /usr/lib/joshi or read from environment
+	duk_push_string(ctx, "/home/ivan/Desarrollo/joshi");
+	duk_put_prop_string(ctx, idx, "dir");
 
 	// [ ... init global joshi ]
 	
