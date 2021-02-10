@@ -5,9 +5,8 @@ LIBS = -lm
 OBJECTS = \
 	build/joshi.o \
 	build/duk_console.o \
-	build/duk_module_node.o \
 	build/duktape.o \
-	build/load_file.o
+	build/joshi_core.o
 
 all: joshi
 

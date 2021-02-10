@@ -3,12 +3,13 @@
 
 #include "duktape.h"
 #include "duk_console.h"
-#include "duk_module_node.h"
-#include "load_file.h"
+#include "joshi_core.h"
 
+static int joshi_run(
+	duk_context *ctx, const char* filepath, int argc, const char *argv[]);
 static void fatal_handler(void *udata, const char *msg);
 
-void main(int argc, char *argv[]) {
+void main(int argc, const char *argv[]) {
 	// Check CLI invocation
 	if (argc < 2) {
 		fprintf(stderr, "No script file name provided.\n");
@@ -25,21 +26,72 @@ void main(int argc, char *argv[]) {
 
 	// Init built-ins
 	duk_console_init(ctx, 0);
-	duk_module_node_init(ctx);
+//	duk_module_node_init(ctx);
 	
-	// Execute file
-	load_file(ctx, argv[1]);
-	int retval = duk_module_node_peval_main(ctx, argv[1]);
+	// Populate joshi object
+	int retval = joshi_run(ctx, argv[1], argc, argv);
 
 	// Cleanup and exit
 	duk_destroy_heap(ctx);
 
-	if (retval == -1) {
-		fprintf(stderr, "Cannot execute program.\n");
-		exit(-1);
+	exit(retval);
+}
+
+static int joshi_run(
+	duk_context *ctx, const char* filepath, int argc, const char *argv[]) {
+
+	// TODO: change ./js/init.js to /usr/lib/joshi/init.js
+	
+	// Load init.js file
+	duk_push_c_function(ctx, read_file, 1);
+	duk_push_string(ctx, "./js/init.js");
+	duk_call(ctx, 1);
+
+	duk_push_string(ctx, "./js/init.js");
+
+	// [ ... source filepath ]
+
+	duk_compile(ctx, DUK_COMPILE_FUNCTION);
+
+	// [ ... init ]
+
+	duk_push_global_object(ctx);
+
+	// [ ... init global]
+
+	// Populate joshi object
+	
+	int idx = duk_push_object(ctx);
+
+	for(int i=0; i<JOSHI_CORE_BUILTINS_COUNT; i++) {
+		BUILTIN* bin = joshi_core_builtins+i;
+
+		duk_push_c_function(ctx, bin->func, bin->argc);
+		duk_put_prop_string(ctx, idx, bin->name);
 	}
 
-	exit(retval);
+	// [ ... init global joshi ]
+	
+	duk_push_string(ctx, filepath);
+
+	for( int i=0; i<argc; i++) {
+		duk_push_string(ctx, argv[i]);
+	}
+
+	// [ ... init global joshi filepath arg0 ... argN ]
+	
+	// Launch init()	
+	
+	duk_call(ctx, 3 + argc);
+
+	// [ ... retval ]
+	
+	int retval = (int)duk_get_number(ctx, -1);
+	duk_pop(ctx);
+	
+	// [ ... ]
+
+	return retval;
 }
 
 static void fatal_handler(void *udata, const char *msg) {
@@ -51,3 +103,4 @@ static void fatal_handler(void *udata, const char *msg) {
 
 	exit(-1);
 }
+
