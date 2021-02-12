@@ -9,14 +9,16 @@ typedef struct {
 	int argc;
 } BUILTIN;
 
-#define JOSHI_CORE_BUILTINS_COUNT 4
+extern size_t joshi_core_builtins_count;
+extern BUILTIN joshi_core_builtins[]; 
 
-// TODO: rename all bultin functions (as _joshi_exit) to avoid collisions
-duk_ret_t compile_function(duk_context* ctx);
-duk_ret_t _joshi_exit(duk_context* ctx);
-duk_ret_t read_file(duk_context* ctx);
-duk_ret_t resolve_path(duk_context* ctx);
+// High level builtins
+duk_ret_t _joshi_compile_function(duk_context* ctx);
+duk_ret_t _joshi_read_file(duk_context* ctx);
+duk_ret_t _joshi_realpath(duk_context* ctx);
 
-extern BUILTIN joshi_core_builtins[JOSHI_CORE_BUILTINS_COUNT]; 
+// Development helpers
+duk_ret_t duk_dump_stack(duk_context* ctx);
+duk_ret_t duk_throw_errno(duk_context* ctx);
 
 #endif

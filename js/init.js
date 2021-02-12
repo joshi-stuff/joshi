@@ -1,7 +1,4 @@
-// TODO: track caller filename to resolve paths correctly
-// TODO: handle builtin packages (those not starting with .)
-// TODO: point CORE_DIR to /usr/lib/joshi
-// TODO: initialize global object (console)
+// TODO: initialize console with a core module (using write() builtin)
 
 function init(global, j, filepath) {
 	const modules_cache = {};
@@ -13,7 +10,7 @@ function init(global, j, filepath) {
 			const callerDir = caller.substr(0, i+1);
 
 			if (module[0] === '.') {
-				return j.resolve_path(callerDir + module);
+				return j.realpath(callerDir + module);
 			}
 
 			if (module.indexOf('/') == -1) {
@@ -30,14 +27,18 @@ function init(global, j, filepath) {
 				return modules_cache[filepath];
 			}
 
+			const isCoreModule = (module[0] !== '.');
+
+			const args = isCoreModule ? "require, j" : "require";
+
 			const source =
-				"function(require){\n" +
+				"function("+args+"){\n" +
 				j.read_file(filepath) +
 				"\n}";
 
 			var fn = j.compile_function(source, filepath);
 
-			modules_cache[filepath] = fn(this);
+			modules_cache[filepath] = isCoreModule ? fn(this, j) : fn(this);
 
 			return modules_cache[filepath];
 		}
@@ -49,7 +50,7 @@ function init(global, j, filepath) {
 	}
 
 	// Resolve filepath
-	const mainPath = j.resolve_path(filepath);
+	const mainPath = j.realpath(filepath);
 
 	// Read and compile main
 	const mainSource =

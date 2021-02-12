@@ -4,6 +4,7 @@
 #include "duktape.h"
 #include "duk_console.h"
 #include "joshi_core.h"
+#include "joshi_spec.h"
 
 static int joshi_run(
 	duk_context *ctx, const char* filepath, int argc, const char *argv[]);
@@ -24,7 +25,8 @@ void main(int argc, const char *argv[]) {
 		exit(-1);
 	}
 
-	// Init built-ins
+	// Init console
+	// TODO: move console to js layer
 	duk_console_init(ctx, 0);
 	
 	// Populate joshi object
@@ -40,7 +42,7 @@ static int joshi_run(
 	duk_context *ctx, const char* filepath, int argc, const char *argv[]) {
 
 	// Load init.js file
-	duk_push_c_function(ctx, read_file, 1);
+	duk_push_c_function(ctx, _joshi_read_file, 1);
 	duk_push_string(ctx, "./js/init.js");
 	duk_call(ctx, 1);
 
@@ -60,15 +62,22 @@ static int joshi_run(
 	
 	int idx = duk_push_object(ctx);
 
-	for(int i=0; i<JOSHI_CORE_BUILTINS_COUNT; i++) {
+	for(int i=0; i<joshi_core_builtins_count; i++) {
 		BUILTIN* bin = joshi_core_builtins+i;
 
 		duk_push_c_function(ctx, bin->func, bin->argc);
 		duk_put_prop_string(ctx, idx, bin->name);
 	}
 
+	for(int i=0; i<joshi_spec_builtins_count; i++) {
+		BUILTIN* bin = joshi_spec_builtins+i;
+
+		duk_push_c_function(ctx, bin->func, bin->argc);
+		duk_put_prop_string(ctx, idx, bin->name);
+	}
+
 	// TODO: change joshi.dir to /usr/lib/joshi or read from environment
-	duk_push_string(ctx, "/home/ivan/Desarrollo/joshi");
+	duk_push_string(ctx, "/home/ivan/Desarrollo/joshi/js");
 	duk_put_prop_string(ctx, idx, "dir");
 
 	// [ ... init global joshi ]
