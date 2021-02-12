@@ -46,7 +46,7 @@ return {
 		],
 
 		'pipe': [
-			{ 'int[]': 'pipefd', ref: true, size: '2' },
+			{ 'int[]': 'fildes', ref: true, size: '2' },
 			{ returns: 'int' }
 		],
 
