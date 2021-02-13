@@ -1,5 +1,3 @@
-// TODO: initialize console with a core module (using write() builtin)
-
 function init(global, j, filepath) {
 	const modules_cache = {};
 
@@ -32,13 +30,14 @@ function init(global, j, filepath) {
 			const args = isCoreModule ? "require, j" : "require";
 
 			const source =
-				"function("+args+"){\n" +
+				"function("+args+"){ " +
 				j.read_file(filepath) +
-				"\n}";
+				" ;}";
 
 			var fn = j.compile_function(source, filepath);
 
-			modules_cache[filepath] = isCoreModule ? fn(this, j) : fn(this);
+			modules_cache[filepath] = 
+				isCoreModule ? fn(arguments.callee, j) : fn(arguments.callee);
 
 			return modules_cache[filepath];
 		}
@@ -54,18 +53,16 @@ function init(global, j, filepath) {
 
 	// Read and compile main
 	const mainSource =
-		"function(argv, require){\n" +
+		"function(argv, require){ " +
 		j.read_file(mainPath) +
-		"\n}";
+		" ;}";
 
 	var main;
 
 	try {
 		main = j.compile_function(mainSource, mainPath);
 	} catch(err) {
-		console.log(err.toString());
-		console.log("  at file", mainPath);
-
+		j.printk('Compilation error: ' + err + '\n  at file' + mainPath + '\n');
 		return -1;
 	}
 
@@ -87,10 +84,7 @@ function init(global, j, filepath) {
 			return retval;
 		}
 	} catch(err) {
-		console.log(err.toString());
-		console.log("  at file", mainPath);
-		console.log(err.stack);
-
+		j.printk('Unhandled error: ' + err.stack + '\n');
 		return -1;
 	}
 

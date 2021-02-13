@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "duktape.h"
-#include "duk_console.h"
 #include "joshi_core.h"
 #include "joshi_spec.h"
 
@@ -25,10 +24,6 @@ void main(int argc, const char *argv[]) {
 		exit(-1);
 	}
 
-	// Init console
-	// TODO: move console to js layer
-	duk_console_init(ctx, 0);
-	
 	// Populate joshi object
 	int retval = joshi_run(ctx, argv[1], argc, argv);
 

@@ -4,7 +4,6 @@ LIBS = -lm
 
 OBJECTS = \
 	build/joshi.o \
-	build/duk_console.o \
 	build/duktape.o \
 	build/joshi_core.o \
 	build/joshi_spec.o
@@ -13,6 +12,7 @@ all: joshi
 
 joshi: $(OBJECTS)
 	gcc build/*.o -o joshi $(LIBS)
+
 
 #
 # Dependencies
@@ -26,8 +26,15 @@ build/joshi_spec.o: src/joshi_spec.h src/duktape/duktape.h src/duktape/duk_confi
 #
 # Spec stuff
 #
+fix-spec:
+	echo "int joshi_spec_builtins_count = 0; void* joshi_spec_builtins;" > src/joshi_spec.c
+
+spec: 
+	rm src/joshi_spec.c
+	make src/joshi_spec.c
+
 src/joshi_spec.c: tools/gen_spec.js tools/joshi.spec.js
-	./joshi tools/gen_spec.js > src/joshi_spec.c
+	./joshi tools/gen_spec.js 2> src/joshi_spec.c
 
 
 #

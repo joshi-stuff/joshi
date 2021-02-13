@@ -1,48 +1,62 @@
-return {
-	close: function(fd) {
-		return j.close(fd);
-	},
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 
-	dup: function(fd) {
-		return j.dup(fd);
-	},
+const LF_CODE = '\n'.charCodeAt(0);
 
-	dup2: function(fd, fd2) {
-		return j.dup2(fd, fd2);
-	},
+const io = {};
 
-	pipe: function() {
-		return j.pipe();	
-	},
+io.close = function(fd) {
+	return j.close(fd);
+}
 
-	read: function(fd, count) {
-		return j.read(fd, count);
-	},
+io.dup = function(fd) {
+	return j.dup(fd);
+}
 
-	read_str: function(fd, count) {
-		// TODO: check bytes read
-		const buf = j.read(fd, count).buf;
+io.dup2 = function(fd, fd2) {
+	return j.dup2(fd, fd2);
+}
 
-		const str = "";
-		for (var i=0; i<buf.length; i++) {
-			str += String.fromCharCode(buf[i]);
-		}
-		return str;
-	},
+io.pipe = function() {
+	return j.pipe();	
+}
 
-	write: function(fd, buf, count) {
-		return j.write(fd, buf, count);
-	},
+io.read = function(fd, buf, count) {
+	return j.read(fd, buf, count);
+}
 
-	write_str: function(fd, str) {
-		const buf = new Uint8Array(str.length);
+io.read_line = function(fd) {
+	var buf = new Uint8Array(1);
+	var bytes = [];
 
-		// TODO: convert from UTF-16 to UTF-8 encoding correctly
-		for (var i=0; i<str.length; i++) {
-			buf[i] = str.charCodeAt(i) & 0xFF;
+	while (true) {
+		j.read(fd, buf, 1);
+
+		if (buf[0] === LF_CODE) {
+			break;
 		}
 
-		// TODO: check bytes written
-		return j.write(fd, buf, buf.length);
-	},
-};
+		bytes.push(buf[0]);
+	}
+
+	return decoder.decode(new Uint8Array(bytes));
+}
+
+io.write = function(fd, buf, count) {
+	return j.write(fd, buf, count);
+}
+
+io.write_line = function(fd, str) {
+	io.write_str(fd, str + '\n');
+}
+
+io.write_str = function(fd, str) {
+	const buf = encoder.encode(str);
+
+	var i = j.write(fd, buf, buf.length);
+	while (i < buf.length) {
+		i += j.write(fd, new Uint8Array(buf.slice(i)), buf.length - i);
+	}
+}
+
+return io;

@@ -1,3 +1,5 @@
+const printk = require('kern').printk;
+
 const spec = require('./joshi.spec.js');
 
 const TYPEDEFS_MAP = {
@@ -201,6 +203,10 @@ function generatePushRefArg(arg, argPos) {
 	throw new Error('Invalid push ref generator for type ' + type );
 }
 
+function println(msg) {
+	printk(msg + '\n');
+}
+
 function tabify(content) {
 	return content
 		.split('\n')
@@ -220,14 +226,14 @@ const scNames = Object.keys(scs);
 //
 // Includes
 //
-console.log('#include <stdlib.h>');
-console.log('#include <string.h>');
-console.log('');
+println('#include <stdlib.h>');
+println('#include <string.h>');
+println('');
 for (var i=0; i<includes.length; i++) {
-	console.log('#include <' + includes[i] + '>');
+	println('#include <' + includes[i] + '>');
 }
-console.log('');
-console.log('#include "joshi_spec.h"');
+println('');
+println('#include "joshi_spec.h"');
 
 //
 // Stubs
@@ -240,8 +246,8 @@ for(var i=0; i<scNames.length; i++) {
 	//
 	// Header
 	//
-	console.log('');
-	console.log('duk_ret_t _joshi_spec_' + scName + '(duk_context* ctx) {');
+	println('');
+	println('duk_ret_t _joshi_spec_' + scName + '(duk_context* ctx) {');
 
 	//
 	// Argument retrieval
@@ -256,7 +262,7 @@ for(var i=0; i<scNames.length; i++) {
 				continue;
 			}
 
-			console.log(tabify(generateArg(arg, argPos++)));
+			println(tabify(generateArg(arg, argPos++)));
 		}
 	}
 
@@ -266,7 +272,7 @@ for(var i=0; i<scNames.length; i++) {
 	if (getRefArgsCount(sc) > 0 ) {
 		var argPos = 0;
 
-		console.log('');
+		println('');
 		for(var j=0; j<argc; j++) {
 			const arg = sc[j];
 
@@ -274,7 +280,7 @@ for(var i=0; i<scNames.length; i++) {
 				continue;
 			}
 
-			console.log(tabify(generateRefArg(arg, argPos++)));
+			println(tabify(generateRefArg(arg, argPos++)));
 		}
 	}
 
@@ -284,15 +290,15 @@ for(var i=0; i<scNames.length; i++) {
 	const rtype = getRetType(sc);
 	const rassign = (rtype === 'void' ? '' : rtype + ' ret = ');
 
-	console.log('');
-	console.log('	' + rassign + scName + '(');
+	println('');
+	println('	' + rassign + scName + '(');
 	for (var j=0; j<argc; j++) {
 		const arg = sc[j];
 		const sep = (j < argc - 1) ? ',' : '';
 
-		console.log('		' + getArgName(arg) + sep);
+		println('		' + getArgName(arg) + sep);
 	}
-	console.log('	);');
+	println('	);');
 	
 	//
 	// Byref arguments push
@@ -300,7 +306,7 @@ for(var i=0; i<scNames.length; i++) {
 	if (getRefArgsCount(sc) > 0 ) {
 		var argPos = 0;
 
-		console.log('');
+		println('');
 		for(var j=0; j<argc; j++) {
 			const arg = sc[j];
 
@@ -308,7 +314,7 @@ for(var i=0; i<scNames.length; i++) {
 				continue;
 			}
 
-			console.log(tabify(generatePushRefArg(arg, argPos++)));
+			println(tabify(generatePushRefArg(arg, argPos++)));
 		}
 	}
 
@@ -318,10 +324,10 @@ for(var i=0; i<scNames.length; i++) {
 	const rtype = getRetType(sc);
 
 	if (getThrows(sc) && (rtype !== 'void')) {
-		console.log('');
-		console.log('	if (ret == -1) {');
-		console.log('		return duk_throw_errno(ctx);');
-		console.log('	}');
+		println('');
+		println('	if (ret == -1) {');
+		println('		return duk_throw_errno(ctx);');
+		println('	}');
 	}
 
 	//
@@ -329,26 +335,26 @@ for(var i=0; i<scNames.length; i++) {
 	//
 	const rtype = getRetType(sc);
 
-	console.log('');
+	println('');
 
 	if (rtype === 'void') {
-		console.log('	return 0;');
+		println('	return 0;');
 	} else if (getRefArgsCount(sc) === 0) {
 		const rtypedef = TYPEDEFS_MAP[rtype];
 		const rjtype = rtypedef.jtype;
 
-		console.log('	duk_push_' + rjtype + '(ctx, ret);');
-		console.log('');
-		console.log('	return 1;');
+		println('	duk_push_' + rjtype + '(ctx, ret);');
+		println('');
+		println('	return 1;');
 	} else {
 		const rtypedef = TYPEDEFS_MAP[rtype];
 		const rjtype = rtypedef.jtype;
 
-		console.log('	duk_push_object(ctx);');
-		console.log('');
-		console.log('	duk_push_' + rjtype + '(ctx, ret);');
-		console.log('	duk_put_prop_string(ctx, -2, "value");');
-		console.log('');
+		println('	duk_push_object(ctx);');
+		println('');
+		println('	duk_push_' + rjtype + '(ctx, ret);');
+		println('	duk_put_prop_string(ctx, -2, "value");');
+		println('');
 
 		for(var j=argc-1; j>=0; j--) {
 			const arg = sc[j];
@@ -359,33 +365,33 @@ for(var i=0; i<scNames.length; i++) {
 
 			const name = getArgName(arg);
 
-			console.log('	duk_pull(ctx, -2);');
-			console.log('	duk_put_prop_string(ctx, -2, "' + name + '");');
+			println('	duk_pull(ctx, -2);');
+			println('	duk_put_prop_string(ctx, -2, "' + name + '");');
 		}
 
-		console.log('');
-		console.log('	return 1;');
+		println('');
+		println('	return 1;');
 	}
 
 	//
 	// End of function
 	//
-	console.log('}');
+	println('}');
 }
 
 //
 // BUILTINs table
 //
-console.log('');
-console.log('BUILTIN joshi_spec_builtins[] = {');
+println('');
+println('BUILTIN joshi_spec_builtins[] = {');
 for(var i=0; i<scNames.length; i++) {
 	const scName = scNames[i];
 	const sc = scs[scName];
 
-	console.log(
+	println(
 		'	{ name: "' + scName + '", func: _joshi_spec_' + scName + 
 		', argc: ' + getArgsCount(sc) + ' },');
 }
-console.log('};');
-console.log('');
-console.log('size_t joshi_spec_builtins_count = sizeof(joshi_spec_builtins)/sizeof(BUILTIN);');
+println('};');
+println('');
+println('size_t joshi_spec_builtins_count = sizeof(joshi_spec_builtins)/sizeof(BUILTIN);');

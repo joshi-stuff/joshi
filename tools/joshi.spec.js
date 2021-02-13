@@ -52,7 +52,7 @@ return {
 
 		'read': [
 			{ 'int': 'fd' },
-			{ 'void*': 'buf', ref: true, size: 'count' },
+			{ 'void*': 'buf' },//, ref: true, size: 'count' },
 			{ 'size_t': 'count' },
 			{ returns: 'ssize_t' },
 		],

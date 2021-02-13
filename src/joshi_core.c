@@ -11,6 +11,7 @@
 
 BUILTIN joshi_core_builtins[] = {
 	{ name: "compile_function", func: _joshi_compile_function, argc: 2 },
+	{ name: "printk", func: _joshi_printk, argc: 1 },
 	{ name: "read_file", func: _joshi_read_file, argc: 1 },
 	{ name: "realpath", func: _joshi_realpath, argc: 1 },
 }; 
@@ -25,6 +26,15 @@ duk_ret_t _joshi_compile_function(duk_context* ctx) {
 	duk_compile(ctx, DUK_COMPILE_FUNCTION);
 
 	return 1;
+}
+
+duk_ret_t _joshi_printk(duk_context* ctx) {
+	const char* msg = duk_get_string(ctx, 0);
+
+	// TODO: make sure to write all bytes
+	write(2, msg, strlen(msg));
+
+	return 0;
 }
 
 duk_ret_t _joshi_read_file(duk_context* ctx) {
