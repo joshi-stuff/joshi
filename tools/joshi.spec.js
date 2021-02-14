@@ -1,6 +1,8 @@
 return {
 	includes: [
 		'fcntl.h',
+//		'poll.h',
+		'signal.h',
 		'stdio.h',
 		'string.h',
 		'sys/stat.h',
@@ -50,9 +52,18 @@ return {
 			{ returns: 'int' }
 		],
 
+		/*
+		'poll': [
+			{ 'struct pollfd*': 'fds'},
+			{ 'nfds_t': 'nfds' },
+			{ 'int': 'timeout' },
+			{ returns: 'int' }
+		],
+		*/
+
 		'read': [
 			{ 'int': 'fd' },
-			{ 'void*': 'buf' },//, ref: true, size: 'count' },
+			{ 'void*': 'buf' },
 			{ 'size_t': 'count' },
 			{ returns: 'ssize_t' },
 		],
@@ -71,11 +82,12 @@ return {
 			{ returns: 'ssize_t' }
 		],
 
-		// TODO: sigaction builtin
+		// TODO: execv and execvp builtin
 		// TODO: ioctl
 		// TODO: kill builtin
 		// TODO: seek builtin
 		// TODO: tell builtin
+		// TODO: execvpe builtin ?
 	}
 };
 

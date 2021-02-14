@@ -34,7 +34,7 @@ spec:
 	make src/joshi_spec.c
 
 src/joshi_spec.c: tools/gen_spec.js tools/joshi.spec.js
-	./joshi tools/gen_spec.js 2> src/joshi_spec.c
+	./joshi tools/gen_spec.js > src/joshi_spec.c
 
 
 #

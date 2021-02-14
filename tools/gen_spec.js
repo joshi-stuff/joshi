@@ -1,6 +1,22 @@
-const printk = require('kern').printk;
+const println = require('term').println;
 
 const spec = require('./joshi.spec.js');
+
+// TODO: rename ref:true as out:true
+// rename refgen and prgen as outPreGen and outPostGen
+// rename gen to inPreGen and create an inPostGen function (for structs, f.e.)
+// rename jtype to retGen
+
+function genGetBufferData(ctype) {
+	return function(arg, argPos) {
+		const name = getArgName(arg);
+
+		return (
+			ctype + ' ' + name + ' = (' + ctype + ')' +
+				'duk_get_buffer_data(ctx, ' + argPos + ', NULL);'
+		);
+	}
+}
 
 const TYPEDEFS_MAP = {
 	'char*': {
@@ -38,6 +54,10 @@ const TYPEDEFS_MAP = {
 			);
 		}
 	},
+	'nfds_t': {
+		gen: 'duk_get_number',
+		jtype: 'number'
+	},
 	'pid_t': {
 		gen: 'duk_get_number',
 		jtype: 'number'
@@ -50,18 +70,14 @@ const TYPEDEFS_MAP = {
 		gen: 'duk_get_number',
 		jtype: 'number'
 	},
+	'struct pollfd*': {
+		gen: genGetBufferData('struct pollfd*')
+	},
 	'unsigned': {
 		jtype: 'number'
 	},
 	'void*': {
-		gen: function(arg, argPos) {
-			const name = getArgName(arg);
-
-			return (
-				'void* ' + name + 
-					' = duk_get_buffer_data(ctx, ' + argPos + ', NULL);'
-			);
-		},
+		gen: genGetBufferData('void*'),
 		refgen: function(arg) {
 			const name = getArgName(arg);
 
@@ -201,10 +217,6 @@ function generatePushRefArg(arg, argPos) {
 	}
 
 	throw new Error('Invalid push ref generator for type ' + type );
-}
-
-function println(msg) {
-	printk(msg + '\n');
 }
 
 function tabify(content) {
