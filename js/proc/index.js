@@ -2,6 +2,45 @@ const io = require('io');
 
 const proc = {};
 
+proc.SIGHUP = 1;
+proc.SIGINT = 2
+proc.SIGQUIT = 3
+proc.SIGILL = 4;
+proc.SIGTRAP = 5;
+proc.SIGABRT = 6;
+proc.SIGIOT = 6;
+proc.SIGBUS = 7;
+proc.SIGFPE = 8;
+proc.SIGKILL = 9;
+proc.SIGUSR1 = 10;
+proc.SIGSEGV = 11;
+proc.SIGUSR2 = 12;
+proc.SIGPIPE = 13;
+proc.SIGALRM = 14;
+proc.SIGTERM = 15;
+proc.SIGSTKFLT = 16;
+proc.SIGCHLD = 17;
+proc.SIGCONT = 18;
+proc.SIGSTOP = 19;
+proc.SIGTSTP = 20;
+proc.SIGTTIN = 21;
+proc.SIGTTOU = 22;
+proc.SIGURG = 23;
+proc.SIGXCPU = 24;
+proc.SIGXFSZ = 25;
+proc.SIGVTALRM = 26;
+proc.SIGPROF = 27;
+proc.SIGWINCH = 28;
+proc.SIGIO = 29;
+proc.SIGPOLL = proc.SIGIO;
+proc.SIGPWR = 30;
+proc.SIGSYS = 31;
+proc.SIGUNUSED = 31;
+
+proc.alarm = function(seconds) {
+	return j.alarm(seconds);
+}
+
 /**
  * Creates two pipes and wires them so that parent and child can talk to each 
  * other.
@@ -71,5 +110,17 @@ proc.pipe_fork = function(wire) {
 proc.fork = function() {
 	return j.fork();
 }
+
+/**
+ *
+ * @param [undefined|null|function] func
+ * If a function is given it is registered as the signal handler.
+ * If `null` is given the signal is ignored.
+ * If `undefined` the default signal handler is installed.
+ */
+proc.signal = function(sig, func) {
+	j.signal(sig, func);
+}
+
 
 return proc;
