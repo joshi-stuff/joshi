@@ -26,9 +26,6 @@ build/joshi_spec.o: src/joshi_spec.h src/duktape/duktape.h src/duktape/duk_confi
 #
 # Spec stuff
 #
-fix-spec:
-	echo "int joshi_spec_builtins_count = 0; void* joshi_spec_builtins;" > src/joshi_spec.c
-
 spec: 
 	rm src/joshi_spec.c
 	make src/joshi_spec.c

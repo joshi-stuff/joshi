@@ -12,28 +12,28 @@ return {
 	],
 	syscalls: {
 		'alarm': [
-			{ 'int': 'seconds' },
+			{ type: 'int', name: 'seconds' },
 			{ returns: 'unsigned', throws: false }
 		],
 
 		'close': [
-			{ 'int': 'fd' },
+			{ type: 'int', name: 'fd' },
 			{ returns: 'int' }
 		],
 
 		'dup': [
-			{ 'int': 'fildes' },
+			{ type: 'int', name: 'fildes' },
 			{ returns: 'int' }
 		],
 
 		'dup2': [
-			{ 'int': 'fildes' },
-			{ 'int': 'fildes2' },
+			{ type: 'int', name: 'fildes' },
+			{ type: 'int', name: 'fildes2' },
 			{ returns: 'int' }
 		],
 
 		'exit': [
-			{ 'int': 'status' },
+			{ type: 'int', name: 'status' },
 			{ returns: 'void' }
 		],
 
@@ -42,43 +42,43 @@ return {
 		],
 
 		'open': [
-			{ 'char*': 'pathname' },
-			{ 'int': 'flags' },
+			{ type: 'char*', name: 'pathname' },
+			{ type: 'int', name: 'flags' },
 			{ returns: 'int' }
 		],
 
 		'pipe': [
-			{ 'int[]': 'fildes', ref: true, size: '2' },
+			{ type: 'int[]', name: 'fildes', out: true, size: '2' },
 			{ returns: 'int' }
 		],
 
 		/*
 		'poll': [
-			{ 'struct pollfd*': 'fds'},
-			{ 'nfds_t': 'nfds' },
-			{ 'int': 'timeout' },
+			{ type: 'struct pollfd*', name: 'fds', in: true, out: true},
+			{ type: 'nfds_t', name: 'nfds' },
+			{ type: 'int', name: 'timeout' },
 			{ returns: 'int' }
 		],
 		*/
 
 		'read': [
-			{ 'int': 'fd' },
-			{ 'void*': 'buf' },
-			{ 'size_t': 'count' },
+			{ type: 'int', name: 'fd' },
+			{ type: 'void*', name: 'buf' },
+			{ type: 'size_t', name: 'count' },
 			{ returns: 'ssize_t' },
 		],
 
 		'waitpid': [
-			{ 'pid_t': 'pid' },
-			{ 'int': 'wstatus', ref: true },
-			{ 'int': 'options' },
+			{ type: 'pid_t', name: 'pid' },
+			{ type: 'int', name: 'wstatus', out: true },
+			{ type: 'int', name: 'options' },
 			{ returns: 'pid_t' }
 		],
 
 		'write': [
-			{ 'int': 'fd' },
-			{ 'void*': 'buf' },
-			{ 'size_t': 'count' },
+			{ type: 'int', name: 'fd' },
+			{ type: 'void*', name: 'buf' },
+			{ type: 'size_t', name: 'count' },
 			{ returns: 'ssize_t' }
 		],
 

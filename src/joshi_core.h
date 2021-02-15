@@ -14,4 +14,6 @@ extern BUILTIN joshi_core_builtins[];
 
 duk_ret_t _joshi_read_file(duk_context* ctx);
 
+duk_ret_t duk_throw_errno(duk_context* ctx);
+
 #endif
