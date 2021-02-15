@@ -2,6 +2,7 @@
 #include <string.h> 
  
 #include <fcntl.h> 
+#include <poll.h> 
 #include <signal.h> 
 #include <stdio.h> 
 #include <string.h> 
@@ -142,7 +143,7 @@ duk_ret_t _joshi_spec_open(duk_context* ctx) {
 } 
  
 duk_ret_t _joshi_spec_pipe(duk_context* ctx) { 
-	/* Output arguments retrieval */ 
+	/* Output-only arguments instantiation */ 
 	int fildes[2]; 
  
 	/* Syscall invocation */ 
@@ -155,7 +156,7 @@ duk_ret_t _joshi_spec_pipe(duk_context* ctx) {
 		return duk_throw_errno(ctx); 
 	} 
  
-	/* Output arguments return */ 
+	/* Output arguments return marshalling */ 
 	duk_push_array(ctx);
 	for (int i=0; i<2; i++) {
 		duk_push_int(ctx, fildes[i]);
@@ -170,6 +171,67 @@ duk_ret_t _joshi_spec_pipe(duk_context* ctx) {
 
 	duk_pull(ctx, -2);
 	duk_put_prop_string(ctx, -2, "fildes");
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_poll(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	duk_size_t fds_length = duk_get_length(ctx, 0);
+	struct pollfd fds[fds_length];
+	for (duk_size_t i = 0; i < fds_length; i++) {
+		duk_get_prop_index(ctx, 0, i);
+
+		duk_get_prop_string(ctx, -1, "fd");
+		fds[i].fd = (int)duk_get_number(ctx, -1);
+		duk_pop(ctx);
+
+		duk_get_prop_string(ctx, -1, "events");
+		fds[i].events = (short int)duk_get_number(ctx, -1);
+		duk_pop(ctx);
+
+		duk_get_prop_string(ctx, -1, "revents");
+		fds[i].revents = (short int)duk_get_number(ctx, -1);
+		duk_pop(ctx);
+
+		duk_pop(ctx);
+	} 
+	nfds_t nfds = (nfds_t)duk_get_number(ctx, 1); 
+	int timeout = (int)duk_get_number(ctx, 2); 
+ 
+	/* Output-only arguments instantiation */ 
+ 
+ 
+	/* Syscall invocation */ 
+	int ret = poll( 
+		fds, 
+		nfds, 
+		timeout 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Output arguments return marshalling */ 
+	for (size_t i = 0; i < fds_length; i++) {
+		duk_get_prop_index(ctx, 0, i);
+
+		duk_push_int(ctx, fds[i].fd);
+		duk_put_prop_string(ctx, -2, "fd");
+
+		duk_push_int(ctx, fds[i].events);
+		duk_put_prop_string(ctx, -2, "events");
+
+		duk_push_int(ctx, fds[i].revents);
+		duk_put_prop_string(ctx, -2, "revents");
+
+		duk_pop(ctx);
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
 
 	return 1; 
 } 
@@ -203,7 +265,7 @@ duk_ret_t _joshi_spec_waitpid(duk_context* ctx) {
 	pid_t pid = (pid_t)duk_get_number(ctx, 0); 
 	int options = (int)duk_get_number(ctx, 1); 
  
-	/* Output arguments retrieval */ 
+	/* Output-only arguments instantiation */ 
 	int wstatus[1]; 
  
 	/* Syscall invocation */ 
@@ -218,7 +280,7 @@ duk_ret_t _joshi_spec_waitpid(duk_context* ctx) {
 		return duk_throw_errno(ctx); 
 	} 
  
-	/* Output arguments return */ 
+	/* Output arguments return marshalling */ 
 	duk_push_number(ctx, wstatus[0]); 
  
 	/* Return */ 
@@ -266,6 +328,7 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "fork", func: _joshi_spec_fork, argc: 0 }, 
 	{ name: "open", func: _joshi_spec_open, argc: 2 }, 
 	{ name: "pipe", func: _joshi_spec_pipe, argc: 1 }, 
+	{ name: "poll", func: _joshi_spec_poll, argc: 3 }, 
 	{ name: "read", func: _joshi_spec_read, argc: 3 }, 
 	{ name: "waitpid", func: _joshi_spec_waitpid, argc: 3 }, 
 	{ name: "write", func: _joshi_spec_write, argc: 3 }, 

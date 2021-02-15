@@ -25,63 +25,6 @@ duk_ret_t _joshi_compile_function(duk_context* ctx) {
 	return 1;
 }
 
-duk_ret_t _joshi_poll(duk_context* ctx) {
-	// TODO: move struct pre-generation to spec
-	duk_size_t fds_length = duk_get_length(ctx, 0);
-	struct pollfd fds[fds_length];
-	for (duk_size_t i=0; i<fds_length; i++) {
-		duk_get_prop_index(ctx, 0, i);
-
-		duk_get_prop_string(ctx, -1, "fd");
-		fds[i].fd = (int)duk_get_number(ctx, -1);
-		duk_pop(ctx);
-
-		duk_get_prop_string(ctx, -1, "events");
-		fds[i].events = (short int)duk_get_number(ctx, -1);
-		duk_pop(ctx);
-
-		duk_get_prop_string(ctx, -1, "revents");
-		fds[i].revents = (short int)duk_get_number(ctx, -1);
-		duk_pop(ctx);
-	
-		duk_pop(ctx);
-	}
- 
-	nfds_t nfds = (nfds_t)duk_get_number(ctx, 1); 
-
-	int timeout = (int)duk_get_number(ctx, 2); 
-
-	int ret = poll( 
-		fds, 
-		nfds, 
-		timeout 
-	); 
-
-	if (ret == -1) { 
-		return duk_throw_errno(ctx); 
-	} 
-
-	// inPostGen: pollfd
-	for (duk_size_t i=0; i<duk_get_length(ctx, 0); i++) {
-		duk_get_prop_index(ctx, 0, i);
-
-		duk_push_int(ctx, fds[i].fd);
-		duk_put_prop_string(ctx, -2, "fd");
-
-		duk_push_int(ctx, fds[i].events);
-		duk_put_prop_string(ctx, -2, "events");
-
-		duk_push_int(ctx, fds[i].revents);
-		duk_put_prop_string(ctx, -2, "revents");
-
-		duk_pop(ctx);
-	}
- 
-	duk_push_number(ctx, ret); 
- 
-	return 1; 
-}
-
 duk_ret_t _joshi_printk(duk_context* ctx) {
 	const char* msg = duk_get_string(ctx, 0);
 
@@ -278,7 +221,6 @@ duk_ret_t duk_throw_errno(duk_context* ctx) {
 //
 BUILTIN joshi_core_builtins[] = {
 	{ name: "compile_function", func: _joshi_compile_function, argc: 2 },
-	{ name: "poll", func: _joshi_poll, argc: 3 },
 	{ name: "printk", func: _joshi_printk, argc: 1 },
 	{ name: "read_file", func: _joshi_read_file, argc: 1 },
 	{ name: "realpath", func: _joshi_realpath, argc: 1 },
