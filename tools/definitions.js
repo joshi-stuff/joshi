@@ -44,6 +44,95 @@ function defNumber(ctype) {
 	};
 }
 
+function defStructArray(structName, fields) {
+	const fieldTypes = {
+		'int': {
+			get: 'number',
+			push: 'int'
+		},
+		'short int': {
+			get: 'number',
+			push: 'int'
+		}
+	};
+
+	return {
+		in: {
+			pre: function(arg, argPos) {
+				var source = '';
+
+				source += 'duk_size_t ' + arg.name + '_length = ';
+				source += 'duk_get_length(ctx, ' + argPos + ');\n';
+
+				source += 'struct ' + structName + ' ';
+				source += arg.name + '[' + arg.name + '_length];\n';
+
+				source += 'for (duk_size_t i = 0; i < ' + arg.name + '_length; i++) {\n';
+				source += '	duk_get_prop_index(ctx, ' + argPos + ', i);\n';
+				source += '\n';
+
+				const keys = Object.keys(fields);
+				for (var i = 0; i < keys.length; i++) {
+					const name = keys[i];
+					const type = fields[name];
+		
+					const jtype = fieldTypes[type].get;
+
+					if (!jtype) {
+						throw new Error(
+							'Unsupported field type ' + type + ' in struct ' +
+								structName);
+					}
+
+					source += '	duk_get_prop_string(ctx, -1, "' + name + '");\n';
+					source += '	' + arg.name + '[i].' + name + ' = ';
+					source += '(' + type + ')duk_get_' + jtype + '(ctx, -1);\n';
+					source += '	duk_pop(ctx);\n';
+					source += '\n';
+				}
+
+				source += '	duk_pop(ctx);\n';
+				source += '}';
+
+				return source;
+			}
+		},
+		out: {
+			post: function(arg, argPos) {
+				var source = '';
+
+				source += 'for (size_t i = 0; i < ' + arg.name + '_length; i++) {\n';
+				source += '	duk_get_prop_index(ctx, ' + argPos + ', i);\n';
+				source += '\n';
+
+				const keys = Object.keys(fields);
+				for (var i = 0; i < keys.length; i++) {
+					const name = keys[i];
+					const type = fields[name];
+		
+					const jtype = fieldTypes[type].push;
+
+					if (!jtype) {
+						throw new Error(
+							'Unsupported field type ' + type + ' in struct ' +
+								structName);
+					}
+
+					source += '	duk_push_' + jtype + '(ctx, ';
+					source += arg.name + '[i].' + name + ');\n';
+					source += '	duk_put_prop_string(ctx, -2, "' + name + '");\n';
+					source += '\n';
+				}
+
+				source += '	duk_pop(ctx);\n';
+				source += '}';
+
+				return source;
+			}
+		},
+	};
+}
+
 return {
 	'char*': {
 		in: {
@@ -71,9 +160,14 @@ return {
 	'pid_t': defNumber('pid_t'),
 	'size_t': defNumber('size_t'),
 	'ssize_t': defNumber('ssize_t'),
-	//'struct pollfd*': {
-	//	gen: gen.getBufferData('struct pollfd*')
-	//},
+	'struct pollfd*': defStructArray(
+		'pollfd', 
+		{
+			'fd': 'int',
+			'events': 'short int',
+			'revents': 'short int',
+		}
+	),
 	'unsigned': defNumber('unsigned'),
 	'void*': defBuffer('void*'),
 };

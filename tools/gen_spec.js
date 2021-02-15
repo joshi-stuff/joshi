@@ -69,7 +69,7 @@ for(var i=0; i<scNames.length; i++) {
 	if (outArgs.length) {
 		var argPos = 0;
 
-		println('	/* Output arguments retrieval */');
+		println('	/* Output-only arguments instantiation */');
 		for(var j = 0; j < args.length; j++) {
 			const arg = args[j];
 
@@ -112,17 +112,12 @@ for(var i=0; i<scNames.length; i++) {
 	}
 
 	//
-	// In arguments post generation
-	//
-	// TODO: in args post generation
-	
-	//
-	// Out arguments post generation
+	// Output arguments post generation
 	//
 	if (outArgs.length) {
 		var argPos = 0;
 
-		println('	/* Output arguments return */');
+		println('	/* Output arguments return marshalling */');
 		for(var j = 0; j < args.length; j++) {
 			const arg = args[j];
 

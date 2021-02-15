@@ -1,7 +1,7 @@
 return {
 	includes: [
 		'fcntl.h',
-//		'poll.h',
+		'poll.h',
 		'signal.h',
 		'stdio.h',
 		'string.h',
@@ -52,14 +52,12 @@ return {
 			{ returns: 'int' }
 		],
 
-		/*
 		'poll': [
 			{ type: 'struct pollfd*', name: 'fds', in: true, out: true},
 			{ type: 'nfds_t', name: 'nfds' },
 			{ type: 'int', name: 'timeout' },
 			{ returns: 'int' }
 		],
-		*/
 
 		'read': [
 			{ type: 'int', name: 'fd' },

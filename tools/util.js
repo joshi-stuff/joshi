@@ -1,6 +1,10 @@
 const util = {};
 
 util.generateInArgPre = function(arg, argPos, def) {
+	if (!def) {
+		throw new Error('No definitions for type ' +  arg.type);
+	}
+
 	var source = '';
 
 	const gen = def.in.pre;
@@ -20,6 +24,15 @@ util.generateInArgPre = function(arg, argPos, def) {
 }
 
 util.generateOutArgPre = function(arg, argPos, def) {
+	if (!def) {
+		throw new Error('No definitions for type ' +  arg.type);
+	}
+
+	// Ignore input arguments: they have been processed already 
+	if (util.isInArg(arg)) {
+		return '';
+	}
+
 	var source = '';
 
 	const gen = def.out.pre;
@@ -34,6 +47,10 @@ util.generateOutArgPre = function(arg, argPos, def) {
 }
 
 util.generateOutArgPost = function(arg, argPos, def) {
+	if (!def) {
+		throw new Error('No definitions for type ' +  arg.type);
+	}
+
 	var source = '';
 
 	const gen = def.out.post;
@@ -51,12 +68,17 @@ util.generateReturn = function(sc, defs) {
 	var source = '';
 
 	const ret = util.getReturn(sc);
+	const inOutArgs = util.getInOutArgs(sc);
 	const outArgs = util.getOutArgs(sc);
 	const retdef = defs[ret.returns];
 
 	if (ret.returns === 'void') {
 		source += 'return 0;';
-	} else if (outArgs.length === 0) {
+	} else if ((outArgs.length - inOutArgs.length) === 0) {
+		if (!retdef) {
+			throw new Error('No definitions for type ' +  ret.returns);
+		}
+
 		if (!retdef.ret) {
 			throw new Error('Invalid return generator for type ' + ret.returns); 
 		}
@@ -65,6 +87,10 @@ util.generateReturn = function(sc, defs) {
 		source += '\n';
 		source += 'return 1;';
 	} else {
+		if (!retdef) {
+			throw new Error('No definitions for type ' +  ret.returns);
+		}
+
 		if (!retdef.ret) {
 			throw new Error('Invalid return generator for type ' + ret.returns); 
 		}
@@ -81,6 +107,10 @@ util.generateReturn = function(sc, defs) {
 			const arg = args[j];
 
 			if (!util.isOutArg(arg)) {
+				continue;
+			}
+
+			if (util.isInArg(arg)) {
 				continue;
 			}
 
@@ -101,6 +131,14 @@ util.getArgs = function(sc) {
 
 util.getInArgs = function(sc) {
 	return util.getArgs(sc).filter(util.isInArg);
+}
+
+util.getInOutArgs = function(sc) {
+	return util.getArgs(sc).filter(
+		function(arg) {
+			return util.isInArg(arg) && util.isOutArg(arg);
+		}
+	);
 }
 
 util.getOutArgs = function(sc) {
