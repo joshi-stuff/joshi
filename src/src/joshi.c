@@ -5,6 +5,8 @@
 #include "joshi_core.h"
 #include "joshi_spec.h"
 
+#define LIB_DIR "/usr/lib/joshi"
+
 static int joshi_run(
 	duk_context *ctx, const char* filepath, int argc, const char *argv[]);
 static void fatal_handler(void *udata, const char *msg);
@@ -38,10 +40,10 @@ static int joshi_run(
 
 	// Load init.js file
 	duk_push_c_function(ctx, _joshi_read_file, 1);
-	duk_push_string(ctx, "./js/init.js");
+	duk_push_string(ctx, LIB_DIR "/init.js");
 	duk_call(ctx, 1);
 
-	duk_push_string(ctx, "./js/init.js");
+	duk_push_string(ctx, LIB_DIR "/init.js");
 
 	// [ ... source filepath ]
 
@@ -71,8 +73,7 @@ static int joshi_run(
 		duk_put_prop_string(ctx, idx, bin->name);
 	}
 
-	// TODO: change joshi.dir to /usr/lib/joshi or read from environment
-	duk_push_string(ctx, "/home/ivan/Desarrollo/joshi/js");
+	duk_push_string(ctx, "/usr/lib/joshi");
 	duk_put_prop_string(ctx, idx, "dir");
 
 	// [ ... init global joshi ]

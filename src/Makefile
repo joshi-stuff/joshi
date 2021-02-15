@@ -1,3 +1,5 @@
+# TODO: add support for Arch AUR
+
 CC = gcc
 DUKTAPE_VERSION = 2.6.0
 LIBS = -lm

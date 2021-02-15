@@ -1,4 +1,6 @@
-/build
-/duktape
-/joshi
+/joshi-*.zst
+/pkg
+/src/build
 /src/duktape
+/src/joshi
+/src/src/duktape
