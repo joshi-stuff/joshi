@@ -41,6 +41,14 @@ proc.alarm = function(seconds) {
 	return j.alarm(seconds);
 }
 
+proc.execv = function(pathname, argv) {
+	return j.execv(pathname, argv);
+}
+
+proc.execvp = function(file, argv) {
+	return j.execvp(file, argv);
+}
+
 /**
  * Creates two pipes and wires them so that parent and child can talk to each 
  * other.

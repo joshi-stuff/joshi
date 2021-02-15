@@ -32,6 +32,18 @@ return {
 			{ returns: 'int' }
 		],
 
+		'execv': [
+			{ type: 'char*', name: 'pathname' },
+			{ type: 'char*[]', name: 'argv' },
+			{ returns: 'int' }
+		],
+
+		'execvp': [
+			{ type: 'char*', name: 'file' },
+			{ type: 'char*[]', name: 'argv' },
+			{ returns: 'int' }
+		],
+
 		'exit': [
 			{ type: 'int', name: 'status' },
 			{ returns: 'void' }
@@ -80,12 +92,11 @@ return {
 			{ returns: 'ssize_t' }
 		],
 
-		// TODO: execv and execvp builtin
 		// TODO: ioctl
-		// TODO: kill builtin
-		// TODO: seek builtin
-		// TODO: tell builtin
-		// TODO: execvpe builtin ?
+		// TODO: kill 
+		// TODO: seek
+		// TODO: tell
+		// TODO: execvpe ?
 	}
 };
 

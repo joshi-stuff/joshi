@@ -28,7 +28,6 @@ function defBuffer(ctype) {
 
 function defNumber(ctype) {
 	return {
-		// TODO: when in+out, the generation must change
 		in: {
 			pre: 'duk_get_number'
 		},
@@ -138,6 +137,27 @@ return {
 		in: {
 			pre: 'duk_get_string'
 		}
+	},
+	'char*[]': {
+		in: {
+			pre: function(arg, argPos) {
+				var source = '';
+
+				source += 'duk_size_t ' + arg.name + '_length = ';
+				source += 'duk_get_length(ctx, ' + argPos + ');\n';
+
+				source += 'char* ' + arg.name + '[' + arg.name + '_length];\n';
+
+				source += 'for (duk_size_t i = 0; i < ' + arg.name + '_length; i++) {\n';
+				source += '	duk_get_prop_index(ctx, ' + argPos + ', i);\n';
+				source += '	' + arg.name + '[i] = (char*)duk_get_string(ctx, -1);\n';
+				source += '	duk_pop(ctx);\n';
+				source += '}';
+
+				return source;
+			}
+		}
+
 	},
 	'int': defNumber('int'),
 	'int[]': {

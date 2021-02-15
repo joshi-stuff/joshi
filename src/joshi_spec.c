@@ -91,6 +91,62 @@ duk_ret_t _joshi_spec_dup2(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_execv(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* pathname = (char*)duk_get_string(ctx, 0); 
+	duk_size_t argv_length = duk_get_length(ctx, 1);
+	char* argv[argv_length];
+	for (duk_size_t i = 0; i < argv_length; i++) {
+		duk_get_prop_index(ctx, 1, i);
+		argv[i] = (char*)duk_get_string(ctx, -1);
+		duk_pop(ctx);
+	} 
+ 
+	/* Syscall invocation */ 
+	int ret = execv( 
+		pathname, 
+		argv 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_execvp(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* file = (char*)duk_get_string(ctx, 0); 
+	duk_size_t argv_length = duk_get_length(ctx, 1);
+	char* argv[argv_length];
+	for (duk_size_t i = 0; i < argv_length; i++) {
+		duk_get_prop_index(ctx, 1, i);
+		argv[i] = (char*)duk_get_string(ctx, -1);
+		duk_pop(ctx);
+	} 
+ 
+	/* Syscall invocation */ 
+	int ret = execvp( 
+		file, 
+		argv 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_exit(duk_context* ctx) { 
 	/* Input arguments retrieval */ 
 	int status = (int)duk_get_number(ctx, 0); 
@@ -324,6 +380,8 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "close", func: _joshi_spec_close, argc: 1 }, 
 	{ name: "dup", func: _joshi_spec_dup, argc: 1 }, 
 	{ name: "dup2", func: _joshi_spec_dup2, argc: 2 }, 
+	{ name: "execv", func: _joshi_spec_execv, argc: 2 }, 
+	{ name: "execvp", func: _joshi_spec_execvp, argc: 2 }, 
 	{ name: "exit", func: _joshi_spec_exit, argc: 1 }, 
 	{ name: "fork", func: _joshi_spec_fork, argc: 0 }, 
 	{ name: "open", func: _joshi_spec_open, argc: 2 }, 
