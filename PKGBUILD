@@ -41,4 +41,7 @@ package() {
 
 	mkdir -p $pkgdir/usr/lib/joshi
 	cp -aR js/* $pkgdir/usr/lib/joshi
+
+	mkdir -p $pkgdir/usr/include/joshi
+	cp -aR src/duktape/*.h $pkgdir/usr/include/joshi
 }
