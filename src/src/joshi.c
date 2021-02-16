@@ -5,7 +5,7 @@
 #include "joshi_core.h"
 #include "joshi_spec.h"
 
-#define LIB_DIR "/usr/lib/joshi"
+const char* LIB_DIR = "/usr/lib/joshi";
 
 static int joshi_run(
 	duk_context *ctx, const char* filepath, int argc, const char *argv[]);
@@ -16,6 +16,13 @@ void main(int argc, const char *argv[]) {
 	if (argc < 2) {
 		fprintf(stderr, "No script file name provided.\n");
 		exit(-1);
+	}
+
+	// Init LIB_DIR
+	const char* joshi_lib_dir = getenv("JOSHI_LIB_DIR");
+
+	if (joshi_lib_dir != NULL) {
+		LIB_DIR = joshi_lib_dir;
 	}
 
 	// Init context
@@ -39,11 +46,16 @@ static int joshi_run(
 	duk_context *ctx, const char* filepath, int argc, const char *argv[]) {
 
 	// Load init.js file
+	char init_path[PATH_MAX+1];
+
+	strcpy(init_path, LIB_DIR);
+	strcat(init_path, "/init.js");
+
 	duk_push_c_function(ctx, _joshi_read_file, 1);
-	duk_push_string(ctx, LIB_DIR "/init.js");
+	duk_push_string(ctx, init_path);
 	duk_call(ctx, 1);
 
-	duk_push_string(ctx, LIB_DIR "/init.js");
+	duk_push_string(ctx, init_path);
 
 	// [ ... source filepath ]
 
