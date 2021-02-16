@@ -85,7 +85,7 @@ static int joshi_run(
 		duk_put_prop_string(ctx, idx, bin->name);
 	}
 
-	duk_push_string(ctx, "/usr/lib/joshi");
+	duk_push_string(ctx, LIB_DIR);
 	duk_put_prop_string(ctx, idx, "dir");
 
 	// [ ... init global joshi ]

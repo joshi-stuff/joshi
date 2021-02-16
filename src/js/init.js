@@ -2,13 +2,13 @@ function init(global, j, filepath) {
 	const modules_cache = {};
 
 	// Create anchored require() function
-	function createRequire(caller) {
+	function createRequire(ownerPath) {
 		const anchoredResolve = function(module) {
-			const i = caller.lastIndexOf('/');
-			const callerDir = caller.substr(0, i+1);
+			const i = ownerPath.lastIndexOf('/');
+			const ownerDir = ownerPath.substr(0, i+1);
 
 			if (module[0] === '.') {
-				return j.realpath(callerDir + module);
+				return j.realpath(ownerDir + module);
 			}
 
 			if (module.indexOf('/') == -1) {
@@ -37,12 +37,14 @@ function init(global, j, filepath) {
 			var fn = j.compile_function(source, filepath);
 
 			modules_cache[filepath] = 
-				isCoreModule ? fn(arguments.callee, j) : fn(arguments.callee);
+				isCoreModule 
+					? fn(createRequire(filepath), j) 
+					: fn(createRequire(filepath));
 
 			return modules_cache[filepath];
 		}
 
-		anchoredRequire.caller = caller;
+		anchoredRequire.ownerPath = ownerPath;
 		anchoredRequire.resolve = anchoredResolve;
 
 		return anchoredRequire;
