@@ -2,6 +2,7 @@ const io = require('io');
 
 const proc = {};
 
+/* Signal numbers */
 proc.SIGHUP = 1;
 proc.SIGINT = 2
 proc.SIGQUIT = 3
@@ -37,6 +38,11 @@ proc.SIGPWR = 30;
 proc.SIGSYS = 31;
 proc.SIGUNUSED = 31;
 
+/* Wait option flags */
+proc.WNOHANG = 1;
+proc.WUNTRACED = 2;
+proc.WCONTINUED = 8;
+
 proc.alarm = function(seconds) {
 	return j.alarm(seconds);
 }
@@ -47,6 +53,14 @@ proc.execv = function(pathname, argv) {
 
 proc.execvp = function(file, argv) {
 	return j.execvp(file, argv);
+}
+
+proc.fork = function() {
+	return j.fork();
+}
+
+proc.getpid = function() {
+	return j.getpid();
 }
 
 /**
@@ -115,10 +129,6 @@ proc.pipe_fork = function(wire) {
 	};
 }
 
-proc.fork = function() {
-	return j.fork();
-}
-
 /**
  *
  * @param [undefined|null|function] func
@@ -130,5 +140,39 @@ proc.signal = function(sig, func) {
 	j.signal(sig, func);
 }
 
+/**
+ *
+ * @param [number] options
+ * @return [{
+ *   value: number, 
+ *   exit_status: number,
+ *   signaled: boolean,
+ *   term_signal: number,
+ *   core_dump: boolean,
+ *   stopped: boolean,
+ *   stop_signal: number,
+ *   continued: boolean
+ * }]
+ */
+proc.waitpid = function(pid, options) {
+	if (options === undefined) {
+		options = 0;
+	}
+
+	const result = j.waitpid(pid, options);
+
+	const wstatus = result.wstatus;
+
+	return {
+		value: result.value,
+		exit_status: (wstatus & 0xFF00) >> 8,
+		signaled: ((wstatus & 0x7F) >> 1) > 0,
+		term_signal: wstatus & 0x7F,
+		core_dump: (wstatus & 0x80) != 0,
+		stopped: (wstatus & 0xFF) == 0x7F,
+		stop_signal: (wstatus & 0xFF00) >> 8,
+		continued: wstatus == 0xFFFF,
+	};
+}
 
 return proc;
