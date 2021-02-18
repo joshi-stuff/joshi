@@ -2,6 +2,17 @@ const io = require('io');
 
 const term = {};
 
+// See https://en.wikipedia.org/wiki/ANSI_escape_code
+const CSI = String.fromCharCode(0x1B) + '['; 
+
+term.bg = function(r, g, b) {
+	term.print(CSI + '48;2;' + r + ';' + g + ';' + b + 'm');
+}
+
+term.fg = function(r, g, b) {
+	term.print(CSI + '38;2;' + r + ';' + g + ';' + b + 'm');
+}
+
 term.print = function() {
 	const str = '';
 
@@ -16,6 +27,8 @@ term.print = function() {
 			str += '(null)';
 		} else if (thing === undefined) {
 			str += '(undefined)';
+		} else if (thing.toString() === '[object Object]') {
+			str += JSON.stringify(thing);
 		} else {
 			str += thing.toString();
 		}
@@ -32,6 +45,10 @@ term.println = function() {
 	things.push('\n');
 
 	term.print.apply(null, things);
+}
+
+term.reset = function() {
+	term.print(CSI + 'm');
 }
 
 return term;
