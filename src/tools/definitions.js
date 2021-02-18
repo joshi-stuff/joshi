@@ -176,6 +176,7 @@ return {
 			}
 		}
 	},
+	'mode_t': defNumber('mode_t'),
 	'nfds_t': defNumber('nfds_t'),
 	'pid_t': defNumber('pid_t'),
 	'size_t': defNumber('size_t'),

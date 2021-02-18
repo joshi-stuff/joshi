@@ -53,9 +53,14 @@ return {
 			{ returns: 'pid_t' }
 		],
 
+		'getpid': [
+			{ returns: 'pid_t' }
+		],
+
 		'open': [
 			{ type: 'char*', name: 'pathname' },
 			{ type: 'int', name: 'flags' },
+			{ type: 'mode_t', name: 'mode' },
 			{ returns: 'int' }
 		],
 

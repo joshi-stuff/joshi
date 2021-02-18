@@ -176,15 +176,33 @@ duk_ret_t _joshi_spec_fork(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_getpid(duk_context* ctx) { 
+	/* Syscall invocation */ 
+	pid_t ret = getpid( 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_open(duk_context* ctx) { 
 	/* Input arguments retrieval */ 
 	char* pathname = (char*)duk_get_string(ctx, 0); 
 	int flags = (int)duk_get_number(ctx, 1); 
+	mode_t mode = (mode_t)duk_get_number(ctx, 2); 
  
 	/* Syscall invocation */ 
 	int ret = open( 
 		pathname, 
-		flags 
+		flags, 
+		mode 
 	); 
  
 	/* Error check */ 
@@ -384,7 +402,8 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "execvp", func: _joshi_spec_execvp, argc: 2 }, 
 	{ name: "exit", func: _joshi_spec_exit, argc: 1 }, 
 	{ name: "fork", func: _joshi_spec_fork, argc: 0 }, 
-	{ name: "open", func: _joshi_spec_open, argc: 2 }, 
+	{ name: "getpid", func: _joshi_spec_getpid, argc: 0 }, 
+	{ name: "open", func: _joshi_spec_open, argc: 3 }, 
 	{ name: "pipe", func: _joshi_spec_pipe, argc: 1 }, 
 	{ name: "poll", func: _joshi_spec_poll, argc: 3 }, 
 	{ name: "read", func: _joshi_spec_read, argc: 3 }, 
