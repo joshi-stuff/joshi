@@ -48,10 +48,16 @@ proc.alarm = function(seconds) {
 }
 
 proc.execv = function(pathname, argv) {
+	argv = argv.slice(0);
+	argv.push(null);
+
 	return j.execv(pathname, argv);
 }
 
 proc.execvp = function(file, argv) {
+	argv = argv.slice(0);
+	argv.push(null);
+
 	return j.execvp(file, argv);
 }
 
