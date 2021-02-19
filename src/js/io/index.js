@@ -133,7 +133,8 @@ io.write_str = function(fd, str) {
 
 	const buf = encoder.encode(str.toString());
 
-	var i = j.write(fd, buf);
+	var i = j.write(fd, buf, buf.length);
+
 	while (i < buf.length) {
 		i += j.write(fd, new Uint8Array(buf.slice(i)), buf.length - i);
 	}
