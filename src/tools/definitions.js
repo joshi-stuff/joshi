@@ -1,5 +1,21 @@
 const util = require('./util.js');
 
+const atomicFieldTypes = {
+	'blkcnt_t': 'number',
+	'blksize_t': 'number',
+	'dev_t': 'number',
+	'gid_t': 'number',
+	'mode_t': 'number',
+	'nlink_t': 'number',
+	'int': 'number',
+	'ino_t': 'number',
+	'long': 'number',
+	'off_t': 'number',
+	'short int': 'number',
+	'uid_t': 'number',
+};
+
+
 function defBuffer(ctype) {
 	return {
 		in: {
@@ -43,18 +59,76 @@ function defNumber(ctype) {
 	};
 }
 
-function defStructArray(structName, fields) {
-	const fieldTypes = {
-		'int': {
-			get: 'number',
-			push: 'int'
-		},
-		'short int': {
-			get: 'number',
-			push: 'int'
-		}
-	};
+function defStruct(structName, fields) {
+	return {
+		in: {
+			pre: function(arg, argPos) {
+				var source = '';
 
+				source += 'struct ' + structName + ' ' + arg.name + '[1];\n';
+
+				const keys = Object.keys(fields);
+
+				for (var i = 0; i < keys.length; i++) {
+					const name = keys[i];
+					const type = fields[name];
+		
+					const jtype = atomicFieldTypes[type];
+
+					if (!jtype) {
+						throw new Error(
+							'Unsupported field type ' + type + ' in struct ' +
+								structName);
+					}
+
+					source += 'duk_get_prop_string(ctx, argPos, "' + name + '");\n';
+					source += arg.name + '->' + name + ' = ';
+					source += '(' + type + ')duk_get_' + jtype + '(ctx, -1);\n';
+					source += 'duk_pop(ctx);\n';
+					source += '\n';
+				}
+
+				return source;
+			}
+		},
+		out: {
+			pre: function(arg) {
+				return 'struct ' + structName + ' ' + arg.name + '[1];\n';
+			},
+			post: function(arg, argPos) {
+				var source = '';
+
+				source += 'duk_push_object(ctx);\n\n';
+
+				const keys = Object.keys(fields);
+
+				for (var i = 0; i < keys.length; i++) {
+					const name = keys[i];
+					const type = fields[name];
+					const jtype = atomicFieldTypes[type];
+
+					if (!jtype) {
+						throw new Error(
+							'Unsupported field type ' + type + ' in struct ' +
+								structName);
+					}
+
+					source += 'duk_push_' + jtype +'(ctx, ';
+					source += arg.name + '->' + name + ');\n';
+					source += 'duk_put_prop_string(ctx, -2, "' + name + '");\n';
+
+					if (i < keys.length - 1) {
+						source += '\n';
+					}
+				}
+
+				return source;
+			}
+		},
+	};
+}
+
+function defStructArray(structName, fields) {
 	return {
 		in: {
 			pre: function(arg, argPos) {
@@ -75,7 +149,7 @@ function defStructArray(structName, fields) {
 					const name = keys[i];
 					const type = fields[name];
 		
-					const jtype = fieldTypes[type].get;
+					const jtype = atomicFieldTypes[type];
 
 					if (!jtype) {
 						throw new Error(
@@ -108,8 +182,7 @@ function defStructArray(structName, fields) {
 				for (var i = 0; i < keys.length; i++) {
 					const name = keys[i];
 					const type = fields[name];
-		
-					const jtype = fieldTypes[type].push;
+					const jtype = atomicFieldTypes[type];
 
 					if (!jtype) {
 						throw new Error(
@@ -136,7 +209,8 @@ return {
 	'char*': {
 		in: {
 			pre: 'duk_get_string'
-		}
+		},
+		ret: 'duk_push_string'
 	},
 	'char*[]': {
 		in: {
@@ -159,6 +233,7 @@ return {
 		}
 
 	},
+	'dev_t': defNumber('ulong_t'),
 	'int': defNumber('int'),
 	'int[]': {
 		out: {
@@ -189,6 +264,25 @@ return {
 			'revents': 'short int',
 		}
 	),
+	'struct stat*': defStruct(
+		'stat',
+		{
+			'st_dev': 'dev_t',
+			'st_ino': 'ino_t',
+			'st_mode': 'mode_t',
+			'st_nlink': 'nlink_t',
+			'st_uid': 'uid_t',
+			'st_gid': 'gid_t',
+			'st_rdev': 'dev_t',
+			'st_size': 'off_t',
+			'st_blksize': 'blksize_t',
+			'st_blocks': 'blkcnt_t',
+			'st_atim.tv_nsec': 'long',
+			'st_mtim.tv_nsec': 'long',
+			'st_ctim.tv_nsec': 'long',
+		}
+	),
+	'uid_t': defNumber('uid_t'),
 	'unsigned': defNumber('unsigned'),
 	'void*': defBuffer('void*'),
 };

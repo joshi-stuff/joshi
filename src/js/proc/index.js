@@ -61,8 +61,16 @@ proc.execvp = function(file, argv) {
 	return j.execvp(file, argv);
 }
 
+proc.exit = function(status) {
+	j.exit(status);
+}
+
 proc.fork = function() {
 	return j.fork();
+}
+
+proc.getenv = function(name) {
+	return j.getenv(name);
 }
 
 proc.getpid = function() {

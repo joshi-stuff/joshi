@@ -176,9 +176,88 @@ duk_ret_t _joshi_spec_fork(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_getegid(duk_context* ctx) { 
+	/* Syscall invocation */ 
+	uid_t ret = getegid( 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_getenv(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* name = (char*)duk_get_string(ctx, 0); 
+ 
+	/* Syscall invocation */ 
+	char* ret = getenv( 
+		name 
+	); 
+ 
+	/* Return */ 
+	duk_push_string(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_geteuid(duk_context* ctx) { 
+	/* Syscall invocation */ 
+	uid_t ret = geteuid( 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_getgid(duk_context* ctx) { 
+	/* Syscall invocation */ 
+	uid_t ret = getgid( 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_getpid(duk_context* ctx) { 
 	/* Syscall invocation */ 
 	pid_t ret = getpid( 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_getuid(duk_context* ctx) { 
+	/* Syscall invocation */ 
+	uid_t ret = getuid( 
 	); 
  
 	/* Error check */ 
@@ -292,13 +371,13 @@ duk_ret_t _joshi_spec_poll(duk_context* ctx) {
 	for (size_t i = 0; i < fds_length; i++) {
 		duk_get_prop_index(ctx, 0, i);
 
-		duk_push_int(ctx, fds[i].fd);
+		duk_push_number(ctx, fds[i].fd);
 		duk_put_prop_string(ctx, -2, "fd");
 
-		duk_push_int(ctx, fds[i].events);
+		duk_push_number(ctx, fds[i].events);
 		duk_put_prop_string(ctx, -2, "events");
 
-		duk_push_int(ctx, fds[i].revents);
+		duk_push_number(ctx, fds[i].revents);
 		duk_put_prop_string(ctx, -2, "revents");
 
 		duk_pop(ctx);
@@ -330,6 +409,80 @@ duk_ret_t _joshi_spec_read(duk_context* ctx) {
  
 	/* Return */ 
 	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_stat(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* pathname = (char*)duk_get_string(ctx, 0); 
+ 
+	/* Output-only arguments instantiation */ 
+	struct stat statbuf[1];
+ 
+ 
+	/* Syscall invocation */ 
+	int ret = stat( 
+		pathname, 
+		statbuf 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Output arguments return marshalling */ 
+	duk_push_object(ctx);
+
+	duk_push_number(ctx, statbuf->st_dev);
+	duk_put_prop_string(ctx, -2, "st_dev");
+
+	duk_push_number(ctx, statbuf->st_ino);
+	duk_put_prop_string(ctx, -2, "st_ino");
+
+	duk_push_number(ctx, statbuf->st_mode);
+	duk_put_prop_string(ctx, -2, "st_mode");
+
+	duk_push_number(ctx, statbuf->st_nlink);
+	duk_put_prop_string(ctx, -2, "st_nlink");
+
+	duk_push_number(ctx, statbuf->st_uid);
+	duk_put_prop_string(ctx, -2, "st_uid");
+
+	duk_push_number(ctx, statbuf->st_gid);
+	duk_put_prop_string(ctx, -2, "st_gid");
+
+	duk_push_number(ctx, statbuf->st_rdev);
+	duk_put_prop_string(ctx, -2, "st_rdev");
+
+	duk_push_number(ctx, statbuf->st_size);
+	duk_put_prop_string(ctx, -2, "st_size");
+
+	duk_push_number(ctx, statbuf->st_blksize);
+	duk_put_prop_string(ctx, -2, "st_blksize");
+
+	duk_push_number(ctx, statbuf->st_blocks);
+	duk_put_prop_string(ctx, -2, "st_blocks");
+
+	duk_push_number(ctx, statbuf->st_atim.tv_nsec);
+	duk_put_prop_string(ctx, -2, "st_atim.tv_nsec");
+
+	duk_push_number(ctx, statbuf->st_mtim.tv_nsec);
+	duk_put_prop_string(ctx, -2, "st_mtim.tv_nsec");
+
+	duk_push_number(ctx, statbuf->st_ctim.tv_nsec);
+	duk_put_prop_string(ctx, -2, "st_ctim.tv_nsec");
+ 
+ 
+	/* Return */ 
+	duk_push_object(ctx);
+
+	duk_push_number(ctx, ret);
+	duk_put_prop_string(ctx, -2, "value");
+
+	duk_pull(ctx, -2);
+	duk_put_prop_string(ctx, -2, "statbuf");
 
 	return 1; 
 } 
@@ -402,11 +555,17 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "execvp", func: _joshi_spec_execvp, argc: 2 }, 
 	{ name: "exit", func: _joshi_spec_exit, argc: 1 }, 
 	{ name: "fork", func: _joshi_spec_fork, argc: 0 }, 
+	{ name: "getegid", func: _joshi_spec_getegid, argc: 0 }, 
+	{ name: "getenv", func: _joshi_spec_getenv, argc: 1 }, 
+	{ name: "geteuid", func: _joshi_spec_geteuid, argc: 0 }, 
+	{ name: "getgid", func: _joshi_spec_getgid, argc: 0 }, 
 	{ name: "getpid", func: _joshi_spec_getpid, argc: 0 }, 
+	{ name: "getuid", func: _joshi_spec_getuid, argc: 0 }, 
 	{ name: "open", func: _joshi_spec_open, argc: 3 }, 
 	{ name: "pipe", func: _joshi_spec_pipe, argc: 1 }, 
 	{ name: "poll", func: _joshi_spec_poll, argc: 3 }, 
 	{ name: "read", func: _joshi_spec_read, argc: 3 }, 
+	{ name: "stat", func: _joshi_spec_stat, argc: 2 }, 
 	{ name: "waitpid", func: _joshi_spec_waitpid, argc: 3 }, 
 	{ name: "write", func: _joshi_spec_write, argc: 3 }, 
 }; 

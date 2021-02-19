@@ -53,8 +53,29 @@ return {
 			{ returns: 'pid_t' }
 		],
 
+		'getegid': [
+			{ returns: 'uid_t' }
+		],
+
+		'getenv': [
+			{ type: 'char*', name: 'name' },
+			{ returns: 'char*', throws: false }
+		],
+
+		'geteuid': [
+			{ returns: 'uid_t' }
+		],
+
+		'getgid': [
+			{ returns: 'uid_t' }
+		],
+
 		'getpid': [
 			{ returns: 'pid_t' }
+		],
+
+		'getuid': [
+			{ returns: 'uid_t' }
 		],
 
 		'open': [
@@ -81,6 +102,12 @@ return {
 			{ type: 'void*', name: 'buf' },
 			{ type: 'size_t', name: 'count' },
 			{ returns: 'ssize_t' },
+		],
+
+		'stat': [
+			{ type: 'char*', name: 'pathname'},
+			{ type: 'struct stat*', name: 'statbuf', out: true},
+			{ returns: 'int' }
 		],
 
 		'waitpid': [

@@ -1,8 +1,10 @@
+const fs = require('fs');
 const io = require('io');
 const proc = require('proc');
 const term = require('term');
 
 const println = term.println;
+const println2 = term.println2;
 
 const parse = require('./parse.js');
 
@@ -18,6 +20,38 @@ function $() {
 	return new Proc(parse.asArgv(arguments));
 }
 
+$.search_path = function(command) {
+	if (command.includes('/')) {
+		return fs.is_executable(command) ? command : null;
+	}
+
+	const path = proc.getenv('PATH');
+
+	if (path === null) {
+		path = '';
+	}
+
+	const dirs = path.split(':');
+
+	for (var i = 0; i < dirs.length; i++) {
+		var dir = dirs[i];
+
+		if (dir === '') {
+			continue;
+		}
+
+		if (dir[dir.length - 1] !== '/') {
+			dir += '/';
+		}
+
+		if (fs.is_executable(dir + command)) {
+			return dir + command;
+		}
+	}
+
+	return null;
+}
+
 function Proc(argv) {
 	this.is_a = 'Proc';
 	this.argv = argv;
@@ -29,11 +63,84 @@ function Proc(argv) {
 }
 
 Proc.prototype = {
+
 	/**
 	 * Execute a full execution graph and wait for it to exit.
 	 */
 	do: function() {
-		const result = this.launch().wait();
+		// Collect piped Procs
+		const pipedProcs = this._collectProcPipes();
+
+		// Compute all Procs
+		const procsToLaunch = [this];
+
+		for (var i = 0; i < pipedProcs.length; i++) {
+			procsToLaunch.push(pipedProcs[i].to);
+		}
+
+		// Check if Proc commands exist
+		for (var i = 0; i < procsToLaunch.length; i++) {
+			const proc = procsToLaunch[i];
+
+			if ($.search_path(proc.argv[0]) === null) {
+				throw new Error('Command not found: ' + proc.argv[0]);
+			}
+		}
+
+
+		// Connect Procs
+		const pipes = [];
+
+		for (var i = 0; i < pipedProcs.length; i++) {
+			const pipedProc = pipedProcs[i];
+			const pipe = io.pipe().fildes;
+
+			pipedProc.from._redir[1] = pipe[1];
+			pipedProc.to._redir[0] = pipe[0];
+
+			pipes.push(pipe);
+		}
+
+		// Launch the Procs
+		for (var i = 0; i < procsToLaunch.length; i++) {
+			const proc = procsToLaunch[i];
+
+			proc._launch(function() {
+				// Close all pipes but the ones this process uses
+				for (var j = 0; j < pipes.length; j++) {
+					if (j !== i && j !== i-1) {
+						io.close(pipes[j][0]);
+						io.close(pipes[j][1]);
+					}
+				}
+
+				// Close the endpoints of the used pipes that we don't use
+				if (i === 0) {
+					io.close(pipes[0][0]);
+				} else if(i === pipes.length) {
+					io.close(pipes[pipes.length-1][1]);
+				} else {
+					io.close(pipes[i-1][1]);
+					io.close(pipes[i][0]);
+				}
+			});
+		}
+
+		// Close all pipes in the shell process
+		for (var i = 0; i < pipes.length; i++) {
+			const pipe = pipes[i];
+
+			io.close(pipe[0]);
+			io.close(pipe[1]);
+		}
+
+		// Wait for parent Procs to finish
+		for (var i = 0; i < procsToLaunch.length - 1; i++) {
+			procsToLaunch[i].wait();
+		}
+
+		// Get the result from the last child
+		const result = procsToLaunch[procsToLaunch.length - 1].wait();
 
 		// TODO: move this to the real shell
 		term.fg(0xD0, 0x80, 0x80);
@@ -50,55 +157,38 @@ Proc.prototype = {
 	// TODO: capture, captureErr, captureAll
 
 	err: function(where) {
-		this._err = where;
+		if (where.is_a === 'Proc') {
+			this._err = where;
+		} else {
+			this._redir[2] = where;
+		}
 
 		return this;
 	},
 
 	in: function(where) {
-		this._in = where;
-
-		return this;
-	},
-
-	/**
-	 * Launch the process without waiting for it.
-	 *
-	 * @param [function] setupCB? invoked after fork and before execvp
-	 * @return [Proc] the child process
-	 */
-	launch: function(setupCB) {
-		const pid = proc.fork();
-
-		if (pid === 0) {
-			if (setupCB) {
-				setupCB();
-			}
-
-			this._setupIn();
-			this._setupOut();
-			this._setupErr();
-			this._setupRedirs();
-
-			proc.execvp(this.argv[0], this.argv);
-			// execution ends here
+		if (where.is_a === 'Proc') {
+			this._in = where;
 		} else {
-			// Store child pid for parent
-			this.pid = pid;
+			this._redir[0] = where;
 		}
 
 		return this;
 	},
 
 	out: function(where) {
-		this._out = where;
+		if (where.is_a === 'Proc') {
+			this._out = where;
+		} else {
+			this._redir[1] = where;
+		}
 
 		return this;
 	},
 
 	outErr: function(where) {
-		this._out = where;
-		this._err = 1;
+		this.out(where);
+		this.err(1);
 
 		return this;
 	},
@@ -119,110 +209,88 @@ Proc.prototype = {
 	},
 
 	toString: function() {
-		return 'Proc{"' + this.argv.join(' ')+ '", pid: ' + this.pid + '}';
+		return 'Proc{' + 
+			'"' + this.argv.join(' ') + '"' +
+			(this.pid 
+				? (', pid: ' + this.pid)
+				: '') +
+			(Object.keys(this._redir).length 
+				? (', redirs: ' + term._toString(this._redir))
+				: '') +
+			'}';
 	},
 
 	/**
+	 * Wait for process to finish and get its exit status
 	 *
-	 * @param [number] fd?
-	 * The fd to divert connect to `where`. If omitted, fd 1 is used.
-	 * 
-	 * @param [number|string|Proc|HereString] where?
-	 * A fd number, file path, Proc, or HereString to connect the fd to.
-	 */
-//	pipe: function(fd, where) {
-//		if (where === undefined) {
-//			where = fd;
-//			fd = 1;
-//		}
-//
-//		this._pipe[fd] = where;
-//		return this;
-//	},
-
-	/**
-	 * Wait for process to finish.
+	 * @return [number] the exit status of the process
 	 */
 	wait: function() {
-		// TODO: this needs to wait for all children, but we don't have 'em
-		// because their handles have been lost after exec in children processes
-		// we only have the pid of the top forked child.
 		return proc.waitpid(this.pid);
 	},
 
-	_setupErr: function() {
-	},
+	_collectProcPipes: function() {
+		const procPipes = [];
+		
+		const out = this._out;
 
-	_setupIn: function() {
-		const where = this._in;
-
-		if (where === undefined) {
-			return;
-		}
-
-		if (where.is_a === 'HereString') {
-			// TODO: in HereString
-			throw new Error('Piping from HereStrings not yet supported');
-		} 
-
-		if (typeof where === 'string') {
-			io.dup(io.open(where), 0);
-
-			return this;
-		} 
-
-		if (typeof where === 'number') {
-			io.dup(where, 0);
-
-			return this;
-		}
-
-		if (where.is_a === 'Proc') {
-			throw new Error(
-				'Reading from a Proc is not supported: invert the relation ' +
-					'and make the child Proc dump its output to the parent');
-		} 
-	},
-
-	_setupOut: function() {
-		const where = this._out;
-
-		if (where === undefined) {
-			return;
-		}
-
-		if (where.is_a === 'Proc') {
-			const p = io.pipe().fildes;
-
-			where.launch(function() {
-				io.close(p[1]);
-				io.dup2(p[0], 0);
-				io.close(p[0]);
+		if (out && out.is_a === 'Proc') {
+			procPipes.push({
+				from: this, 
+				to: out
 			});
 
-			io.close(p[0]);
-			io.dup2(p[1], 1);
-			io.close(p[1]);
-
-			return;
-		} 
-
-		if (typeof where === 'string') {
-			// TODO: handle append with some flag, shell object, ...
-			io.dup(io.trunc(where), 1);
-
-			return;
-		} 
-
-		if (typeof where === 'number') {
-			io.dup(where, 1);
-
-			return;
+			procPipes = procPipes.concat(out._collectProcPipes());
 		}
 
-		if (where.is_a === 'HereString') {
-			throw new Error('Sending output to a HereString is not possible');
-		} 
+		const err = this._err;
+
+		if (err && err.is_a === 'Proc') {
+			procPipes.push({
+				from: this, 
+				to: err
+			});
+
+			procPipes = procPipes.concat(err._collectProcPipes());
+		}
+
+		return procPipes;
+	},
+
+	/**
+	 * Launch the process without waiting for it.
+	 *
+	 * @param [function] setupCB? invoked right before execvp
+	 * @return [Proc] the child process
+	 */
+	_launch: function(setupCB) {
+		const command = $.search_path(this.argv[0]);
+
+		if (command === null) {
+			throw new Error('Command not found: ' + this.argv[0]);
+		}
+
+		const pid = proc.fork();
+
+		if (pid === 0) {
+			try {
+				this._setupRedirs();
+
+				if (setupCB) {
+					setupCB();
+				}
+
+				proc.execvp(this.argv[0], this.argv);
+			} catch(err) {
+				proc.exit(err.errno);
+			}
+			// execution ends here
+		} else {
+			// Store child pid for parent
+			this.pid = pid;
+		}
+
+		return this;
 	},
 
 	_setupRedirs: function() {
@@ -230,21 +298,35 @@ Proc.prototype = {
 
 		for (var i = 0; i < fds.length; i++ ) {
 			const fd = fds[i];
-			const where = this._pipe[fd];
+			const where = this._redir[fd];
 
 			var fdTo;
 
 			if (where.is_a === 'Proc') {
-				throw new Error('Piping to Procs not yet supported');
+				throw new Error('Redirecting to Procs it not supported');
 			} else if (where.is_a === 'HereString') {
-				throw new Error('Piping from HereStrings not yet supported');
+				if (fd === 1 || fd === 2) {
+					throw new Error(
+						'Standard outputs cannot be redirected to HereStrings');
+				}
+
+				throw new Error(
+					'Redirecting from HereStrings not yet supported');
 			} if (typeof where === 'string') {
-				fdTo = io.truncate(where);
+				if (fd === 0) {
+					fdTo = io.open(where);
+				} else if (fd === 1 || fd ===2) {
+					// TODO: support appending
+					fdTo = io.truncate(where);
+				} else {
+					// TODO: what to do here? how to open?
+					throw new Error(
+						'Non standard fds cannot be redirected to files');
+				}
 			} else if (typeof where === 'number') {
 				fdTo = where;
 			}
 
-			println(this.argv, fdTo, '->', fd);
 			io.dup2(fdTo, fd);
 		}
 	},
