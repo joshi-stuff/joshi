@@ -33,11 +33,11 @@ build/joshi_spec.o: src/joshi_spec.h src/duktape/duktape.h src/duktape/duk_confi
 #
 # Spec stuff
 #
+fix-spec:
+	git checkout src/joshi_spec.c
+
 spec: 
 	rm src/joshi_spec.c
-	make src/joshi_spec.c
-
-src/joshi_spec.c: tools/gen_spec.js tools/joshi.spec.js
 	./joshi tools/gen_spec.js > src/joshi_spec.c
 
 
@@ -68,6 +68,7 @@ duktape/duktape.tar.xz:
 #
 clean: 
 	@rm -rf build
+	@rm joshi
 
 
 #
