@@ -1,4 +1,9 @@
-# TODO: add support for Arch AUR
+# TODO: migrate my-sway
+# TODO: interactive shell
+# TODO: dynamic library integration (for extension)
+# TODO: after dynamic library integration: dbus integration
+# TODO: after dynamic library integration: gtk integration
+# TODO: after dynamic library integration: optimize my-sway
 
 CC = gcc
 DUKTAPE_VERSION = 2.6.0
