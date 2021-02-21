@@ -154,6 +154,12 @@ proc.signal = function(sig, func) {
 	j.signal(sig, func);
 }
 
+proc.sleep = function(seconds) {
+	while (seconds > 0) {
+		seconds = j.sleep(seconds);
+	}
+}
+
 /**
  *
  * @param [number] options
