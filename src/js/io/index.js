@@ -20,6 +20,11 @@ io.POLLMSG = 0x400;
 io.POLLREMOVE = 0x1000;
 io.POLLRDHUP = 0x2000;
 
+// lseek flags
+io.SEEK_SET = 0;
+io.SEEK_CUR = 1;
+io.SEEK_END = 2;
+
 const O_APPEND = 02000;
 const O_CREAT = 0100;
 const O_RDWR = 02;
@@ -64,6 +69,10 @@ io.dup2 = function(targetFd, changedFd) {
 	return j.dup2(Number(targetFd), Number(changedFd));
 }
 
+io.lseek = function(fd, offset, whence) {
+	return j.lseek(fd, offset, whence);
+}
+
 io.open = function(pathname) {
 	return j.open(pathname, 0);
 }
@@ -88,12 +97,36 @@ io.read = function(fd, buf, count) {
 	return j.read(Number(fd), buf, Number(count));
 }
 
+/**
+ * Read contents of a fd until it is exhausted and return them as a String.
+ *
+ * @param [number] fd
+ * @return [String] 
+ */
+io.read_file = function(fd) {
+	const buf = new Uint8Array(1024);
+	const bytes = [];
+	
+	var count;
+	while ((count = io.read(fd, buf, buf.length)) !== 0) {
+		for (var i = 0; i < count; i++) {
+			bytes.push(buf[i]);
+		}
+	}
+
+	return decoder.decode(new Uint8Array(bytes));
+}
+
 io.read_line = function(fd) {
 	var buf = new Uint8Array(1);
 	var bytes = [];
 
 	while (true) {
 		if (j.read(fd, buf, 1) === 0) {
+			if (!bytes.length) {
+				return null;
+			}
+
 			break;
 		}
 
@@ -105,6 +138,19 @@ io.read_line = function(fd) {
 	}
 
 	return decoder.decode(new Uint8Array(bytes));
+}
+
+io.safe_close = function(fd) {
+	try {
+		io.close(fd);
+	} 
+	catch(err) {
+		// ignore
+	}
+}
+
+io.tell = function(fd) {
+	return io.lseek(fd, 0, io.SEEK_CUR);
 }
 
 /**
