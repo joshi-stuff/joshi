@@ -56,14 +56,8 @@ fs.stat = function(pathname) {
 	};
 }
 
-
-
-
-
-
-
-
-
-
+fs.unlink = function(pathname) {
+	return j.unlink(pathname);
+}
 
 return fs;
