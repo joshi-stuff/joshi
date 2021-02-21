@@ -6,6 +6,7 @@
 #include <signal.h> 
 #include <stdio.h> 
 #include <string.h> 
+#include <sys/random.h> 
 #include <sys/stat.h> 
 #include <sys/types.h> 
 #include <sys/wait.h> 
@@ -255,9 +256,64 @@ duk_ret_t _joshi_spec_getpid(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_getrandom(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	void* buf = (void*)duk_get_buffer_data(ctx, 0, NULL); 
+	size_t buflen = (size_t)duk_get_number(ctx, 1); 
+	unsigned int flags = (unsigned int)duk_get_number(ctx, 2); 
+ 
+	/* Output-only arguments instantiation */ 
+ 
+ 
+	/* Syscall invocation */ 
+	ssize_t ret = getrandom( 
+		buf, 
+		buflen, 
+		flags 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Output arguments return marshalling */ 
+	memcpy(duk_push_fixed_buffer(ctx, buflen), buf, buflen);
+ 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_getuid(duk_context* ctx) { 
 	/* Syscall invocation */ 
 	uid_t ret = getuid( 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_lseek(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	int fildes = (int)duk_get_number(ctx, 0); 
+	off_t offset = (off_t)duk_get_number(ctx, 1); 
+	int whence = (int)duk_get_number(ctx, 2); 
+ 
+	/* Syscall invocation */ 
+	off_t ret = lseek( 
+		fildes, 
+		offset, 
+		whence 
 	); 
  
 	/* Error check */ 
@@ -413,6 +469,26 @@ duk_ret_t _joshi_spec_read(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_sleep(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	unsigned int seconds = (unsigned int)duk_get_number(ctx, 0); 
+ 
+	/* Syscall invocation */ 
+	unsigned int ret = sleep( 
+		seconds 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_stat(duk_context* ctx) { 
 	/* Input arguments retrieval */ 
 	char* pathname = (char*)duk_get_string(ctx, 0); 
@@ -483,6 +559,26 @@ duk_ret_t _joshi_spec_stat(duk_context* ctx) {
 
 	duk_pull(ctx, -2);
 	duk_put_prop_string(ctx, -2, "statbuf");
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_unlink(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* pathname = (char*)duk_get_string(ctx, 0); 
+ 
+	/* Syscall invocation */ 
+	int ret = unlink( 
+		pathname 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
 
 	return 1; 
 } 
@@ -560,14 +656,18 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "geteuid", func: _joshi_spec_geteuid, argc: 0 }, 
 	{ name: "getgid", func: _joshi_spec_getgid, argc: 0 }, 
 	{ name: "getpid", func: _joshi_spec_getpid, argc: 0 }, 
+	{ name: "getrandom", func: _joshi_spec_getrandom, argc: 3 }, 
 	{ name: "getuid", func: _joshi_spec_getuid, argc: 0 }, 
+	{ name: "lseek", func: _joshi_spec_lseek, argc: 3 }, 
 	{ name: "open", func: _joshi_spec_open, argc: 3 }, 
 	{ name: "pipe", func: _joshi_spec_pipe, argc: 1 }, 
 	{ name: "poll", func: _joshi_spec_poll, argc: 3 }, 
 	{ name: "read", func: _joshi_spec_read, argc: 3 }, 
+	{ name: "sleep", func: _joshi_spec_sleep, argc: 1 }, 
 	{ name: "stat", func: _joshi_spec_stat, argc: 2 }, 
+	{ name: "unlink", func: _joshi_spec_unlink, argc: 1 }, 
 	{ name: "waitpid", func: _joshi_spec_waitpid, argc: 3 }, 
 	{ name: "write", func: _joshi_spec_write, argc: 3 }, 
 }; 
  
-size_t joshi_spec_builtins_count = sizeof(joshi_spec_builtins)/sizeof(BUILTIN); 
+size_t joshi_spec_builtins_count = 25 ; 

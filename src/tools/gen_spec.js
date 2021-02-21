@@ -159,4 +159,4 @@ for(var i = 0; i < scNames.length; i++) {
 }
 println('};');
 println('');
-println('size_t joshi_spec_builtins_count = sizeof(joshi_spec_builtins)/sizeof(BUILTIN);');
+println('size_t joshi_spec_builtins_count =', scNames.length, ';');

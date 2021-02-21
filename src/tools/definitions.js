@@ -31,12 +31,17 @@ function defBuffer(ctype) {
 				return ctype + ' ' + arg.name + ' = malloc(' + arg.size + ');'
 			},
 			post: function(arg) {
-				return (
-					'memcpy(' + 
-						'duk_push_fixed_buffer(ctx, ' + arg.size + '), ' + 
-						arg.name + ', ' +  arg.size + ');\n' +
+				var source = '';
+
+				source += 'memcpy(';
+				source += 'duk_push_fixed_buffer(ctx, ' + arg.size + '), ';
+				source += arg.name + ', ' +  arg.size + ');\n';
+
+				if (!util.isInArg(arg)) {
 					'free(' + arg.name + ');'
-				);
+				}
+
+				return source;
 			}
 		}
 	};
@@ -253,6 +258,7 @@ return {
 	},
 	'mode_t': defNumber('mode_t'),
 	'nfds_t': defNumber('nfds_t'),
+	'off_t': defNumber('off_t'),
 	'pid_t': defNumber('pid_t'),
 	'size_t': defNumber('size_t'),
 	'ssize_t': defNumber('ssize_t'),
@@ -284,6 +290,7 @@ return {
 	),
 	'uid_t': defNumber('uid_t'),
 	'unsigned': defNumber('unsigned'),
+	'unsigned int': defNumber('unsigned int'),
 	'void*': defBuffer('void*'),
 };
 

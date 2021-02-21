@@ -5,6 +5,7 @@ return {
 		'signal.h',
 		'stdio.h',
 		'string.h',
+		'sys/random.h',
 		'sys/stat.h',
 		'sys/types.h',
 		'sys/wait.h',
@@ -74,8 +75,22 @@ return {
 			{ returns: 'pid_t' }
 		],
 
+		'getrandom': [
+			{ type: 'void*', name: 'buf', size: 'buflen', in: true, out: true },
+			{ type: 'size_t', name: 'buflen' },
+			{ type: 'unsigned int', name: 'flags' },
+			{ returns: 'ssize_t' }
+		],
+
 		'getuid': [
 			{ returns: 'uid_t' }
+		],
+
+		'lseek': [
+			{ type: 'int', name: 'fildes' },
+			{ type: 'off_t', name: 'offset' },
+			{ type: 'int', name: 'whence' },
+			{ returns: 'off_t' }
 		],
 
 		'open': [
@@ -104,9 +119,19 @@ return {
 			{ returns: 'ssize_t' },
 		],
 
+		'sleep': [
+			{ type: 'unsigned int', name: 'seconds' },
+			{ returns: 'unsigned int' },
+		],
+
 		'stat': [
 			{ type: 'char*', name: 'pathname'},
 			{ type: 'struct stat*', name: 'statbuf', out: true},
+			{ returns: 'int' }
+		],
+
+		'unlink': [
+			{ type: 'char*', name: 'pathname'},
 			{ returns: 'int' }
 		],
 
@@ -126,9 +151,6 @@ return {
 
 		// TODO: ioctl
 		// TODO: kill 
-		// TODO: seek
-		// TODO: tell
-		// TODO: execvpe ?
 	}
 };
 
