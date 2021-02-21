@@ -75,8 +75,12 @@ function init(global, j, filepath) {
 		for(var i=3; i<arguments.length; i++) {
 			argv[i-3] = arguments[i];
 		}
+
+		const require = createRequire(mainPath);
+
+		require('shims');
 		
-		const retval = main(argv, createRequire(mainPath));
+		const retval = main(argv, require);
 
 		if (retval === false) {
 			return 1;
