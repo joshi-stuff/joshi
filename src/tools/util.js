@@ -83,7 +83,13 @@ util.generateReturn = function(sc, defs) {
 			throw new Error('Invalid return generator for type ' + ret.returns); 
 		}
 
-		source += retdef.ret + '(ctx, ret);\n';
+		if (typeof retdef.ret === 'function') {
+			source += retdef.ret(sc) + '\n';
+		}
+		else {
+			source += retdef.ret + '(ctx, ret);\n';
+		}
+
 		source += '\n';
 		source += 'return 1;';
 	} else {
@@ -97,7 +103,12 @@ util.generateReturn = function(sc, defs) {
 
 		source += 'duk_push_object(ctx);\n';
 		source += '\n';
-		source += retdef.ret + '(ctx, ret);\n';
+		if (typeof retdef.ret === 'function') {
+			source += retdef.ret(sc) + '\n';
+		}
+		else {
+			source += retdef.ret + '(ctx, ret);\n';
+		}
 		source += 'duk_put_prop_string(ctx, -2, "value");\n';
 		source += '\n';
 

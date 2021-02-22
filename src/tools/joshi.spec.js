@@ -1,5 +1,6 @@
 return {
 	includes: [
+		'dirent.h',
 		'fcntl.h',
 		'poll.h',
 		'signal.h',
@@ -19,6 +20,11 @@ return {
 
 		'close': [
 			{ type: 'int', name: 'fd' },
+			{ returns: 'int' }
+		],
+
+		'closedir': [
+			{ type: 'DIR*', name: 'dirp' },
 			{ returns: 'int' }
 		],
 
@@ -100,6 +106,11 @@ return {
 			{ returns: 'int' }
 		],
 
+		'opendir': [
+			{ type: 'char*', name: 'name' },
+			{ returns: 'DIR*', throws: 'on null' }
+		],
+
 		'pipe': [
 			{ type: 'int[]', name: 'fildes', out: true, size: '2' },
 			{ returns: 'int' }
@@ -117,6 +128,11 @@ return {
 			{ type: 'void*', name: 'buf' },
 			{ type: 'size_t', name: 'count' },
 			{ returns: 'ssize_t' },
+		],
+
+		'readdir': [
+			{ type: 'DIR*', name: 'dirp' },
+			{ returns: 'struct dirent*', throws: 'on null'}
 		],
 
 		'sleep': [

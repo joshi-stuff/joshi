@@ -1,3 +1,5 @@
+// TODO: generate duk_push_xxx functions for types and then assemble calls
+
 const println = require('term').println;
 
 const defs = require('./definitions.js');
@@ -15,6 +17,7 @@ const scNames = Object.keys(scs);
 //
 // Includes
 //
+println('#include <errno.h>');
 println('#include <stdlib.h>');
 println('#include <string.h>');
 println('');
@@ -90,6 +93,7 @@ for(var i=0; i<scNames.length; i++) {
 	const retAssign = (ret.returns === 'void' ? '' : ret.returns + ' ret = ');
 
 	println('	/* Syscall invocation */');
+	println('	errno = 0;');
 	println('	' + retAssign + scName + '(');
 	for (var j = 0; j < args.length; j++) {
 		const arg = args[j];
@@ -104,8 +108,10 @@ for(var i=0; i<scNames.length; i++) {
 	// Error check
 	//
 	if ((ret.throws !== false) && (ret.returns !== 'void')) {
+		const err_val = ret.throws === 'on null' ? 'NULL' : -1;
+
 		println('	/* Error check */');
-		println('	if (ret == -1) {');
+		println('	if (ret == ' + err_val + ') {');
 		println('		return duk_throw_errno(ctx);');
 		println('	}');
 		println('');

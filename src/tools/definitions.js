@@ -3,6 +3,7 @@ const util = require('./util.js');
 const atomicFieldTypes = {
 	'blkcnt_t': 'number',
 	'blksize_t': 'number',
+	'char*': 'string',
 	'dev_t': 'number',
 	'gid_t': 'number',
 	'mode_t': 'number',
@@ -13,8 +14,9 @@ const atomicFieldTypes = {
 	'off_t': 'number',
 	'short int': 'number',
 	'uid_t': 'number',
+	'unsigned char': 'number',
+	'unsigned int': 'number',
 };
-
 
 function defBuffer(ctype) {
 	return {
@@ -43,6 +45,32 @@ function defBuffer(ctype) {
 
 				return source;
 			}
+		}
+	};
+}
+
+function defHandle(ctype) {
+	return {
+		in: {
+			pre: function(arg, argPos) {
+				var source = '';
+
+				source += ctype + ' ' + arg.name + ';\n';
+				source += 'memcpy(&' + arg.name + ', ';
+				source += 'duk_get_buffer_data(ctx, ' + argPos + ', NULL), ';
+				source += 'sizeof(' + arg.name + '));';
+
+				return source;
+			}
+		},
+		ret: function() {
+			var source = '';
+
+			source += 'memcpy(';
+			source += 'duk_push_fixed_buffer(ctx, sizeof(ret)), &ret, ';
+			source += 'sizeof(ret));';
+
+			return source;
 		}
 	};
 }
@@ -130,6 +158,35 @@ function defStruct(structName, fields) {
 				return source;
 			}
 		},
+		ret: function() {
+				var source = '';
+
+				source += 'duk_push_object(ctx);\n\n';
+
+				const keys = Object.keys(fields);
+
+				for (var i = 0; i < keys.length; i++) {
+					const name = keys[i];
+					const type = fields[name];
+					const jtype = atomicFieldTypes[type];
+
+					if (!jtype) {
+						throw new Error(
+							'Unsupported field type ' + type + ' in struct ' +
+								structName);
+					}
+
+					source += 'duk_push_' + jtype +'(ctx, ';
+					source += 'ret->' + name + ');\n';
+					source += 'duk_put_prop_string(ctx, -2, "' + name + '");\n';
+
+					if (i < keys.length - 1) {
+						source += '\n';
+					}
+				}
+
+				return source;
+		}
 	};
 }
 
@@ -239,6 +296,7 @@ return {
 
 	},
 	'dev_t': defNumber('ulong_t'),
+	'DIR*': defHandle('DIR*'),
 	'int': defNumber('int'),
 	'int[]': {
 		out: {
@@ -262,6 +320,16 @@ return {
 	'pid_t': defNumber('pid_t'),
 	'size_t': defNumber('size_t'),
 	'ssize_t': defNumber('ssize_t'),
+	'struct dirent*': defStruct(
+		'dirent', 
+		{
+			'd_ino': 'ino_t',
+			'd_off': 'off_t',
+			'd_reclen': 'unsigned int',
+			'd_type': 'unsigned char',
+			'd_name': 'char*'
+		}
+	),
 	'struct pollfd*': defStructArray(
 		'pollfd', 
 		{
