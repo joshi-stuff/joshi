@@ -11,6 +11,10 @@ function init(global, j, filepath) {
 				return j.realpath(ownerDir + module);
 			}
 
+			if (module[0] === '/') {
+				return module;
+			}
+
 			if (module.indexOf('/') == -1) {
 				module += '/index.js';
 			}
@@ -54,9 +58,15 @@ function init(global, j, filepath) {
 	const mainPath = j.realpath(filepath);
 
 	// Read and compile main
+	var mainLines = j.read_file(mainPath).split('\n');
+
+	if (mainLines[0].indexOf('#!') === 0) {
+		mainLines = mainLines.slice(1);
+	}
+		
 	const mainSource =
 		"function(argv, require){ " +
-		j.read_file(mainPath) +
+		mainLines.join('\n') +
 		" ;}";
 
 	var main;
