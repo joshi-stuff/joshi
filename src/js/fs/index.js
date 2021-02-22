@@ -1,4 +1,5 @@
 const errno = require('errno');
+const io = require('io');
 const proc = require('proc');
 
 const fs = {};
@@ -38,6 +39,50 @@ fs.is_executable = function(pathname) {
 	}
 
 	return false;
+}
+
+fs.list_dir = function(name) {
+	const items = [];
+
+	const dirp = j.opendir(name);
+
+	try {
+		while(true) {
+			const dirent = j.readdir(dirp);
+			const name = dirent.d_name;
+
+			if (name === '.' || name === '..') {
+				continue;
+			}
+			
+			items.push(dirent.d_name);
+		}
+	}
+	catch(err) {
+		if (err.errno) {
+			throw err;
+		}
+	}
+	finally {
+		j.closedir(dirp);
+	}
+
+	return items.sort();
+}
+
+fs.read_file = function(path) {
+	const fd = io.open(path);
+
+	try {
+		return io.read_file(fd);
+	} 
+	finally {
+		io.close(fd);
+	}
+}
+
+fs.realpath = function(path) {
+	return j.realpath(path);
 }
 
 fs.stat = function(pathname) {
