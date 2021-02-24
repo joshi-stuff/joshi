@@ -74,7 +74,13 @@ io.lseek = function(fd, offset, whence) {
 }
 
 io.open = function(pathname) {
-	return j.open(pathname, 0);
+	try {
+		return j.open(pathname, 0);
+	}
+	catch(err) {
+		err.message += ' (' + pathname + ')';
+		throw err;
+	}
 }
 
 io.pipe = function() {
@@ -88,7 +94,7 @@ io.pipe = function() {
  * @return [number] count of fds with events or 0 on timeout
  */
 io.poll = function(fds, timeout) {
-	return j.poll(Number(fds), fds.length, Number(timeout));
+	return j.poll(fds, fds.length, Number(timeout));
 }
 
 io.read = function(fd, buf, count) {
@@ -98,12 +104,12 @@ io.read = function(fd, buf, count) {
 }
 
 /**
- * Read contents of a fd until it is exhausted and return them as a String.
+ * Read contents of a fd until it is exhausted and return them as a Uint8Array.
  *
  * @param [number] fd
- * @return [String] 
+ * @return [Uint8Array] 
  */
-io.read_file = function(fd) {
+io.read_bytes = function(fd) {
 	const buf = new Uint8Array(1024);
 	const bytes = [];
 	
@@ -114,7 +120,17 @@ io.read_file = function(fd) {
 		}
 	}
 
-	return decoder.decode(new Uint8Array(bytes));
+	return new Uint8Array(bytes);
+}
+
+/**
+ * Read contents of a fd until it is exhausted and return them as a String.
+ *
+ * @param [number] fd
+ * @return [String] 
+ */
+io.read_file = function(fd) {
+	return decoder.decode(io.read_bytes(fd));
 }
 
 io.read_line = function(fd) {
