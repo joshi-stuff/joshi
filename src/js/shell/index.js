@@ -7,7 +7,6 @@ const println2 = term.println2;
 
 const Capture = require('./Capture.js');
 const Proc = require('./Proc.js');
-const parse = require('./parse.js');
 
 // TODO: $.here(string) support
 // TODO: $.append(string) support 
