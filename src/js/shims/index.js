@@ -25,3 +25,11 @@ Object.values = function(obj) {
 
 	return values;
 }
+
+String.prototype.endsWith = function(suffix) {
+	return this.lastIndexOf(suffix) === this.length - suffix.length;
+}
+
+String.prototype.startsWith = function(prefix) {
+	return this.indexOf(prefix) === 0;
+}
