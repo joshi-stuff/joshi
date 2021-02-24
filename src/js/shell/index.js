@@ -18,7 +18,21 @@ const parse = require('./parse.js');
  * @param [string|...string|string[]]
  */
 function $() {
-	return new Proc($, parse.asArgv(arguments));
+	const args = [];
+
+	if(arguments.length > 1) {
+		for (var i = 0; i < arguments.length; i++) {
+			args.push(arguments[i]);
+		}
+	} else if (typeof arguments[0] === 'string') {
+		return args.push(arguments[0]);
+	} else if (Array.isArray(arguments[0])) {
+		args = arguments[0];
+	} else {
+		throw new Error('Invalid arguments: ' + arguments);
+	}
+
+	return new Proc($, args);
 }
 
 $.capture = function(container) {
