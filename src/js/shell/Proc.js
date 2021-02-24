@@ -10,6 +10,8 @@ function Proc($, argv) {
 	this.is_a = 'Proc';
 	this.argv = argv;
 
+	this._env = {};
+
 	// Pipe is initial configuration
 	this._pipe = {};
 
@@ -19,19 +21,24 @@ function Proc($, argv) {
 
 Proc.prototype = {
 
+	env: function(vars) {
+		this._env = vars;
+		return this;
+	},
+
 	/**
 	 * Execute a full execution graph and wait for it to exit.
 	 */
 	do: function() {
 		// Get Procs
-		const procs = [this].concat(this._collectChildProcs());
+		const childProcs = [this].concat(this._collectChildProcs());
 
 		// Check if commands can be found
-		for (var i = 0; i < procs.length; i++) {
-			const proc = procs[i];
+		for (var i = 0; i < childProcs.length; i++) {
+			const childProc = childProcs[i];
 
-			if (this.$.search_path(proc.argv[0]) === null) {
-				throw new Error('Command not found: ' + proc.argv[0]);
+			if (this.$.search_path(childProc.argv[0]) === null) {
+				throw new Error('Command not found: ' + childProc.argv[0]);
 			}
 		}
 
@@ -40,22 +47,37 @@ Proc.prototype = {
 
 		try {
 			// Open pipes
-			for (var i = 0; i < procs.length; i++) {
-				openFds = openFds.concat(procs[i]._openPipes());
+			for (var i = 0; i < childProcs.length; i++) {
+				openFds = openFds.concat(childProcs[i]._openPipes());
 			}
 
-			// Launch the Procs
-			for (var i = 0; i < procs.length; i++) {
-				const proc = procs[i];
+			// Set env
+			const saved_env = {};
 
-				proc._launch(function() {
+			Object.entries(this._env).forEach(function(entry) {
+				const name = entry[0];
+				const value = entry[1];
+
+				saved_env[name] = proc.getenv(name);
+				if (value !== null && value !== undefined) {
+					proc.setenv(name, value);
+				} else {
+					proc.unsetenv(name);
+				}
+			});
+
+			// Launch the Procs
+			for (var i = 0; i < childProcs.length; i++) {
+				const childProc = childProcs[i];
+
+				childProc._launch(function() {
 					// Setup redirections
-					const fds = Object.keys(proc._redir);
+					const fds = Object.keys(childProc._redir);
 					const usedFds = {};
 
 					for (var i = 0; i < fds.length; i++) {
 						const fd = fds[i];
-						const fdTo = proc._redir[fd];
+						const fdTo = childProc._redir[fd];
 
 						io.dup2(fdTo, fd);
 						io.close(fdTo);
@@ -73,6 +95,18 @@ Proc.prototype = {
 					}
 				});
 			}
+
+			// Restore env
+			Object.entries(saved_env).forEach(function(entry) {
+				const name = entry[0];
+				const value = entry[1];
+
+				if (value !== null) {
+					proc.setenv(name, value);
+				} else {
+					proc.unsetenv(name);
+				}
+			});
 
 			// Collect capture fds
 			const captures = this._collectCaptures();
@@ -92,13 +126,13 @@ Proc.prototype = {
 			}
 
 			// Wait for parent Procs to finish and get result from last child
-			const last = procs.length - 1;
+			const last = childProcs.length - 1;
 
 			for (var i = 0; i < last; i++) {
-				procs[i].wait();
+				childProcs[i].wait();
 			}
 
-			const result = procs[last].wait();
+			const result = childProcs[last].wait();
 
 			// Close captures after execution
 			for (var i = 0; i < captures.length; i++) {
