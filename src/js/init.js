@@ -8,18 +8,20 @@ function init(global, j, filepath) {
 			const ownerDir = ownerPath.substr(0, i+1);
 
 			if (module[0] === '.') {
-				return j.realpath(ownerDir + module);
+				module = j.realpath(ownerDir + module);
+			} 
+			else if(module[0] === '/') {
+				// absolute path: do nothing
 			}
-
-			if (module[0] === '/') {
-				return module;
+			else {
+				module = j.dir + '/' + module;
 			}
-
-			if (module.indexOf('/') == -1) {
+			
+			if (!module.endsWith('.js')) {
 				module += '/index.js';
 			}
 
-			return j.dir + '/' + module;
+			return module;
 		}
 
 		const anchoredRequire = function(module) {
@@ -29,23 +31,35 @@ function init(global, j, filepath) {
 				return modules_cache[filepath];
 			}
 
-			const isCoreModule = (module[0] !== '.');
+			try {
+				const isCoreModule = (module[0] !== '.');
 
-			const args = isCoreModule ? "require, j" : "require";
+				const args = isCoreModule ? "require, j" : "require";
 
-			const source =
-				"function("+args+"){ " +
-				j.read_file(filepath) +
-				" ;}";
+				const source =
+					"function("+args+"){ " +
+					j.read_file(filepath) +
+					" ;}";
 
-			var fn = j.compile_function(source, filepath);
+				var fn = j.compile_function(source, filepath);
 
-			modules_cache[filepath] = 
-				isCoreModule 
+				modules_cache[filepath] = 
+					isCoreModule 
 					? fn(createRequire(filepath), j) 
 					: fn(createRequire(filepath));
 
-			return modules_cache[filepath];
+				return modules_cache[filepath];
+			} 
+			catch(err) {
+				const msg = err.message || '';
+
+				if (msg.startsWith('Cannot read file: ')) {
+					err = new Error('Module not found: ' + module);
+					err.errno = 2; // ENOENT
+				}
+
+				throw err;
+			}
 		}
 
 		anchoredRequire.ownerPath = ownerPath;
@@ -60,8 +74,8 @@ function init(global, j, filepath) {
 	// Read and compile main
 	var mainLines = j.read_file(mainPath).split('\n');
 
-	if (mainLines[0].indexOf('#!') === 0) {
-		mainLines = mainLines.slice(1);
+	if (mainLines[0].startsWith('#!')) {
+		mainLines[0] = '//' + mainLines[0];
 	}
 		
 	const mainSource =
