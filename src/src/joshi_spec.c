@@ -572,6 +572,48 @@ duk_ret_t _joshi_spec_readdir(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_setenv(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* name = (char*)duk_get_string(ctx, 0); 
+	char* value = (char*)duk_get_string(ctx, 1); 
+	int overwrite = (int)duk_get_number(ctx, 2); 
+ 
+	/* Syscall invocation */ 
+	errno = 0; 
+	int ret = setenv( 
+		name, 
+		value, 
+		overwrite 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_setsid(duk_context* ctx) { 
+	/* Syscall invocation */ 
+	errno = 0; 
+	pid_t ret = setsid( 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_sleep(duk_context* ctx) { 
 	/* Input arguments retrieval */ 
 	unsigned int seconds = (unsigned int)duk_get_number(ctx, 0); 
@@ -689,6 +731,27 @@ duk_ret_t _joshi_spec_unlink(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_unsetenv(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* name = (char*)duk_get_string(ctx, 0); 
+ 
+	/* Syscall invocation */ 
+	errno = 0; 
+	int ret = unsetenv( 
+		name 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_waitpid(duk_context* ctx) { 
 	/* Input arguments retrieval */ 
 	pid_t pid = (pid_t)duk_get_number(ctx, 0); 
@@ -774,11 +837,14 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "poll", func: _joshi_spec_poll, argc: 3 }, 
 	{ name: "read", func: _joshi_spec_read, argc: 3 }, 
 	{ name: "readdir", func: _joshi_spec_readdir, argc: 1 }, 
+	{ name: "setenv", func: _joshi_spec_setenv, argc: 3 }, 
+	{ name: "setsid", func: _joshi_spec_setsid, argc: 0 }, 
 	{ name: "sleep", func: _joshi_spec_sleep, argc: 1 }, 
 	{ name: "stat", func: _joshi_spec_stat, argc: 2 }, 
 	{ name: "unlink", func: _joshi_spec_unlink, argc: 1 }, 
+	{ name: "unsetenv", func: _joshi_spec_unsetenv, argc: 1 }, 
 	{ name: "waitpid", func: _joshi_spec_waitpid, argc: 3 }, 
 	{ name: "write", func: _joshi_spec_write, argc: 3 }, 
 }; 
  
-size_t joshi_spec_builtins_count = 28 ; 
+size_t joshi_spec_builtins_count = 31 ; 

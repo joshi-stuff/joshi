@@ -135,6 +135,17 @@ return {
 			{ returns: 'struct dirent*', throws: 'on null'}
 		],
 
+		'setenv': [
+			{ type: 'char*', name: 'name' },
+			{ type: 'char*', name: 'value' },
+			{ type: 'int', name: 'overwrite' },
+			{ returns: 'int' },
+		],
+
+		'setsid': [
+			{ returns: 'pid_t' }
+		],
+
 		'sleep': [
 			{ type: 'unsigned int', name: 'seconds' },
 			{ returns: 'unsigned int' },
@@ -149,6 +160,11 @@ return {
 		'unlink': [
 			{ type: 'char*', name: 'pathname'},
 			{ returns: 'int' }
+		],
+
+		'unsetenv': [
+			{ type: 'char*', name: 'name' },
+			{ returns: 'int' },
 		],
 
 		'waitpid': [
