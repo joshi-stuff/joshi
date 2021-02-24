@@ -47,16 +47,42 @@ proc.alarm = function(seconds) {
 	return j.alarm(seconds);
 }
 
-proc.execv = function(pathname, argv) {
+proc.execv = function(pathname, argv, env) {
+	env = env || {};
+
 	argv = argv.slice(0);
 	argv.push(null);
+
+	Object.entries(env).forEach(function(entry) {
+		const name = entry[0];
+		const value = entry[1];
+
+		if (value !== null) {
+			proc.setenv(name, value);
+		} else {
+			proc.unsetenv(name);
+		}
+	});
 
 	return j.execv(pathname, argv);
 }
 
-proc.execvp = function(file, argv) {
+proc.execvp = function(file, argv, env) {
+	env = env || {};
+
 	argv = argv.slice(0);
 	argv.push(null);
+
+	Object.entries(env).forEach(function(entry) {
+		const name = entry[0];
+		const value = entry[1];
+
+		if (value !== null) {
+			proc.setenv(name, value);
+		} else {
+			proc.unsetenv(name);
+		}
+	});
 
 	return j.execvp(file, argv);
 }
@@ -73,8 +99,24 @@ proc.getenv = function(name) {
 	return j.getenv(name);
 }
 
+proc.getegid = function() {
+	return j.getegid();
+}
+
+proc.geteuid = function() {
+	return j.geteuid();
+}
+
+proc.getgid = function() {
+	return j.getgid();
+}
+
 proc.getpid = function() {
 	return j.getpid();
+}
+
+proc.getuid = function() {
+	return j.getuid();
 }
 
 /**
@@ -138,9 +180,25 @@ proc.pipe_fork = function(wire) {
 		pid,
 		in: read_fd,
 		out: write_fd,
-		child: pid ===0,
+		child: pid === 0,
 		parent: pid !== 0
 	};
+}
+
+proc.setenv = function(name, value, overwrite) {
+	if (overwrite === undefined) {
+		overwrite = 1;
+	} else if (overwrite) {
+		overwrite = 1;
+	} else {
+		overwrite = 0;
+	}
+
+	return j.setenv(name, value, overwrite);
+}
+
+proc.setsid = function() {
+	return j.setsid();
 }
 
 /**
@@ -158,6 +216,42 @@ proc.sleep = function(seconds) {
 	while (seconds > 0) {
 		seconds = j.sleep(seconds);
 	}
+}
+
+proc.spawn = function(file, argv, env) {
+	const pid = proc.fork();
+
+	if (pid === 0) {
+		try {
+			proc.execv(file, argv, env);
+		}
+		catch(err) {
+			io.write_line(2, err.toString());
+			proc.exit(err.errno || -1);
+		}
+	}
+
+	return pid;
+}
+
+proc.spawnp = function(file, argv, env) {
+	const pid = proc.fork();
+
+	if (pid === 0) {
+		try {
+			proc.execvp(file, argv, env);
+		}
+		catch(err) {
+			io.write_line(2, err.toString());
+			proc.exit(err.errno || -1);
+		}
+	}
+
+	return pid;
+}
+
+proc.unsetenv = function(name) {
+	return j.unsetenv(name);
 }
 
 /**
