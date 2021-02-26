@@ -33,11 +33,13 @@ void main(int argc, const char *argv[]) {
 		exit(-1);
 	}
 
+	_joshi_duk_context = ctx;
+
 	// Populate joshi object
 	int retval = joshi_run(ctx, argv[1], argc, argv);
 
-	// Cleanup and exit
-	duk_destroy_heap(ctx);
+	// Don't cleanup before exit because atexit would crash
+	// duk_destroy_heap(ctx);
 
 	exit(retval);
 }

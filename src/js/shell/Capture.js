@@ -3,14 +3,11 @@ const io = require('io');
 const math = require('math');
 const proc = require('proc');
 
-const println2 = require('term').println2;
-
 function Capture($, container) {
 	this.$ = $;
 	this.is_a = 'Capture';
 	this.container = container;
-	this.fd = undefined;
-	this.name = undefined;
+	this.sources = [];
 }
 
 Capture.NAMES = {
@@ -22,28 +19,37 @@ Capture.NAMES = {
 Capture.prototype = {
 
 	close: function() {
-		try {
-			io.lseek(this.fd, 0, io.SEEK_SET);
-			const content = io.read_file(this.fd);
+		const container = this.container;
 
-			this.container[this.name] = content;
-		} 
-		finally {
-			io.close(this.fd);
-			this.fd = undefined;
-		}
+		this.sources.forEach(function(source) {
+			try {
+				io.lseek(source.fd, 0, io.SEEK_SET);
+				container[source.name] = io.read_file(source.fd);
+			} 
+			finally {
+				io.safe_close(source.fd);
+			}
+		});
+
+		this.sources = [];
 	},
 
 	open: function(sourceFd) {
-		this.name = Capture.NAMES[sourceFd] || ('fd' + sourceFd);
+		const source = {
+			name: Capture.NAMES[sourceFd] || ('fd' + sourceFd),
+		};
 
 		const rnd = math.get_random_bytes(2);
-		const filename = '/tmp/joshi_' + proc.getpid() + '_' + rnd[0] + rnd[1];
+		const filename = 
+			'/tmp/joshi_' + proc.getpid() + '_' + sourceFd + '_'
+				+ rnd[0] + rnd[1];
 
-		this.fd = io.create(filename);
+		source.fd = io.create(filename);
 		fs.unlink(filename);
 
-		return this.fd;
+		this.sources.push(source);
+
+		return source.fd;
 	},
 
 }

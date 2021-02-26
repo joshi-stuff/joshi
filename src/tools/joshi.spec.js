@@ -18,6 +18,11 @@ return {
 			{ returns: 'unsigned', throws: false }
 		],
 
+		'chdir': [
+			{ type: 'char*', name: 'path' },
+			{ returns: 'int' }
+		],
+
 		'close': [
 			{ type: 'int', name: 'fd' },
 			{ returns: 'int' }
@@ -92,11 +97,23 @@ return {
 			{ returns: 'uid_t' }
 		],
 
+		'kill': [
+			{ type: 'pid_t', name: 'pid' },
+			{ type: 'int', name: 'sig' },
+			{ returns: 'int' }
+		],
+
 		'lseek': [
 			{ type: 'int', name: 'fildes' },
 			{ type: 'off_t', name: 'offset' },
 			{ type: 'int', name: 'whence' },
 			{ returns: 'off_t' }
+		],
+
+		'mkdir': [
+			{ type: 'char*', name: 'pathname' },
+			{ type: 'mode_t', name: 'mode' },
+			{ returns: 'int' }
 		],
 
 		'open': [

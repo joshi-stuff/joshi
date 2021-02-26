@@ -10,6 +10,7 @@ function Proc($, argv) {
 	this.is_a = 'Proc';
 	this.argv = argv;
 
+	this._dir = undefined;
 	this._env = {};
 
 	// Pipe is initial configuration
@@ -20,6 +21,11 @@ function Proc($, argv) {
 }
 
 Proc.prototype = {
+
+	dir: function(dir) {
+		this._dir = dir;
+		return this;
+	},
 
 	env: function(vars) {
 		this._env = vars;
@@ -51,21 +57,6 @@ Proc.prototype = {
 				openFds = openFds.concat(childProcs[i]._openPipes());
 			}
 
-			// Set env
-			const saved_env = {};
-
-			Object.entries(this._env).forEach(function(entry) {
-				const name = entry[0];
-				const value = entry[1];
-
-				saved_env[name] = proc.getenv(name);
-				if (value !== null && value !== undefined) {
-					proc.setenv(name, value);
-				} else {
-					proc.unsetenv(name);
-				}
-			});
-
 			// Launch the Procs
 			for (var i = 0; i < childProcs.length; i++) {
 				const childProc = childProcs[i];
@@ -96,24 +87,14 @@ Proc.prototype = {
 				});
 			}
 
-			// Restore env
-			Object.entries(saved_env).forEach(function(entry) {
-				const name = entry[0];
-				const value = entry[1];
-
-				if (value !== null) {
-					proc.setenv(name, value);
-				} else {
-					proc.unsetenv(name);
-				}
-			});
-
 			// Collect capture fds
 			const captures = this._collectCaptures();
 			const captureFds = {};
 			
 			for (var i = 0; i < captures.length; i++) {
-				captureFds[captures[i].fd] = true;
+				captures[i].sources.forEach(function(source){ 
+					captureFds[source.fd] = true;
+				});
 			}
 
 			// Close open fds in parent except those to be used after execution
@@ -140,6 +121,7 @@ Proc.prototype = {
 			}
 
 			// TODO: move this to the real shell
+			/*
 			term.fg(0xD0, 0x80, 0x80);
 			if (result.exit_status != 0) {
 				println('Command exited with code:', result.exit_status);
@@ -149,6 +131,7 @@ Proc.prototype = {
 				println('Command core dumped');
 			}
 			term.reset();
+			*/
 
 			return result;
 		} 
@@ -170,12 +153,23 @@ Proc.prototype = {
 			fds = [1];
 		}
 
-		// Redirect first fd to where
-		this._pipe[fds[0]] = where;
+		if (!Array.isArray(fds)) {
+			fds = [fds];
+		}
 
-		// Redirect rest of fds to first fd
-		for (var i = 1; i < fds.length; i++) {
-			this._pipe[fds[i]] = fds[0];
+		if (where.is_a === 'Proc') {
+			// Redirect first fd to where
+			this._pipe[fds[0]] = where;
+
+			// Redirect rest of fds to first fd
+			for (var i = 1; i < fds.length; i++) {
+				this._pipe[fds[i]] = fds[0];
+			}
+		}
+		else {
+			for (var i = 0; i < fds.length; i++) {
+				this._pipe[fds[i]] = where;
+			}
 		}
 
 		return this;
@@ -209,7 +203,9 @@ Proc.prototype = {
 			const where = this._pipe[fd];
 
 			if (where.is_a === 'Capture') {
-				captures.push(where);
+				if (!captures.includes(where)) {
+					captures.push(where);
+				}
 			}
 			else if (where.is_a === 'Proc' ) {
 				captures = captures.concat(where._collectCaptures());
@@ -269,7 +265,7 @@ Proc.prototype = {
 					this._redir[fd] = where;
 				} else {
 					throw new Error(
-						'Unsupported redirection for fd ' + fd + ' of Proc ' + 
+						'Unsupported redirection for fd ' + fd + ' of ' + 
 						this + ': ' + where
 					); 
 				}
@@ -302,7 +298,11 @@ Proc.prototype = {
 					setupCB();
 				}
 
-				proc.execvp(this.argv[0], this.argv);
+				if (this._dir) {
+					proc.chdir(this._dir);
+				}
+
+				proc.execvp(this.argv[0], this.argv, this._env);
 			} catch(err) {
 				proc.exit(err.errno);
 			}

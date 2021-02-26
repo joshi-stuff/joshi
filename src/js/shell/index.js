@@ -11,6 +11,7 @@ const Proc = require('./Proc.js');
 // TODO: $.here(string) support
 // TODO: $.append(string) support 
 // TODO: $.truncate(string) support 
+// TODO: pipe(null) support
 
 /*
  *
@@ -24,7 +25,7 @@ function $() {
 			args.push(arguments[i]);
 		}
 	} else if (typeof arguments[0] === 'string') {
-		return args.push(arguments[0]);
+		args.push(arguments[0]);
 	} else if (Array.isArray(arguments[0])) {
 		args = arguments[0];
 	} else {

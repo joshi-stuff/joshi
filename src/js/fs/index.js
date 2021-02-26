@@ -1,5 +1,6 @@
 const errno = require('errno');
 const io = require('io');
+const math = require('math');
 const proc = require('proc');
 
 const fs = {};
@@ -132,6 +133,53 @@ fs.list_dir = function(name) {
 	return items.sort();
 }
 
+fs.mkdir = function(pathname, mode) {
+	mode = mode || 0755;
+
+	try {
+		return j.mkdir(pathname, mode);
+	} 
+	catch(err) {
+		err.message += ' (' + pathname + ')';
+		throw err;
+	}
+}
+
+fs.mkdirp = function(pathname, mode) {
+	var dirname = '';
+	var initialIndex = 1;
+
+	if (!pathname.startsWith('/')) {
+		dirname = '.';
+		initialIndex = 0;
+	}
+	
+	const parts = pathname.split('/');
+
+	for (var i = initialIndex; i < parts.length; i++) {
+		dirname += '/' + parts[i];
+
+		if (!fs.exists(dirname)) {
+			fs.mkdir(dirname, mode);
+		}
+	}	
+
+	return 0;
+}
+
+fs.mktemp_file = function(contents) {
+	contents = contents || '';
+
+	const rnd = math.get_random_bytes(2);
+	const filename = 
+		'/tmp/joshi_' + proc.getpid().toString(16) + '_' + rnd[0].toString(16) + 
+			rnd[1].toString(16);
+
+	fs.write_file(filename, contents, 0600);
+
+	return filename;
+}
+
 fs.read_file = function(path) {
 	const fd = io.open(path);
 
@@ -176,8 +224,8 @@ fs.unlink = function(pathname) {
 	return j.unlink(pathname);
 }
 
-fs.write_file = function(path, contents) {
-	const fd = io.truncate(path);
+fs.write_file = function(path, contents, mode) {
+	const fd = io.truncate(path, mode);
 
 	try {
 		return io.write_str(fd, contents);

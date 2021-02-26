@@ -5,12 +5,25 @@ const term = {};
 // See https://en.wikipedia.org/wiki/ANSI_escape_code
 const CSI = String.fromCharCode(0x1B) + '['; 
 
+term.clear = function() {
+	term.print(CSI + '2J');
+	term.move_to(1, 1);
+}
+
 term.bg = function(r, g, b) {
 	term.print(CSI + '48;2;' + r + ';' + g + ';' + b + 'm');
 }
 
 term.fg = function(r, g, b) {
 	term.print(CSI + '38;2;' + r + ';' + g + ';' + b + 'm');
+}
+
+term.hide_cursor = function() {
+	term.print(CSI + '?25l');
+}
+
+term.move_to = function(row, column) {
+	term.print(CSI + row + ';' + column + 'H');
 }
 
 term.print2 = function() {
@@ -65,8 +78,16 @@ term.println2 = function() {
 	term.print2.apply(null, things);
 }
 
+term.read_line = function() {
+	return io.read_line(0);
+}
+
 term.reset = function() {
 	term.print(CSI + 'm');
+}
+
+term.show_cursor = function() {
+	term.print(CSI + '?25h');
 }
 
 term._toString = function(thing) {

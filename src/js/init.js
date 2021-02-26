@@ -57,6 +57,9 @@ function init(global, j, filepath) {
 					err = new Error('Module not found: ' + module);
 					err.errno = 2; // ENOENT
 				}
+				else {
+					err.message += ' (in require of ' + module + ')';
+				}
 
 				throw err;
 			}

@@ -33,6 +33,27 @@ duk_ret_t _joshi_spec_alarm(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_chdir(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* path = (char*)duk_get_string(ctx, 0); 
+ 
+	/* Syscall invocation */ 
+	errno = 0; 
+	int ret = chdir( 
+		path 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_close(duk_context* ctx) { 
 	/* Input arguments retrieval */ 
 	int fd = (int)duk_get_number(ctx, 0); 
@@ -342,6 +363,29 @@ duk_ret_t _joshi_spec_getuid(duk_context* ctx) {
 	return 1; 
 } 
  
+duk_ret_t _joshi_spec_kill(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	pid_t pid = (pid_t)duk_get_number(ctx, 0); 
+	int sig = (int)duk_get_number(ctx, 1); 
+ 
+	/* Syscall invocation */ 
+	errno = 0; 
+	int ret = kill( 
+		pid, 
+		sig 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
 duk_ret_t _joshi_spec_lseek(duk_context* ctx) { 
 	/* Input arguments retrieval */ 
 	int fildes = (int)duk_get_number(ctx, 0); 
@@ -354,6 +398,29 @@ duk_ret_t _joshi_spec_lseek(duk_context* ctx) {
 		fildes, 
 		offset, 
 		whence 
+	); 
+ 
+	/* Error check */ 
+	if (ret == -1) { 
+		return duk_throw_errno(ctx); 
+	} 
+ 
+	/* Return */ 
+	duk_push_number(ctx, ret);
+
+	return 1; 
+} 
+ 
+duk_ret_t _joshi_spec_mkdir(duk_context* ctx) { 
+	/* Input arguments retrieval */ 
+	char* pathname = (char*)duk_get_string(ctx, 0); 
+	mode_t mode = (mode_t)duk_get_number(ctx, 1); 
+ 
+	/* Syscall invocation */ 
+	errno = 0; 
+	int ret = mkdir( 
+		pathname, 
+		mode 
 	); 
  
 	/* Error check */ 
@@ -815,6 +882,7 @@ duk_ret_t _joshi_spec_write(duk_context* ctx) {
  
 BUILTIN joshi_spec_builtins[] = { 
 	{ name: "alarm", func: _joshi_spec_alarm, argc: 1 }, 
+	{ name: "chdir", func: _joshi_spec_chdir, argc: 1 }, 
 	{ name: "close", func: _joshi_spec_close, argc: 1 }, 
 	{ name: "closedir", func: _joshi_spec_closedir, argc: 1 }, 
 	{ name: "dup", func: _joshi_spec_dup, argc: 1 }, 
@@ -830,7 +898,9 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "getpid", func: _joshi_spec_getpid, argc: 0 }, 
 	{ name: "getrandom", func: _joshi_spec_getrandom, argc: 3 }, 
 	{ name: "getuid", func: _joshi_spec_getuid, argc: 0 }, 
+	{ name: "kill", func: _joshi_spec_kill, argc: 2 }, 
 	{ name: "lseek", func: _joshi_spec_lseek, argc: 3 }, 
+	{ name: "mkdir", func: _joshi_spec_mkdir, argc: 2 }, 
 	{ name: "open", func: _joshi_spec_open, argc: 3 }, 
 	{ name: "opendir", func: _joshi_spec_opendir, argc: 1 }, 
 	{ name: "pipe", func: _joshi_spec_pipe, argc: 1 }, 
@@ -847,4 +917,4 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "write", func: _joshi_spec_write, argc: 3 }, 
 }; 
  
-size_t joshi_spec_builtins_count = 31 ; 
+size_t joshi_spec_builtins_count = 34 ; 

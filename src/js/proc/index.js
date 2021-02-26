@@ -1,6 +1,15 @@
+const errno = require('errno');
 const io = require('io');
 
 const proc = {};
+
+const atexit_handlers = [];
+
+j.atexit(function() {
+	for (var i = atexit_handlers.length - 1; i >= 0; i--) {
+		atexit_handlers[i]();
+	}
+});
 
 /* Signal numbers */
 proc.SIGHUP = 1;
@@ -47,6 +56,14 @@ proc.alarm = function(seconds) {
 	return j.alarm(seconds);
 }
 
+proc.atexit = function(fn) {
+	atexit_handlers.push(fn);
+}
+
+proc.chdir = function(dir) {
+	return j.chdir(dir);
+}
+
 proc.execv = function(pathname, argv, env) {
 	env = env || {};
 
@@ -64,7 +81,13 @@ proc.execv = function(pathname, argv, env) {
 		}
 	});
 
-	return j.execv(pathname, argv);
+	try {
+		return j.execv(pathname, argv);
+	}
+	catch(err) {
+		err.message += ' (' + pathname + ')';
+		throw err;
+	}
 }
 
 proc.execvp = function(file, argv, env) {
@@ -84,7 +107,13 @@ proc.execvp = function(file, argv, env) {
 		}
 	});
 
-	return j.execvp(file, argv);
+	try {
+		return j.execvp(file, argv);
+	}
+	catch(err) {
+		err.message += ' (' + file + ')';
+		throw err;
+	}
 }
 
 proc.exit = function(status) {
@@ -117,6 +146,14 @@ proc.getpid = function() {
 
 proc.getuid = function() {
 	return j.getuid();
+}
+
+proc.kill = function(pid, sig) {
+	if (sig === undefined) {
+		sig = proc.SIGKILL;
+	}
+
+	return j.kill(pid, sig);
 }
 
 /**
@@ -185,6 +222,17 @@ proc.pipe_fork = function(wire) {
 	};
 }
 
+proc.safe_kill = function(pid, sig) {
+	try {
+		return proc.kill(pid, sig);
+	}
+	catch(err) {
+		if (err.errno !== errno.ESRCH) {
+			throw err;
+		}
+	}
+}
+
 proc.setenv = function(name, value, overwrite) {
 	if (overwrite === undefined) {
 		overwrite = 1;
@@ -194,7 +242,7 @@ proc.setenv = function(name, value, overwrite) {
 		overwrite = 0;
 	}
 
-	return j.setenv(name, value, overwrite);
+	return j.setenv(name.toString(), value.toString(), overwrite);
 }
 
 proc.setsid = function() {

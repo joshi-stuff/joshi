@@ -14,11 +14,87 @@
 duk_ret_t duk_dump_stack(duk_context* ctx);
 duk_ret_t duk_throw_errno(duk_context* ctx);
 
-static duk_context* _joshi_signal_duk_context[NSIG];
+duk_context* _joshi_duk_context;
+
+static int _joshi_atexit_handler_set = 0;
+
+//
+// Internal helper functions
+//
+static void _joshi_atexit_handler(void) {
+	duk_context* ctx = _joshi_duk_context;
+
+	duk_push_heap_stash(ctx);
+
+	// ... stash
+	
+	duk_get_prop_string(ctx, -1, "atexit_handler");
+
+	// ... stash func
+	
+	duk_remove(ctx, -2);
+
+	// ... func
+
+	duk_call(ctx, 0);
+}
+
+static void _joshi_signal_handler(int sig) {
+	duk_context* ctx = _joshi_duk_context;
+
+	duk_push_heap_stash(ctx);
+
+	// ... stash
+	
+	duk_get_prop_string(ctx, -1, "signal_handlers");
+
+	// ... stash signal_handlers
+	
+	duk_get_prop_index(ctx, -1, sig);
+
+	// ... stash func
+	
+	duk_remove(ctx, -2);
+
+	// ... func
+
+	duk_push_int(ctx, sig);
+	duk_call(ctx, 1);
+}
 
 //
 // High level builtins
 //
+duk_ret_t _joshi_atexit(duk_context* ctx) {
+	if (_joshi_atexit_handler_set) {
+		errno  = EINVAL;
+		return duk_throw_errno(ctx);
+	}
+	else {
+		_joshi_atexit_handler_set = 1;
+	}
+
+	duk_push_heap_stash(ctx);
+
+	// ... func stash
+
+	duk_pull(ctx, -2);
+
+	// ... stash func
+
+	duk_put_prop_string(ctx, -2, "atexit_handler");
+	duk_pop(ctx);
+
+	int result = atexit(_joshi_atexit_handler);
+	
+	if (result == -1) {
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_int(ctx, result);
+	return 1;
+}
+
 duk_ret_t _joshi_compile_function(duk_context* ctx) {
 	duk_compile(ctx, DUK_COMPILE_FUNCTION);
 
@@ -71,29 +147,6 @@ duk_ret_t _joshi_realpath(duk_context* ctx) {
 	return 1;
 }
 
-static void _joshi_signal_handler(int sig) {
-	duk_context* ctx = _joshi_signal_duk_context[sig];
-
-	duk_push_heap_stash(ctx);
-
-	// ... stash
-	
-	duk_get_prop_string(ctx, -1, "signal_handlers");
-
-	// ... stash signal_handlers
-	
-	duk_get_prop_index(ctx, -1, sig);
-
-	// ... stash func
-	
-	duk_remove(ctx, -2);
-
-	// ... func
-
-	duk_push_int(ctx, sig);
-	duk_call(ctx, 1);
-}
-
 duk_ret_t _joshi_signal(duk_context* ctx) {
 	int sig = (int)duk_get_number(ctx, 0);
 
@@ -101,17 +154,14 @@ duk_ret_t _joshi_signal(duk_context* ctx) {
 
 	switch (duk_get_type(ctx, 1)) {
 		case DUK_TYPE_UNDEFINED:
-			_joshi_signal_duk_context[sig] = NULL;
 			func = SIG_DFL;
 			break;
 
 		case DUK_TYPE_NULL:
-			_joshi_signal_duk_context[sig] = NULL;
 			func = SIG_IGN;
 			break;
 
 		default:
-			_joshi_signal_duk_context[sig] = ctx;
 			func = _joshi_signal_handler;
 
 			duk_push_heap_stash(ctx);
@@ -220,6 +270,7 @@ duk_ret_t duk_throw_errno(duk_context* ctx) {
 // Table of builtins
 //
 BUILTIN joshi_core_builtins[] = {
+	{ name: "atexit", func: _joshi_atexit, argc: 1 },
 	{ name: "compile_function", func: _joshi_compile_function, argc: 2 },
 	{ name: "printk", func: _joshi_printk, argc: 1 },
 	{ name: "read_file", func: _joshi_read_file, argc: 1 },
