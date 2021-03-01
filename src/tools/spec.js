@@ -1,0 +1,128 @@
+const fs = require('fs');
+
+const generate = require('./generate.js');
+
+// Generators
+function generatePopPushDeclarations(types) {
+	return Object.keys(types).reduce(function(lines, typeName) {
+		return lines.concat(
+			generate.popDeclaration(typeName, types).map(function(lines) {
+				return lines.concat(';');
+			}),
+			generate.pushDeclaration(typeName, types).map(function(lines) {
+				return lines.concat(';');
+			})
+		);
+	}, []);
+}
+
+function generatePopPushFunctions(types) {
+	return Object.keys(types).reduce(function(lines, typeName) {
+		return lines.concat(
+			generate.popFunction(typeName, types),
+			'',
+			generate.pushFunction(typeName, types),
+			''
+		);
+	}, []);
+}
+
+function generateStubs(functions, throws, types) {
+	return Object.keys(functions).reduce(function(lines, fnName) {
+		return lines.concat(
+			generate.stub(fnName, functions, throws, types),
+			''
+		);
+	}, []);
+}
+
+// Main loop
+function main(argv) {
+	if (argv.length != 3) {
+		println2('usage: joshi spec.js <output dir>');
+		proc.exit(1);
+	}
+
+	const out = argv[2];
+
+	const dir = './specs';
+	const functions = require(dir+'/functions.js');
+	const throws = require(dir+'/throws.js');
+	const types = require(dir+'/types.js');
+
+	// TODO: Normalize input data //////////////////////////////////////////////
+	Object.values(functions).forEach(function(fn) {
+		if (fn.returns && !fn.returns.name) {
+			fn.returns.name = 'ret_value';
+		}
+	});
+	////////////////////////////////////////////////////////////////////////////
+
+	const lines = [].concat(
+	);
+
+	fs.write_file(
+		out+'/joshi_spec.c', 
+		[].concat(
+			require('./specs/header.js'),
+			'',
+			'#include "joshi_core.h"',
+			'#include "joshi_spec.h"', 
+			'',
+			'typedef struct duk_blk {',
+			'	duk_size_t size;',
+			'	char data[];',
+			'} duk_blk;',
+			'',
+			generatePopPushDeclarations(types),
+			'',
+			'static duk_blk* duk_malloc(duk_context* ctx, duk_size_t size) {',
+			'	duk_push_heap_stash(ctx);',
+			'	duk_get_prop_string(ctx, -1, "_malloc_area");',
+			'',
+			'	if (duk_is_undefined(ctx, -1)) {',
+			'		duk_pop(ctx);',
+			'		duk_push_array(ctx);',
+			'		duk_put_prop_string(ctx, -2, "_malloc_area");',
+			'		duk_get_prop_string(ctx, -1, "_malloc_area");',
+			'	}',
+			'',
+			'	duk_blk* ret_value = ',
+			'		duk_push_fixed_buffer(ctx, sizeof(duk_size_t) + size);',
+			'	ret_value->size = size;',
+			'	duk_put_prop_index(ctx, -2, duk_get_length(ctx, -2));',
+			'	duk_pop_2(ctx);',
+			'',
+			'	return ret_value;',
+			'}',
+			'',
+			'static void duk_free_all(duk_context* ctx) {',
+			'	duk_push_heap_stash(ctx);',
+			'	duk_del_prop_string(ctx, -1, "_malloc_area");',
+			'	duk_pop(ctx);',
+			'}',
+			'',
+			generatePopPushFunctions(types),
+			generateStubs(functions, throws, types),
+			'',
+			'BUILTIN joshi_spec_builtins[] = {',
+			generate.tabify(
+				1,
+				Object.entries(functions).reduce(function(lines, entry) {
+					const FN = entry[0];
+					const fn = entry[1];
+
+					return lines.concat(
+						'{ name: "'+FN+'", func: _joshi_spec_'+FN+
+							', argc: '+fn.args.length+' },'
+					);
+				}, [])
+			),
+			'};',
+			'',
+			'size_t joshi_spec_builtins_count = ' + Object.keys(functions).length + ';' 
+		).join('\n')
+	);
+}
+
+main(argv);
