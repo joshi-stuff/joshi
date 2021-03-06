@@ -40,8 +40,8 @@ fix-spec:
 	git checkout src/joshi_spec.c
 
 spec: 
-	rm src/joshi_spec.c
-	./joshi tools/gen_spec.js > src/joshi_spec.c
+	@rm src/joshi_spec.c
+	./joshi ./tools/spec.js ./src
 
 
 #
