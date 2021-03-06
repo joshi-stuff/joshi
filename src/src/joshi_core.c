@@ -52,13 +52,20 @@ static void _joshi_signal_handler(int sig) {
 	
 	duk_get_prop_index(ctx, -1, sig);
 
-	// ... stash func
+	// ... stash signal_handlers func
 	
+	duk_remove(ctx, -2);
+
+	// ... stash func
+
 	duk_remove(ctx, -2);
 
 	// ... func
 
 	duk_push_int(ctx, sig);
+
+	// ... func sig
+
 	duk_call(ctx, 1);
 }
 
@@ -141,7 +148,9 @@ duk_ret_t _joshi_realpath(duk_context* ctx) {
 	const char* filepath = duk_get_string(ctx, 0);
 
 	char resolved_name[PATH_MAX+1];
-	realpath(filepath, resolved_name);
+	if (realpath(filepath, resolved_name) == NULL) {
+		duk_throw_errno(ctx);
+	}
 
 	duk_push_string(ctx, resolved_name);
 	return 1;
@@ -186,12 +195,13 @@ duk_ret_t _joshi_signal(duk_context* ctx) {
 				
 				duk_get_prop_string(ctx, -1, "signal_handlers");
 
-				// ... func stash signal_handlers
-
-				duk_remove(ctx, -2);
-
-				// ... func signal_handlers
 			}
+
+			// ... func stash signal_handlers
+
+			duk_remove(ctx, -2);
+			
+			// ... func signal_handlers
 
 			duk_pull(ctx, -2);
 
@@ -225,27 +235,74 @@ duk_ret_t duk_dump_stack(duk_context* ctx) {
 	    fprintf(stderr, "<empty>\n");
 	} else {
 		for(int i=idx_top; i>=0; i--) {
-			int typei = duk_get_type(ctx, i);
+			int type = duk_get_type(ctx, i);
 
-			char *type = NULL;
+			switch(type) {
+				case DUK_TYPE_NONE:
+					fprintf(stderr, "%d: (none)\n", i);
+					break;
 
-			switch(typei) {
-				case DUK_TYPE_NONE: type = "none"; break;
-				case DUK_TYPE_UNDEFINED: type = "undefined"; break;
-				case DUK_TYPE_NULL: type = "null"; break;
-				case DUK_TYPE_BOOLEAN: type = "boolean"; break;
-				case DUK_TYPE_NUMBER: type = "number"; break;
-				case DUK_TYPE_STRING: type = "string"; break;
-				case DUK_TYPE_OBJECT: type = "object"; break;
-				case DUK_TYPE_BUFFER: type = "buffer"; break;
-				case DUK_TYPE_POINTER: type = "pointer"; break;
-				case DUK_TYPE_LIGHTFUNC: type = "lightfunc"; break;
-			}
+				case DUK_TYPE_UNDEFINED:
+					fprintf(stderr, "%d: (undefined)\n", i);
+					break;
 
-			if (type == NULL) {
-				fprintf(stderr, "%d: %d ???\n", i, typei);
-			} else {
-				fprintf(stderr, "%d: %s\n", i, type);
+				case DUK_TYPE_NULL:
+					fprintf(stderr, "%d: (null)\n", i);
+					break;
+
+				case DUK_TYPE_BOOLEAN:
+					fprintf(stderr, "%d: boolean %d\n", i, duk_get_boolean(ctx, i));
+					break;
+
+				case DUK_TYPE_NUMBER: 
+					fprintf(stderr, "%d: number %f\n", i, duk_get_number(ctx, i));
+					break;
+
+				case DUK_TYPE_STRING:
+					fprintf(stderr, "%d: string '%s'\n", i, duk_get_string(ctx, i));
+					break;
+
+				case DUK_TYPE_OBJECT:
+					if (duk_has_prop_string(ctx, i, "call")) {
+						duk_get_prop_string(ctx, i, "name");
+						const char* name = duk_get_string(ctx, -1);
+						duk_pop(ctx);
+
+						fprintf(
+							stderr, 
+							"%d: function %s\n", 
+							i, 
+							name ? name : "???"
+						);
+					} else {
+						fprintf(stderr, "%d: object { ", i);
+
+						duk_enum(ctx, i, DUK_ENUM_OWN_PROPERTIES_ONLY);
+						while (duk_next(ctx, -1, 0)) {
+							fprintf(stderr, "%s ", duk_get_string(ctx, -1));
+							duk_pop(ctx);  
+						}
+						duk_pop(ctx);
+
+						fprintf(stderr, "}\n");
+					}
+					break;
+
+				case DUK_TYPE_BUFFER:
+					fprintf(stderr, "%d: buffer\n", i);
+					break;
+
+				case DUK_TYPE_POINTER:
+					fprintf(stderr, "%d: pointer\n", i);
+					break;
+
+				case DUK_TYPE_LIGHTFUNC:
+					fprintf(stderr, "%d: (light function)\n", i);
+					break;
+
+				default:
+					fprintf(stderr, "%d: (unknown type: %d)\n", i, type);
+					break;
 			}
 		}
 	}

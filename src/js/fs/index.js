@@ -11,13 +11,13 @@ fs.basename = function(path) {
 	return path.substring(1 + path.lastIndexOf('/'));
 }
 
-fs.copy_file = function(from, to) {
+fs.copy_file = function(from, to, mode) {
 	var fdFrom;
 	var fdTo;
 
 	try {
 		fdFrom = io.open(from);
-		fdTo = io.truncate(to);
+		fdTo = io.truncate(to, mode);
 
 		const buf = new Uint8Array(1024);
 
@@ -31,6 +31,7 @@ fs.copy_file = function(from, to) {
 	}
 	catch(err) {
 		fs.safe_unlink(to);
+		throw err;
 	}
 	finally {
 		io.safe_close(fdFrom);
@@ -106,7 +107,7 @@ fs.list_dir = function(name) {
 
 	try {
 		dirp = j.opendir(name);
-
+		
 		while(true) {
 			const dirent = j.readdir(dirp);
 			const name = dirent.d_name;
@@ -195,6 +196,8 @@ fs.realpath = function(path) {
 	return j.realpath(path);
 }
 
+// TODO: rmdir
+
 fs.safe_unlink = function(path) {
 	try {
 		fs.unlink(path);
@@ -212,9 +215,9 @@ fs.stat = function(pathname) {
 		mode: statbuf.st_mode,
 		size: statbuf.st_size,
 		time: {
-			access: statbuf['st_atim.tv_nsec'],
-			creation: statbuf['st_ctim.tv_nsec'],
-			modification: statbuf['st_mtim.tv_nsec'],
+			access: statbuf.st_atim.tv_sec,
+			creation: statbuf.st_ctim.tv_sec,
+			modification: statbuf.st_mtim.tv_sec,
 		},
 		uid: statbuf.st_uid,
 	};

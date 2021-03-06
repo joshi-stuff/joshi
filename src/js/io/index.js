@@ -42,7 +42,7 @@ const O_TRUNC = 01000;
 io.append = function(pathname, mode) {
 	mode = mode || 0644;
 
-	return j.open(pathname, O_CREAT|O_APPEND|O_RDRW, Number(mode));
+	return j.open(pathname, O_CREAT|O_APPEND|O_RDWR, Number(mode));
 }
 
 io.close = function(fd) {
@@ -75,7 +75,7 @@ io.lseek = function(fd, offset, whence) {
 
 io.open = function(pathname) {
 	try {
-		return j.open(pathname, 0);
+		return j.open(pathname, 0, 0);
 	}
 	catch(err) {
 		err.message += ' (' + pathname + ')';
@@ -84,7 +84,9 @@ io.open = function(pathname) {
 }
 
 io.pipe = function() {
-	return j.pipe();	
+	const fildes = [-1, -1];
+
+	return j.pipe(fildes).fildes;	
 }
 
 /**
@@ -94,7 +96,14 @@ io.pipe = function() {
  * @return [number] count of fds with events or 0 on timeout
  */
 io.poll = function(fds, timeout) {
-	return j.poll(fds, fds.length, Number(timeout));
+	const result = j.poll(fds, fds.length, Number(timeout));
+
+	fds.length = 0;
+	for (var i=0; i<result.fds.length; i++) {
+		fds.push(result.fds[i]);
+	}
+
+	return result.value;
 }
 
 io.read = function(fd, buf, count) {

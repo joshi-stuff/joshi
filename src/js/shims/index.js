@@ -14,6 +14,20 @@ Array.prototype.findIndex = function(predicate) {
 	return -1;
 }
 
+Array.prototype.flat = function() {
+	var depth = isNaN(arguments[0]) ? 1 : Number(arguments[0]);
+
+	return depth ? Array.prototype.reduce.call(this, function (acc, cur) {
+		if (Array.isArray(cur)) {
+			acc.push.apply(acc, Array.prototype.flat.call(cur, depth - 1));
+		} else {
+			acc.push(cur);
+		}
+
+		return acc;
+	}, []) : Array.prototype.slice.call(this);
+}
+
 Array.prototype.includes = function(item) {
 	for (var i = 0; i < this.length; i++) {
 		if (this[i] === item) {

@@ -124,6 +124,10 @@ proc.fork = function() {
 	return j.fork();
 }
 
+/**
+ *
+ * @return [string|null]
+ */
 proc.getenv = function(name) {
 	return j.getenv(name);
 }
@@ -176,8 +180,8 @@ proc.pipe_fork = function(wire) {
 	wire.parent = wire.parent || {};
 	wire.child = wire.child || {};
 
-	const p2c = io.pipe().fildes;
-	const c2p = io.pipe().fildes;
+	const p2c = io.pipe();
+	const c2p = io.pipe();
 
 	const pid = proc.fork();
 	var read_fd;

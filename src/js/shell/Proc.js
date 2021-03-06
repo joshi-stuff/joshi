@@ -251,7 +251,7 @@ Proc.prototype = {
 						);
 					}
 
-					const pipe = io.pipe().fildes;
+					const pipe = io.pipe();
 
 					this._redir[fd] = pipe[1];
 					openFds.push(this._redir[fd]);
