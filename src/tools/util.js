@@ -1,6 +1,6 @@
 const util = {};
 
-util.prefixVarName = function(prefix, v) {
+util.prefix_var_name = function(prefix, v) {
 	const nv = Object.assign({}, v);
 
 	nv.name = prefix + v.name;

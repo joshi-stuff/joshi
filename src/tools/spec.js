@@ -3,31 +3,31 @@ const fs = require('fs');
 const generate = require('./generate.js');
 
 // Generators
-function generatePopPushDeclarations(types) {
+function generate_pop_push_declarations(types) {
 	return Object.keys(types).reduce(function(lines, typeName) {
 		return lines.concat(
-			generate.popDeclaration(typeName, types).map(function(lines) {
+			generate.pop_declaration(typeName, types).map(function(lines) {
 				return lines.concat(';');
 			}),
-			generate.pushDeclaration(typeName, types).map(function(lines) {
+			generate.push_declaration(typeName, types).map(function(lines) {
 				return lines.concat(';');
 			})
 		);
 	}, []);
 }
 
-function generatePopPushFunctions(types) {
+function generate_pop_push_functions(types) {
 	return Object.keys(types).reduce(function(lines, typeName) {
 		return lines.concat(
-			generate.popFunction(typeName, types),
+			generate.pop_function(typeName, types),
 			'',
-			generate.pushFunction(typeName, types),
+			generate.push_function(typeName, types),
 			''
 		);
 	}, []);
 }
 
-function generateStubs(functions, throws, types) {
+function generate_stubs(functions, throws, types) {
 	return Object.keys(functions).reduce(function(lines, fnName) {
 		return lines.concat(
 			generate.stub(fnName, functions, throws, types),
@@ -74,7 +74,7 @@ function main(argv) {
 			'	char data[];',
 			'} duk_blk;',
 			'',
-			generatePopPushDeclarations(types),
+			generate_pop_push_declarations(types),
 			'',
 			'static duk_blk* duk_malloc(duk_context* ctx, duk_size_t size) {',
 			'	duk_push_heap_stash(ctx);',
@@ -102,8 +102,8 @@ function main(argv) {
 			'	duk_pop(ctx);',
 			'}',
 			'',
-			generatePopPushFunctions(types),
-			generateStubs(functions, throws, types),
+			generate_pop_push_functions(types),
+			generate_stubs(functions, throws, types),
 			'',
 			'BUILTIN joshi_spec_builtins[] = {',
 			generate.tabify(

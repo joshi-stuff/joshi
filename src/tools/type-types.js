@@ -2,14 +2,14 @@ const generate = require('./generate.js');
 const util = require('./util.js');
 
 function ARRAY(IT) {return {
-	pop_decl: function(typeName, types) {
-		const T = typeName;
+	pop_decl: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return 'duk_blk* duk_get_'+ST+'(duk_context* ctx, duk_idx_t idx)';
 	},
-	pop_gen: function(typeName, types) {
-		const T = typeName;
+	pop_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [].concat(
@@ -21,7 +21,7 @@ function ARRAY(IT) {return {
 			'	duk_get_prop_index(ctx, idx, i);',
 			generate.tabify(
 				1,
-				generate.popVariable({ type: IT, name: 'value[i]' }, types)
+				generate.pop_variable({ type: IT, name: 'value[i]' }, types)
 			),
 			'	duk_pop(ctx);',
 			'}',
@@ -29,14 +29,14 @@ function ARRAY(IT) {return {
 			'return blk;'
 		);
 	},
-	push_decl: function(typeName, types) {
-		const T = typeName;
+	push_decl: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return 'void duk_push_'+ST+'(duk_context* ctx, duk_blk* blk)';
 	},
-	push_gen: function(typeName, types) {
-		const T = typeName;
+	push_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [].concat(
@@ -47,7 +47,7 @@ function ARRAY(IT) {return {
 			'for (duk_idx_t i = 0; i < length; i++) {',
 			generate.tabify(
 				1,
-				generate.pushVariable({ type: IT, name: 'value[i]' }, types)
+				generate.push_variable({ type: IT, name: 'value[i]' }, types)
 			),
 			'	duk_put_prop_index(ctx, -2, i);',
 			'}'
@@ -99,8 +99,8 @@ function ARRAY(IT) {return {
 }}
 
 function ATOMIC(JT, nullable) {return {
-	pop_gen: function(typeName, types) {
-		const T = typeName;
+	pop_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		const lines = [];
@@ -118,8 +118,8 @@ function ATOMIC(JT, nullable) {return {
 			'return ('+T+')duk_require_'+JT+'(ctx, idx);'
 		);
 	},
-	push_gen: function(typeName, types) {
-		const T = typeName;
+	push_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [
@@ -171,16 +171,16 @@ function BUILTIN(JT) {
 }
 
 function BUFFER() {return {
-	pop_gen: function(typeName, types) {
-		const T = typeName;
+	pop_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [
 			'return ('+T+')duk_require_buffer_data(ctx, idx, NULL);',
 		];
 	},
-	push_gen: function(typeName, types) {
-		const T = typeName;
+	push_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		// If one day we need push support for buffers we must turn it into a
@@ -206,8 +206,8 @@ function BUFFER() {return {
 }}
 
 function OPAQUE() {return {
-	pop_gen: function(typeName, types) {
-		const T = typeName;
+	pop_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [
@@ -218,8 +218,8 @@ function OPAQUE() {return {
 			'return value;',
 		];
 	},
-	push_gen: function(typeName, types) {
-		const T = typeName;
+	push_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [
@@ -273,11 +273,11 @@ function STRING() {return {
 			'char '+VAR+'['+variable.length+'];'
 		];
 	},
-	pop_decl: function(typeName, types) {
+	pop_decl: function(type_name, types) {
 		return 'void duk_get_char_arr(duk_context* ctx, duk_idx_t idx, char out_value[])';
 	},
-	pop_gen: function(typeName, types) {
-		const T = typeName;
+	pop_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		if (T !== 'char[]') {
@@ -288,11 +288,11 @@ function STRING() {return {
 			'strcpy(out_value, duk_require_string(ctx, idx));',
 		];
 	},
-	push_decl: function(typeName, types) {
+	push_decl: function(type_name, types) {
 		return 'void duk_push_char_arr(duk_context* ctx, char value[])';
 	},
-	push_gen: function(typeName, types) {
-		const T = typeName;
+	push_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		if (T !== 'char[]') {
@@ -340,14 +340,14 @@ function STRING() {return {
 }}
 
 function STRUCT(fields) {return {
-	pop_decl: function(typeName, types) {
-		const T = typeName;
+	pop_decl: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return 'void duk_get_'+ST+'(duk_context* ctx, duk_idx_t idx, '+T+'* value)'; 
 	},
-	pop_gen: function(typeName, types) {
-		const T = typeName;
+	pop_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [].concat(
@@ -358,8 +358,8 @@ function STRUCT(fields) {return {
 					'	duk_get_prop_string(ctx, idx, "'+F+'");',
 					generate.tabify(
 						1, 
-						generate.popVariable(
-							util.prefixVarName('value->', field), 
+						generate.pop_variable(
+							util.prefix_var_name('value->', field), 
 							types
 						)
 					),
@@ -368,14 +368,14 @@ function STRUCT(fields) {return {
 			}, [])
 		);
 	},
-	push_decl: function(typeName, types) {
-		const T = typeName;
+	push_decl: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return 'void duk_push_'+ST+'(duk_context* ctx, '+T+'* value)';
 	},
-	push_gen: function(typeName, types) {
-		const T = typeName;
+	push_gen: function(type_name, types) {
+		const T = type_name;
 		const ST = generate.sid(T);
 
 		return [].concat(
@@ -386,8 +386,8 @@ function STRUCT(fields) {return {
 				return lines.concat(
 					generate.tabify(
 						1, 
-						generate.pushVariable(
-							util.prefixVarName('value->', field),
+						generate.push_variable(
+							util.prefix_var_name('value->', field),
 							types
 						)
 					),
