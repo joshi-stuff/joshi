@@ -20,52 +20,52 @@ typedef struct duk_blk {
 	char data[];
 } duk_blk;
 
-static blkcnt_t duk_get_blkcnt_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_blkcnt_t(duk_context* ctx, blkcnt_t value);
-static blksize_t duk_get_blksize_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_blksize_t(duk_context* ctx, blksize_t value);
-static void duk_get_char_arr(duk_context* ctx, duk_idx_t idx, char out_value[]);
-static void duk_push_char_arr(duk_context* ctx, char value[]);
-static char* duk_get_char_pt(duk_context* ctx, duk_idx_t idx);
-static void duk_push_char_pt(duk_context* ctx, char* value);
-static const char* duk_get_const_char_pt(duk_context* ctx, duk_idx_t idx);
-static void duk_push_const_char_pt(duk_context* ctx, const char* value);
-static dev_t duk_get_dev_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_dev_t(duk_context* ctx, dev_t value);
-static gid_t duk_get_gid_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_gid_t(duk_context* ctx, gid_t value);
-static mode_t duk_get_mode_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_mode_t(duk_context* ctx, mode_t value);
-static nfds_t duk_get_nfds_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_nfds_t(duk_context* ctx, nfds_t value);
-static nlink_t duk_get_nlink_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_nlink_t(duk_context* ctx, nlink_t value);
-static ino_t duk_get_ino_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_ino_t(duk_context* ctx, ino_t value);
-static long duk_get_long(duk_context* ctx, duk_idx_t idx);
-static void duk_push_long(duk_context* ctx, long value);
-static off_t duk_get_off_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_off_t(duk_context* ctx, off_t value);
-static pid_t duk_get_pid_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_pid_t(duk_context* ctx, pid_t value);
-static size_t duk_get_size_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_size_t(duk_context* ctx, size_t value);
-static ssize_t duk_get_ssize_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_ssize_t(duk_context* ctx, ssize_t value);
-static short int duk_get_short_int(duk_context* ctx, duk_idx_t idx);
-static void duk_push_short_int(duk_context* ctx, short int value);
-static uid_t duk_get_uid_t(duk_context* ctx, duk_idx_t idx);
-static void duk_push_uid_t(duk_context* ctx, uid_t value);
-static unsigned duk_get_unsigned(duk_context* ctx, duk_idx_t idx);
-static void duk_push_unsigned(duk_context* ctx, unsigned value);
-static unsigned char duk_get_unsigned_char(duk_context* ctx, duk_idx_t idx);
-static void duk_push_unsigned_char(duk_context* ctx, unsigned char value);
-static unsigned int duk_get_unsigned_int(duk_context* ctx, duk_idx_t idx);
-static void duk_push_unsigned_int(duk_context* ctx, unsigned int value);
+#define duk_get_blkcnt_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_blkcnt_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_blksize_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_blksize_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_char_arr(ctx,idx,out_value) strcpy((out_value),require_string((ctx),(idx)))
+#define duk_push_char_arr(ctx,value) duk_push_string((ctx),(value))
+#define duk_get_char_pt(ctx,idx) (duk_is_null((ctx),(idx))||duk_is_undefined((ctx),(idx))?NULL:(char*)duk_require_string((ctx),(idx)))
+#define duk_push_char_pt(ctx,value) duk_push_string((ctx),(value))
+#define duk_get_const_char_pt(ctx,idx) (duk_is_null((ctx),(idx))||duk_is_undefined((ctx),(idx))?NULL:(const char*)duk_require_string((ctx),(idx)))
+#define duk_push_const_char_pt(ctx,value) duk_push_string((ctx),(value))
+#define duk_get_dev_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_dev_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_gid_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_gid_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_mode_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_mode_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_nfds_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_nfds_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_nlink_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_nlink_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_ino_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_ino_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_long(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_long(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_off_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_off_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_pid_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_pid_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_size_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_size_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_ssize_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_ssize_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_short_int(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_short_int(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_uid_t(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_uid_t(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_unsigned(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_unsigned(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_unsigned_char(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_unsigned_char(ctx,value) duk_push_int((ctx),(value))
+#define duk_get_unsigned_int(ctx,idx) duk_require_int((ctx),(idx))
+#define duk_push_unsigned_int(ctx,value) duk_push_int((ctx),(value))
 static DIR* duk_get_DIR_pt(duk_context* ctx, duk_idx_t idx);
-static void duk_push_DIR_pt(duk_context* ctx, DIR* value);
-static void* duk_get_void_pt(duk_context* ctx, duk_idx_t idx);
-static void duk_push_void_pt(duk_context* ctx, void* value);
+#define duk_push_DIR_pt(ctx,value) memcpy(duk_push_fixed_buffer(ctx,sizeof(DIR*)),&(value),sizeof(DIR*))
+#define duk_get_void_pt(ctx,idx) ((void*)duk_require_buffer_data((ctx),(idx),NULL))
+/* duk_push_void_pt: buffer types do not need/have push support */
 static duk_blk* duk_get_char_pt_arr(duk_context* ctx, duk_idx_t idx);
 static void duk_push_char_pt_arr(duk_context* ctx, duk_blk* blk);
 static duk_blk* duk_get_int_arr(duk_context* ctx, duk_idx_t idx);
@@ -107,200 +107,10 @@ static void duk_free_all(duk_context* ctx) {
 	duk_pop(ctx);
 }
 
-static blkcnt_t duk_get_blkcnt_t(duk_context* ctx, duk_idx_t idx) {
-	return (blkcnt_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_blkcnt_t(duk_context* ctx, blkcnt_t value) {
-	duk_push_int(ctx, value);
-}
-
-static blksize_t duk_get_blksize_t(duk_context* ctx, duk_idx_t idx) {
-	return (blksize_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_blksize_t(duk_context* ctx, blksize_t value) {
-	duk_push_int(ctx, value);
-}
-
-static void duk_get_char_arr(duk_context* ctx, duk_idx_t idx, char out_value[]) {
-	strcpy(out_value, duk_require_string(ctx, idx));
-}
-
-static void duk_push_char_arr(duk_context* ctx, char value[]) {
-	duk_push_string(ctx, value);
-}
-
-static char* duk_get_char_pt(duk_context* ctx, duk_idx_t idx) {
-	if (duk_is_null(ctx, idx) || duk_is_undefined(ctx, idx)) {
-		return NULL;
-	}
-	
-	return (char*)duk_require_string(ctx, idx);
-}
-
-static void duk_push_char_pt(duk_context* ctx, char* value) {
-	duk_push_string(ctx, value);
-}
-
-static const char* duk_get_const_char_pt(duk_context* ctx, duk_idx_t idx) {
-	if (duk_is_null(ctx, idx) || duk_is_undefined(ctx, idx)) {
-		return NULL;
-	}
-	
-	return (const char*)duk_require_string(ctx, idx);
-}
-
-static void duk_push_const_char_pt(duk_context* ctx, const char* value) {
-	duk_push_string(ctx, value);
-}
-
-static dev_t duk_get_dev_t(duk_context* ctx, duk_idx_t idx) {
-	return (dev_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_dev_t(duk_context* ctx, dev_t value) {
-	duk_push_int(ctx, value);
-}
-
-static gid_t duk_get_gid_t(duk_context* ctx, duk_idx_t idx) {
-	return (gid_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_gid_t(duk_context* ctx, gid_t value) {
-	duk_push_int(ctx, value);
-}
-
-static mode_t duk_get_mode_t(duk_context* ctx, duk_idx_t idx) {
-	return (mode_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_mode_t(duk_context* ctx, mode_t value) {
-	duk_push_int(ctx, value);
-}
-
-static nfds_t duk_get_nfds_t(duk_context* ctx, duk_idx_t idx) {
-	return (nfds_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_nfds_t(duk_context* ctx, nfds_t value) {
-	duk_push_int(ctx, value);
-}
-
-static nlink_t duk_get_nlink_t(duk_context* ctx, duk_idx_t idx) {
-	return (nlink_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_nlink_t(duk_context* ctx, nlink_t value) {
-	duk_push_int(ctx, value);
-}
-
-static ino_t duk_get_ino_t(duk_context* ctx, duk_idx_t idx) {
-	return (ino_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_ino_t(duk_context* ctx, ino_t value) {
-	duk_push_int(ctx, value);
-}
-
-
-
-static long duk_get_long(duk_context* ctx, duk_idx_t idx) {
-	return (long)duk_require_int(ctx, idx);
-}
-
-static void duk_push_long(duk_context* ctx, long value) {
-	duk_push_int(ctx, value);
-}
-
-static off_t duk_get_off_t(duk_context* ctx, duk_idx_t idx) {
-	return (off_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_off_t(duk_context* ctx, off_t value) {
-	duk_push_int(ctx, value);
-}
-
-static pid_t duk_get_pid_t(duk_context* ctx, duk_idx_t idx) {
-	return (pid_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_pid_t(duk_context* ctx, pid_t value) {
-	duk_push_int(ctx, value);
-}
-
-static size_t duk_get_size_t(duk_context* ctx, duk_idx_t idx) {
-	return (size_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_size_t(duk_context* ctx, size_t value) {
-	duk_push_int(ctx, value);
-}
-
-static ssize_t duk_get_ssize_t(duk_context* ctx, duk_idx_t idx) {
-	return (ssize_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_ssize_t(duk_context* ctx, ssize_t value) {
-	duk_push_int(ctx, value);
-}
-
-static short int duk_get_short_int(duk_context* ctx, duk_idx_t idx) {
-	return (short int)duk_require_int(ctx, idx);
-}
-
-static void duk_push_short_int(duk_context* ctx, short int value) {
-	duk_push_int(ctx, value);
-}
-
-static uid_t duk_get_uid_t(duk_context* ctx, duk_idx_t idx) {
-	return (uid_t)duk_require_int(ctx, idx);
-}
-
-static void duk_push_uid_t(duk_context* ctx, uid_t value) {
-	duk_push_int(ctx, value);
-}
-
-static unsigned duk_get_unsigned(duk_context* ctx, duk_idx_t idx) {
-	return (unsigned)duk_require_int(ctx, idx);
-}
-
-static void duk_push_unsigned(duk_context* ctx, unsigned value) {
-	duk_push_int(ctx, value);
-}
-
-static unsigned char duk_get_unsigned_char(duk_context* ctx, duk_idx_t idx) {
-	return (unsigned char)duk_require_int(ctx, idx);
-}
-
-static void duk_push_unsigned_char(duk_context* ctx, unsigned char value) {
-	duk_push_int(ctx, value);
-}
-
-static unsigned int duk_get_unsigned_int(duk_context* ctx, duk_idx_t idx) {
-	return (unsigned int)duk_require_int(ctx, idx);
-}
-
-static void duk_push_unsigned_int(duk_context* ctx, unsigned int value) {
-	duk_push_int(ctx, value);
-}
-
 static DIR* duk_get_DIR_pt(duk_context* ctx, duk_idx_t idx) {
 	DIR* value;
 	memcpy(&value, duk_require_buffer_data(ctx, idx, NULL), sizeof(DIR*));
 	return value;
-}
-
-static void duk_push_DIR_pt(duk_context* ctx, DIR* value) {
-	memcpy(duk_push_fixed_buffer(ctx, sizeof(DIR*)), &value, sizeof(DIR*));
-}
-
-static void* duk_get_void_pt(duk_context* ctx, duk_idx_t idx) {
-	return (void*)duk_require_buffer_data(ctx, idx, NULL);
-}
-
-static void duk_push_void_pt(duk_context* ctx, void* value) {
-	/* duk_push_void_pt: buffer types do not need/have push support */
 }
 
 static duk_blk* duk_get_char_pt_arr(duk_context* ctx, duk_idx_t idx) {
@@ -379,146 +189,146 @@ static void duk_push_struct_pollfd_arr(duk_context* ctx, duk_blk* blk) {
 }
 
 static void duk_get_struct_dirent(duk_context* ctx, duk_idx_t idx, struct dirent* value) {
-		duk_get_prop_string(ctx, idx, "d_ino");
-		value->d_ino = duk_get_ino_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "d_off");
-		value->d_off = duk_get_off_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "d_reclen");
-		value->d_reclen = duk_get_unsigned_int(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "d_type");
-		value->d_type = duk_get_unsigned_char(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "d_name");
-		strcpy(value->d_name, duk_get_string(ctx, -1));
-		duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "d_ino");
+	value->d_ino = duk_get_ino_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "d_off");
+	value->d_off = duk_get_off_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "d_reclen");
+	value->d_reclen = duk_get_unsigned_int(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "d_type");
+	value->d_type = duk_get_unsigned_char(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "d_name");
+	strcpy(value->d_name, duk_get_string(ctx, -1));
+	duk_pop(ctx);
 }
 
 static void duk_push_struct_dirent(duk_context* ctx, struct dirent* value) {
 	duk_push_object(ctx);
-		duk_push_ino_t(ctx, value->d_ino);
-		duk_put_prop_string(ctx, -2, "d_ino");
-		duk_push_off_t(ctx, value->d_off);
-		duk_put_prop_string(ctx, -2, "d_off");
-		duk_push_unsigned_int(ctx, value->d_reclen);
-		duk_put_prop_string(ctx, -2, "d_reclen");
-		duk_push_unsigned_char(ctx, value->d_type);
-		duk_put_prop_string(ctx, -2, "d_type");
-		duk_push_string(ctx, value->d_name);
-		duk_put_prop_string(ctx, -2, "d_name");
+	duk_push_ino_t(ctx, value->d_ino);
+	duk_put_prop_string(ctx, -2, "d_ino");
+	duk_push_off_t(ctx, value->d_off);
+	duk_put_prop_string(ctx, -2, "d_off");
+	duk_push_unsigned_int(ctx, value->d_reclen);
+	duk_put_prop_string(ctx, -2, "d_reclen");
+	duk_push_unsigned_char(ctx, value->d_type);
+	duk_put_prop_string(ctx, -2, "d_type");
+	duk_push_string(ctx, value->d_name);
+	duk_put_prop_string(ctx, -2, "d_name");
 }
 
 static void duk_get_struct_stat(duk_context* ctx, duk_idx_t idx, struct stat* value) {
-		duk_get_prop_string(ctx, idx, "st_dev");
-		value->st_dev = duk_get_dev_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_ino");
-		value->st_ino = duk_get_ino_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_mode");
-		value->st_mode = duk_get_mode_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_nlink");
-		value->st_nlink = duk_get_nlink_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_uid");
-		value->st_uid = duk_get_uid_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_gid");
-		value->st_gid = duk_get_gid_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_rdev");
-		value->st_rdev = duk_get_dev_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_size");
-		value->st_size = duk_get_off_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_blksize");
-		value->st_blksize = duk_get_blksize_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_blocks");
-		value->st_blocks = duk_get_blkcnt_t(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_atim");
-		duk_get_struct_timespec(ctx, -1, &(value->st_atim));
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_mtim");
-		duk_get_struct_timespec(ctx, -1, &(value->st_mtim));
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "st_ctim");
-		duk_get_struct_timespec(ctx, -1, &(value->st_ctim));
-		duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_dev");
+	value->st_dev = duk_get_dev_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_ino");
+	value->st_ino = duk_get_ino_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_mode");
+	value->st_mode = duk_get_mode_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_nlink");
+	value->st_nlink = duk_get_nlink_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_uid");
+	value->st_uid = duk_get_uid_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_gid");
+	value->st_gid = duk_get_gid_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_rdev");
+	value->st_rdev = duk_get_dev_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_size");
+	value->st_size = duk_get_off_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_blksize");
+	value->st_blksize = duk_get_blksize_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_blocks");
+	value->st_blocks = duk_get_blkcnt_t(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_atim");
+	duk_get_struct_timespec(ctx, -1, &(value->st_atim));
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_mtim");
+	duk_get_struct_timespec(ctx, -1, &(value->st_mtim));
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "st_ctim");
+	duk_get_struct_timespec(ctx, -1, &(value->st_ctim));
+	duk_pop(ctx);
 }
 
 static void duk_push_struct_stat(duk_context* ctx, struct stat* value) {
 	duk_push_object(ctx);
-		duk_push_dev_t(ctx, value->st_dev);
-		duk_put_prop_string(ctx, -2, "st_dev");
-		duk_push_ino_t(ctx, value->st_ino);
-		duk_put_prop_string(ctx, -2, "st_ino");
-		duk_push_mode_t(ctx, value->st_mode);
-		duk_put_prop_string(ctx, -2, "st_mode");
-		duk_push_nlink_t(ctx, value->st_nlink);
-		duk_put_prop_string(ctx, -2, "st_nlink");
-		duk_push_uid_t(ctx, value->st_uid);
-		duk_put_prop_string(ctx, -2, "st_uid");
-		duk_push_gid_t(ctx, value->st_gid);
-		duk_put_prop_string(ctx, -2, "st_gid");
-		duk_push_dev_t(ctx, value->st_rdev);
-		duk_put_prop_string(ctx, -2, "st_rdev");
-		duk_push_off_t(ctx, value->st_size);
-		duk_put_prop_string(ctx, -2, "st_size");
-		duk_push_blksize_t(ctx, value->st_blksize);
-		duk_put_prop_string(ctx, -2, "st_blksize");
-		duk_push_blkcnt_t(ctx, value->st_blocks);
-		duk_put_prop_string(ctx, -2, "st_blocks");
-		duk_push_struct_timespec(ctx, &(value->st_atim));
-		duk_put_prop_string(ctx, -2, "st_atim");
-		duk_push_struct_timespec(ctx, &(value->st_mtim));
-		duk_put_prop_string(ctx, -2, "st_mtim");
-		duk_push_struct_timespec(ctx, &(value->st_ctim));
-		duk_put_prop_string(ctx, -2, "st_ctim");
+	duk_push_dev_t(ctx, value->st_dev);
+	duk_put_prop_string(ctx, -2, "st_dev");
+	duk_push_ino_t(ctx, value->st_ino);
+	duk_put_prop_string(ctx, -2, "st_ino");
+	duk_push_mode_t(ctx, value->st_mode);
+	duk_put_prop_string(ctx, -2, "st_mode");
+	duk_push_nlink_t(ctx, value->st_nlink);
+	duk_put_prop_string(ctx, -2, "st_nlink");
+	duk_push_uid_t(ctx, value->st_uid);
+	duk_put_prop_string(ctx, -2, "st_uid");
+	duk_push_gid_t(ctx, value->st_gid);
+	duk_put_prop_string(ctx, -2, "st_gid");
+	duk_push_dev_t(ctx, value->st_rdev);
+	duk_put_prop_string(ctx, -2, "st_rdev");
+	duk_push_off_t(ctx, value->st_size);
+	duk_put_prop_string(ctx, -2, "st_size");
+	duk_push_blksize_t(ctx, value->st_blksize);
+	duk_put_prop_string(ctx, -2, "st_blksize");
+	duk_push_blkcnt_t(ctx, value->st_blocks);
+	duk_put_prop_string(ctx, -2, "st_blocks");
+	duk_push_struct_timespec(ctx, &(value->st_atim));
+	duk_put_prop_string(ctx, -2, "st_atim");
+	duk_push_struct_timespec(ctx, &(value->st_mtim));
+	duk_put_prop_string(ctx, -2, "st_mtim");
+	duk_push_struct_timespec(ctx, &(value->st_ctim));
+	duk_put_prop_string(ctx, -2, "st_ctim");
 }
 
 static void duk_get_struct_pollfd(duk_context* ctx, duk_idx_t idx, struct pollfd* value) {
-		duk_get_prop_string(ctx, idx, "fd");
-		value->fd = duk_get_int(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "events");
-		value->events = duk_get_short_int(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "revents");
-		value->revents = duk_get_short_int(ctx, -1);
-		duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "fd");
+	value->fd = duk_get_int(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "events");
+	value->events = duk_get_short_int(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "revents");
+	value->revents = duk_get_short_int(ctx, -1);
+	duk_pop(ctx);
 }
 
 static void duk_push_struct_pollfd(duk_context* ctx, struct pollfd* value) {
 	duk_push_object(ctx);
-		duk_push_int(ctx, value->fd);
-		duk_put_prop_string(ctx, -2, "fd");
-		duk_push_short_int(ctx, value->events);
-		duk_put_prop_string(ctx, -2, "events");
-		duk_push_short_int(ctx, value->revents);
-		duk_put_prop_string(ctx, -2, "revents");
+	duk_push_int(ctx, value->fd);
+	duk_put_prop_string(ctx, -2, "fd");
+	duk_push_short_int(ctx, value->events);
+	duk_put_prop_string(ctx, -2, "events");
+	duk_push_short_int(ctx, value->revents);
+	duk_put_prop_string(ctx, -2, "revents");
 }
 
 static void duk_get_struct_timespec(duk_context* ctx, duk_idx_t idx, struct timespec* value) {
-		duk_get_prop_string(ctx, idx, "tv_nsec");
-		value->tv_nsec = duk_get_long(ctx, -1);
-		duk_pop(ctx);
-		duk_get_prop_string(ctx, idx, "tv_sec");
-		value->tv_sec = duk_get_long(ctx, -1);
-		duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "tv_nsec");
+	value->tv_nsec = duk_get_long(ctx, -1);
+	duk_pop(ctx);
+	duk_get_prop_string(ctx, idx, "tv_sec");
+	value->tv_sec = duk_get_long(ctx, -1);
+	duk_pop(ctx);
 }
 
 static void duk_push_struct_timespec(duk_context* ctx, struct timespec* value) {
 	duk_push_object(ctx);
-		duk_push_long(ctx, value->tv_nsec);
-		duk_put_prop_string(ctx, -2, "tv_nsec");
-		duk_push_long(ctx, value->tv_sec);
-		duk_put_prop_string(ctx, -2, "tv_sec");
+	duk_push_long(ctx, value->tv_nsec);
+	duk_put_prop_string(ctx, -2, "tv_nsec");
+	duk_push_long(ctx, value->tv_sec);
+	duk_put_prop_string(ctx, -2, "tv_sec");
 }
 
 static duk_ret_t _joshi_spec_alarm(duk_context* ctx) {
