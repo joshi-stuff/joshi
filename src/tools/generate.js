@@ -37,34 +37,21 @@ generate.pop_declaration = function(type_name, types) {
 		const T = type_name;
 		const ST = generate.sid(T);
 
-		code = T+' duk_get_'+ST+'(duk_context* ctx, duk_idx_t idx)';
+		code = 'static '+T+' duk_get_'+ST+'(duk_context* ctx, duk_idx_t idx);';
 	}
 
 	if (!code.length) {
 		return [];
 	}
 
-	return [ 'static ' + code ];
+	return [code];
 }
 
 generate.pop_function = function(type_name, types) {
 	const type = types[type_name];
 	const pop_gen = type.pop_gen;
 
-	const lines = pop_gen(type_name, types);
-
-	if (!lines.length) {
-		return [];
-	}
-
-	return [].concat(
-		generate.pop_declaration(type_name, types)+' {',
-		generate.tabify(
-			1,
-			lines	
-		),
-		'}'
-	);
+	return pop_gen(type_name, types);
 }
 
 generate.pop_variable = function(v, types, idx, is_pointer) {
@@ -91,14 +78,14 @@ generate.push_declaration = function(type_name, types) {
 		const T = type_name;
 		const ST = generate.sid(T);
 
-		code = 'void duk_push_'+ST+'(duk_context* ctx, '+T+' value)';
+		code = 'static void duk_push_'+ST+'(duk_context* ctx, '+T+' value);';
 	}
 
 	if (!code.length) {
 		return [];
 	}
 
-	return [ 'static ' + code ];
+	return [code];
 
 }
 
@@ -106,20 +93,7 @@ generate.push_function = function(type_name, types) {
 	const type = types[type_name];
 	const push_gen = type.push_gen;
 
-	const lines = push_gen(type_name, types);
-
-	if (!lines.length) {
-		return [];
-	}
-
-	return [].concat(
-		generate.push_declaration(type_name, types)+' {',
-		generate.tabify(
-			1, 
-			lines		
-		),
-		'}'
-	);
+	return push_gen(type_name, types);
 }
 
 generate.push_variable = function(v, types, is_pointer) {

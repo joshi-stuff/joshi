@@ -6,23 +6,28 @@ const generate = require('./generate.js');
 function generate_pop_push_declarations(types) {
 	return Object.keys(types).reduce(function(lines, typeName) {
 		return lines.concat(
-			generate.pop_declaration(typeName, types).map(function(lines) {
-				return lines.concat(';');
-			}),
-			generate.push_declaration(typeName, types).map(function(lines) {
-				return lines.concat(';');
-			})
+			generate.pop_declaration(typeName, types),
+			generate.push_declaration(typeName, types)
 		);
 	}, []);
 }
 
 function generate_pop_push_functions(types) {
 	return Object.keys(types).reduce(function(lines, typeName) {
+		const popLines = generate.pop_function(typeName, types);
+		const pushLines = generate.push_function(typeName, types);
+
+		if (popLines.length !== 0) {
+			popLines.push('');
+		}
+
+		if (pushLines.length !== 0) {
+			pushLines.push('');
+		}
+
 		return lines.concat(
-			generate.pop_function(typeName, types),
-			'',
-			generate.push_function(typeName, types),
-			''
+			popLines,
+			pushLines
 		);
 	}, []);
 }
