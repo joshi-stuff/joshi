@@ -476,203 +476,58 @@ test('atexit', function() {
 	});
 });
 
-/*
-const c = {};
-
-term.clear(false);
-
-$('ls')
-	.pipe([1, 2], $.capture(c))
-	.do();
-
-println2(c);
-*/
-
-
-/*
-proc.atexit(function() {
-	println2('hola pringao');
-});
-
-proc.atexit(function() {
-	println2('adios pringao');
-});
-*/
-
-/*
-const pfork = proc.pipe_fork({
-	child: {
-		out: true
-	}
-});
-
-if (pfork.child) {
-	proc.execvp('nmcli', ['nmcli', 'monitor']);
-	println2('something went wrong');
-	proc.exit(1);
-} 
-
-while(true) {
-	const fds = [
-		{
-			fd: pfork.in,
-			events: io.POLLIN,
-			revents: 0
-		}
-	];
-
-	io.poll(fds, 0);
-
-	println2('poll', fds[0].revents);
-	if (fds[0].revents) {
-		println2('>>>', io.read_line(fds[0].fd));
-	}
-
-	proc.sleep(1);
-}
-*/
-
-/*
-println2(proc.getenv('ANT_OPTS2'));
-println2(proc.getenv('ANT_OPTS'));
-
-$('bash', '-c', 'env | grep ANT_').env({
-	'ANT_OPTS2': 'hola',
-	'ANT_OPTS': 'adios'
-}).do();
-
-println2(proc.getenv('ANT_OPTS2'));
-println2(proc.getenv('ANT_OPTS'));
-*/
-
-/*
-fs.copy_file('kk.js', 'perico.js');
-println(fs.list_dir('.'));
-*/
-
-/*
-try {
+// Test shell
+test('more < FILE', function() {
+	const FILE = '/etc/environment';
 	const x = {};
 
-	$('ls', '-l').pipe(
-		$('grep', 'o').pipe(
-			$('grep', 's').pipe(
-				$.capture(x)
-			)
-		)
-	).do();
+	$('more')
+		.pipe(0, $.file(FILE))
+		.pipe(1, $.capture(x))
+		.do();
 
-	print(x.out);
-} catch(err) {
-	println2(err);
-}
-*/
-
-/*
-try {
-	$('./joshi', 'kk2.js', 'A').pipe(
-		$('./joshi', 'kk2.js', 'B').pipe(
-			$('./joshi', 'kk2.js', 'C')
-		)
-	).do();
-} catch(err) {
-	println2('kk.js', err);
-}
-*/
-
-/*
-$('ls', '-l')
-	.outErr('./ls.log')
-	.do();
-*/
-
-
-/*
-const io = require('io');
-const proc = require('proc');
-const println = require('term').println;
-*/
-
-/*
-const pf = proc.pipe_fork({
-	child: {
-		in: true
-	},
-	parent: {
-		out: true
-	}
+	expect.is(fs.read_file(FILE), x.out);
 });
 
-if (pf.child) {
-	proc.execvp('grep', ['grep', 's', null]);
-} else {
-	proc.execvp('ls', ['ls', '-l', null]);
-}
-*/
+test('echo perico > FILE', function() {
+	const FILE = '/tmp/test_truncate';
 
-/*
-proc.signal(proc.SIGALRM, function(sig) {
-	println('Hello from signal handler');
+	$('echo', 'perico')
+		.pipe(1, $.file(FILE))
+		.do();
+
+	expect.is('perico\n', fs.read_file(FILE));
 });
-proc.alarm(3);
-*/
 
-/*
-const fds = [
-	{ fd: 0, events: io.POLLIN, revents: 0 }
-];
+test('echo perico >> FILE', function() {
+	const FILE = '/tmp/test_append';
 
-io.poll(fds, 1, 3000);
+	$('echo', 'perico')
+		.pipe(1, $.file(FILE))
+		.do();
 
-if (fds[0].revents & io.POLLIN) {
-	try {
-		const str = io.read_line(0);
-		println('Got:', str);
-	} catch(err) {
-		println('Error:', err);
-	}
-} else {
-	println('Timed out!');
-}
-*/
+	$('echo', 'perico')
+		.pipe(1, $.file(FILE, '+'))
+		.do();
 
-/*
-const pf = proc.pipe_fork();
+	expect.is('perico\nperico\n', fs.read_file(FILE));
+});
 
-if (pf.child) {
-	println('C: reading from parent');
-	const line = io.read_line(pf.in);
+test('echo perico > null', function() {
+	$('echo', 'perico')
+		.pipe(1, null)
+		.do();
+	
+	log('the string "perico" should NOT appear above this line');
+});
 
-	println('C: writing "' + line + '" to parent');
-	io.write_line(pf.out, line);
-} else {
-	println('P: child pid is', pf.pid);
+test('more < HERE_STRING', function() {
+	const x = {};
 
-	println('P: writing "🏇 hola" to child');
-    io.write_line(pf.out, '🏇 hola'); 
+	$('more')
+		.pipe(0, $.here('perico'))
+		.pipe(1, $.capture(x))
+		.do();
 
-	println('P: reading from child');
-	const line = io.read_line(pf.in);
-	println('P: child sent "' + line + '"');
-}
-*/
-
-//const {$, _} = require('joshi');
-
-// $() -> proc
-//
-// proc	.echo() -> void
-//		.toString() -> string
-//		.pipe() -> proc
-//		.map(function) -> proc  function(line:string) -> string 
-//
-//		.echo$()
-//		.toString$()
-//		.pipe$()
-//		.map$(function)
-//
-
-// echo $(ls -l 2>&1 | grep '.js$')
-//
-//$("ls", "-l").pipe$('grep', `.js$`).echo();
-
+	expect.is('perico', x.out);
+});

@@ -1,7 +1,5 @@
 const fs = require('fs');
 const io = require('io');
-const math = require('math');
-const proc = require('proc');
 
 function Capture($, container) {
 	this.$ = $;
@@ -39,11 +37,7 @@ Capture.prototype = {
 			name: Capture.NAMES[sourceFd] || ('fd' + sourceFd),
 		};
 
-		const rnd = math.get_random_bytes(2);
-		const filename = 
-			'/tmp/joshi_' + proc.getpid() + '_' + sourceFd + '_'
-				+ rnd[0] + rnd[1];
-
+		const filename = fs.mktemp_file('');
 		source.fd = io.create(filename);
 		fs.unlink(filename);
 

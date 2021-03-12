@@ -168,15 +168,16 @@ fs.mkdirp = function(pathname, mode) {
 	return 0;
 }
 
-fs.mktemp_file = function(contents) {
+fs.mktemp_file = function(contents, mode) {
 	contents = contents || '';
+	mode = mode || 0600;
 
 	const rnd = math.get_random_bytes(2);
 	const filename = 
 		'/tmp/joshi_' + proc.getpid().toString(16) + '_' + rnd[0].toString(16) + 
 			rnd[1].toString(16);
 
-	fs.write_file(filename, contents, 0600);
+	fs.write_file(filename, contents, mode);
 
 	return filename;
 }

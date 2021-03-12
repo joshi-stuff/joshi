@@ -1,4 +1,5 @@
 const fs = require('fs');
+const io = require('io');
 const proc = require('proc');
 const term = require('term');
 
@@ -6,12 +7,8 @@ const println = term.println;
 const println2 = term.println2;
 
 const Capture = require('./Capture.js');
+const EphemeralFd = require('./EphemeralFd.js');
 const Proc = require('./Proc.js');
-
-// TODO: $.here(string) support
-// TODO: $.append(string) support 
-// TODO: $.truncate(string) support 
-// TODO: pipe(null) support
 
 /*
  *
@@ -36,7 +33,49 @@ function $() {
 }
 
 $.capture = function(container) {
-	return new Capture(this, container);
+	return new Capture($, container);
+}
+
+/**
+ * @param [undefined|''|'0'|'+'] mode
+ * Default mode for fd 1 and 2 is '0' (truncate), for the rest it is '' (open).
+ * Mode '+' is append.
+ */
+$.file = function(filepath, mode) {
+	return new EphemeralFd($, function(sourceFd) {
+		sourceFd = Number(sourceFd);
+
+		if (!mode) {
+			if (sourceFd === 1 || sourceFd === 2) {
+				mode = '0';
+			}
+			else {
+				mode = '';
+			}
+		}
+
+		switch(mode) {
+			case '':
+				return io.open(filepath);
+
+			case '+':
+				return io.append(filepath);
+
+			case '0':
+				return io.truncate(filepath);
+		}
+
+		throw new Error('Unknown mode: ' + mode);
+	});
+}
+
+$.here = function(here_string) {
+	return new EphemeralFd($, function(sourceFd) {
+		const filepath = fs.mktemp_file(here_string, 0400);
+		const fd = io.open(filepath);
+		fs.unlink(filepath);
+		return fd;
+	});
 }
 
 $.search_path = function(command) {

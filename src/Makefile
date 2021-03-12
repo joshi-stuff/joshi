@@ -1,4 +1,6 @@
 # TODO: migrate my-sway
+# TODO: etc directory holding links to joshi lib dirs
+# TODO: investigate curses
 # TODO: interactive shell
 # TODO: ES6 on the fly compilation and bytecode cache directory
 # TODO: modify spec to make it more robust and extensible (generate push and pop functions)

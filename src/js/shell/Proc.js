@@ -87,25 +87,6 @@ Proc.prototype = {
 				});
 			}
 
-			// Collect capture fds
-			const captures = this._collectCaptures();
-			const captureFds = {};
-			
-			for (var i = 0; i < captures.length; i++) {
-				captures[i].sources.forEach(function(source){ 
-					captureFds[source.fd] = true;
-				});
-			}
-
-			// Close open fds in parent except those to be used after execution
-			for (var i = 0; i < openFds.length; i++) {
-				const fd = openFds[i];
-
-				if (!captureFds[fd]) {
-					io.close(fd);
-				}
-			}
-
 			// Wait for parent Procs to finish and get result from last child
 			const last = childProcs.length - 1;
 
@@ -115,9 +96,11 @@ Proc.prototype = {
 
 			const result = childProcs[last].wait();
 
-			// Close captures after execution
-			for (var i = 0; i < captures.length; i++) {
-				captures[i].close();
+			// Close openables after execution
+			const openables = this._collectOpenables();
+
+			for (var i = 0; i < openables.length; i++) {
+				openables[i].close();
 			}
 
 			// TODO: move this to the real shell
@@ -157,6 +140,10 @@ Proc.prototype = {
 			fds = [fds];
 		}
 
+		if (where === null) {
+			where = this.$.file('/dev/null');
+		}  
+
 		if (where.is_a === 'Proc') {
 			// Redirect first fd to where
 			this._pipe[fds[0]] = where;
@@ -193,8 +180,12 @@ Proc.prototype = {
 		return proc.waitpid(this.pid);
 	},
 
-	_collectCaptures: function() {
-		const captures = [];
+	/**
+	 * Recursively collect all this._pipe objects with an open() method (i.e. 
+	 * Capture, EphemeralFd, ...)
+	 */
+	_collectOpenables: function() {
+		const openables = [];
 
 		const fds = Object.keys(this._pipe);
 
@@ -203,16 +194,16 @@ Proc.prototype = {
 			const where = this._pipe[fd];
 
 			if (where.is_a === 'Capture') {
-				if (!captures.includes(where)) {
-					captures.push(where);
+				if (!openables.includes(where)) {
+					openables.push(where);
 				}
 			}
 			else if (where.is_a === 'Proc' ) {
-				captures = captures.concat(where._collectCaptures());
+				openables = openables.concat(where._collectOpenables());
 			}
 		}
 
-		return captures;
+		return openables;
 	},
 
 	_collectChildProcs: function() {
@@ -233,6 +224,9 @@ Proc.prototype = {
 		return childProcs;
 	},
 
+	/**
+	 * Scans this._pipe and puts associated fds in this._redir
+	 */
 	_openPipes: function() {
 		const openFds = [];
 
@@ -258,7 +252,7 @@ Proc.prototype = {
 
 					where._redir[0] = pipe[0];
 					openFds.push(where._redir[0]);
-				} else if (where.is_a === 'Capture') {
+				} else if (typeof where.open === 'function') {
 					this._redir[fd] = where.open(fd);
 					openFds.push(this._redir[fd]);
 				} else if (typeof where === 'number') {
