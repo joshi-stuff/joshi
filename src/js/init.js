@@ -1,5 +1,6 @@
 function init(global, j, filepath) {
 	const modules_cache = {};
+	var kern = undefined;
 
 	// Create anchored require() function
 	function createRequire(ownerPath) {
@@ -7,21 +8,39 @@ function init(global, j, filepath) {
 			const i = ownerPath.lastIndexOf('/');
 			const ownerDir = ownerPath.substr(0, i+1);
 
-			if (module[0] === '.') {
-				module = j.realpath(ownerDir + module);
-			} 
-			else if(module[0] === '/') {
-				// absolute path: do nothing
-			}
-			else {
-				module = j.dir + '/' + module;
-			}
-			
 			if (!module.endsWith('.js')) {
 				module += '/index.js';
 			}
 
-			return module;
+			if (module[0] === '.') {
+				return j.realpath(ownerDir + module);
+			} 
+
+			if(module[0] === '/') {
+				return module;
+			}
+
+			if (!kern || !kern.search_path.length) {
+				return j.dir + '/' + module;
+			}
+
+			const dirs = [j.dir].concat(kern.search_path);
+			var foundModule;
+
+			for (var i = 0; i < dirs.length; i++) {
+				try {
+					const candidate = dirs[i] + '/' + module;
+
+					j.realpath(candidate);
+
+					return candidate;
+				} 
+				catch(err) {
+					// ignore
+				}
+			}
+
+			return j.dir + '/' + module;
 		}
 
 		const anchoredRequire = function(module) {
@@ -32,8 +51,7 @@ function init(global, j, filepath) {
 			}
 
 			try {
-				const isCoreModule = (module[0] !== '.');
-
+				const isCoreModule = filepath.startsWith(j.dir);
 				const args = isCoreModule ? "require, j" : "require";
 
 				const source =
@@ -106,6 +124,7 @@ function init(global, j, filepath) {
 		const require = createRequire(mainPath);
 
 		require('shims');
+		kern = require('kern');
 		
 		const retval = main(argv, require);
 

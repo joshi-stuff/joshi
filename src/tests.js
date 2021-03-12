@@ -1,5 +1,6 @@
 const fs = require('fs');
 const io = require('io');
+const kern = require('kern');
 const math = require('math');
 const proc = require('proc');
 const $ = require('shell');
@@ -79,6 +80,25 @@ function test(name, fn) {
 }
 
 term.clear();
+
+// Test kern
+test('kern.search_path+require.resolve', function() {
+	try {
+		const cwd = fs.realpath('.');
+
+		kern.search_path = [fs.dirname(cwd)];
+
+		const path = require.resolve('src/tests.js');
+
+		expect.is(cwd + '/tests.js', path);
+	} finally {
+		kern.search_path = [];
+	}
+});
+
+test('require.ownerPath', function() {
+	expect.is(fs.realpath('./tests.js'), require.ownerPath);
+});
 
 // Test fs
 test('[rm|mk]dir+stat', function() {
