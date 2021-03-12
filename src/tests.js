@@ -3,6 +3,7 @@ const io = require('io');
 const math = require('math');
 const proc = require('proc');
 const $ = require('shell');
+const stream = require('stream');
 const term = require('term');
 const print = require('term').print;
 const print2 = require('term').print2;
@@ -288,7 +289,8 @@ test('pipe+read_line', function() {
 
 	const fd = io.pipe();
 	io.write_line(fd[1], CONTENT);
-	const content = io.read_line(fd[0]);
+	const sd = stream.create(fd[0]);
+	const content = stream.read_line(sd);
 	io.close(fd[0]);
 	io.close(fd[1]);
 
@@ -369,9 +371,10 @@ test('alarm+signal', function() {
 		io.close(fds[0]);
 	});
 
+	const sd = stream.create(fds[0]);
 	proc.alarm(1);
 	expect.throws(function() {
-		io.read_line(fds[0]);
+		stream.read_line(sd);
 	});
 
 	proc.signal(proc.SIGALRM, null);

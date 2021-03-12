@@ -1,9 +1,11 @@
 const io = require('io');
+const stream = require('stream');
 
 const term = {};
 
 // See https://en.wikipedia.org/wiki/ANSI_escape_code
 const CSI = String.fromCharCode(0x1B) + '['; 
+const stdin = stream.create(0);
 
 term.clear = function() {
 	term.print(CSI + '2J');
@@ -79,7 +81,7 @@ term.println2 = function() {
 }
 
 term.read_line = function() {
-	return io.read_line(0);
+	return stdin.read_line();
 }
 
 term.reset = function() {
