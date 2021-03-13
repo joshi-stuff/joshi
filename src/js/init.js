@@ -13,7 +13,7 @@ function init(global, j, filepath) {
 			}
 
 			if (module[0] === '.') {
-				return j.realpath(ownerDir + module);
+				return owner_dir + module;
 			} 
 
 			if(module[0] === '/') {
