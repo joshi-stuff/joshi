@@ -81,7 +81,7 @@ term.println2 = function() {
 }
 
 term.read_line = function() {
-	return stdin.read_line();
+	return stream.read_line(stdin);
 }
 
 term.reset = function() {
