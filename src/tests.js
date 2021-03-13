@@ -96,8 +96,8 @@ test('kern.search_path+require.resolve', function() {
 	}
 });
 
-test('require.ownerPath', function() {
-	expect.is(fs.realpath('./tests.js'), require.ownerPath);
+test('require.owner_path', function() {
+	expect.is(fs.realpath('./tests.js'), require.owner_path);
 });
 
 // Test fs

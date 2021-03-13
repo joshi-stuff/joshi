@@ -3,10 +3,10 @@ function init(global, j, filepath) {
 	var kern = undefined;
 
 	// Create anchored require() function
-	function createRequire(ownerPath) {
-		const anchoredResolve = function(module) {
-			const i = ownerPath.lastIndexOf('/');
-			const ownerDir = ownerPath.substr(0, i+1);
+	function create_require(owner_path) {
+		const anchored_resolve = function(module) {
+			const i = owner_path.lastIndexOf('/');
+			const owner_dir = owner_path.substr(0, i+1);
 
 			if (!module.endsWith('.js')) {
 				module += '/index.js';
@@ -43,16 +43,16 @@ function init(global, j, filepath) {
 			return j.dir + '/' + module;
 		}
 
-		const anchoredRequire = function(module) {
-			const filepath = anchoredResolve(module);
+		const anchored_require = function(module) {
+			const filepath = anchored_resolve(module);
 
 			if (modules_cache[filepath]) {
 				return modules_cache[filepath];
 			}
 
 			try {
-				const isCoreModule = filepath.startsWith(j.dir);
-				const args = isCoreModule ? "require, j" : "require";
+				const is_core_module = filepath.startsWith(j.dir);
+				const args = is_core_module ? "require, j" : "require";
 
 				const source =
 					"function("+args+"){ " +
@@ -62,9 +62,9 @@ function init(global, j, filepath) {
 				var fn = j.compile_function(source, filepath);
 
 				modules_cache[filepath] = 
-					isCoreModule 
-					? fn(createRequire(filepath), j) 
-					: fn(createRequire(filepath));
+					is_core_module 
+					? fn(create_require(filepath), j) 
+					: fn(create_require(filepath));
 
 				return modules_cache[filepath];
 			} 
@@ -83,33 +83,33 @@ function init(global, j, filepath) {
 			}
 		}
 
-		anchoredRequire.ownerPath = ownerPath;
-		anchoredRequire.resolve = anchoredResolve;
+		anchored_require.owner_path = owner_path;
+		anchored_require.resolve = anchored_resolve;
 
-		return anchoredRequire;
+		return anchored_require;
 	}
 
 	// Resolve filepath
-	const mainPath = j.realpath(filepath);
+	const main_path = j.realpath(filepath);
 
 	// Read and compile main
-	var mainLines = j.read_file(mainPath).split('\n');
+	var main_lines = j.read_file(main_path).split('\n');
 
-	if (mainLines[0].startsWith('#!')) {
-		mainLines[0] = '//' + mainLines[0];
+	if (main_lines[0].startsWith('#!')) {
+		main_lines[0] = '//' + main_lines[0];
 	}
 		
-	const mainSource =
+	const main_source =
 		"function(argv, require){ " +
-		mainLines.join('\n') +
+		main_lines.join('\n') +
 		" ;}";
 
 	var main;
 
 	try {
-		main = j.compile_function(mainSource, mainPath);
+		main = j.compile_function(main_source, main_path);
 	} catch(err) {
-		j.printk('Compilation error: ' + err + '\n  at file' + mainPath + '\n');
+		j.printk('Compilation error: ' + err + '\n  at file' + main_path + '\n');
 		return -1;
 	}
 
@@ -121,7 +121,7 @@ function init(global, j, filepath) {
 			argv[i-3] = arguments[i];
 		}
 
-		const require = createRequire(mainPath);
+		const require = create_require(main_path);
 
 		require('shims');
 		kern = require('kern');
