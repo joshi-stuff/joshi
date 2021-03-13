@@ -5,7 +5,14 @@ const proc = require('proc');
 
 const fs = {};
 
-const println = require('term').println2;
+fs.S_IFMT = 0170000;
+fs.S_IFBLK = 0060000;
+fs.S_IFCHR = 0020000;
+fs.S_IFDIR = 0040000;
+fs.S_IFIFO = 0010000;
+fs.S_IFLNK = 0120000;
+fs.S_IFREG = 0100000;
+fs.S_IFSOCK = 0140000;
 
 fs.basename = function(path) {
 	return path.substring(1 + path.lastIndexOf('/'));
@@ -65,19 +72,23 @@ fs.exists = function(pathname) {
 	}
 }
 
+fs.is_directory = function(pathname) {
+	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFDIR;
+}
+
 fs.is_executable = function(pathname) {
 	try {
 		const stat = fs.stat(pathname);
 
-		if (stat.mode & 0005) {
+		if (stat.mode & 0001) {
 			return true;
 		}
 
-		if((stat.mode & 0050) && (proc.getegid() === stat.gid)) {
+		if((stat.mode & 0010) && (proc.getegid() === stat.gid)) {
 			return true;
 		}
 
-		if((stat.mode & 0500) && (proc.geteuid() === stat.uid)) {
+		if((stat.mode & 0100) && (proc.geteuid() === stat.uid)) {
 			return true;
 		}
 
@@ -100,6 +111,25 @@ fs.is_executable = function(pathname) {
 	return false;
 }
 
+fs.is_fifo = function(pathname) {
+	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFIFO;
+}
+
+fs.is_file = function(pathname) {
+	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFREG;
+}
+
+fs.is_link = function(pathname) {
+	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFLNK;
+}
+
+fs.is_socket = function(pathname) {
+	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFSOCK;
+}
+
+/**
+ * @return [string[]] alphabetically sorted list of items in directory
+ */
 fs.list_dir = function(name) {
 	const items = [];
 
