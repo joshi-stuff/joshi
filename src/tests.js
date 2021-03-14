@@ -505,8 +505,8 @@ test('more < FILE', function() {
 	const x = {};
 
 	$('more')
-		.pipe(0, $.file(FILE))
-		.pipe(1, $.capture(x))
+		.pipe(0, FILE)
+		.pipe(1, x)
 		.do();
 
 	expect.is(fs.read_file(FILE), x.out);
@@ -516,7 +516,7 @@ test('echo perico > FILE', function() {
 	const FILE = '/tmp/test_truncate';
 
 	$('echo', 'perico')
-		.pipe(1, $.file(FILE))
+		.pipe(1, '0:' + FILE)
 		.do();
 
 	expect.is('perico\n', fs.read_file(FILE));
@@ -526,11 +526,11 @@ test('echo perico >> FILE', function() {
 	const FILE = '/tmp/test_append';
 
 	$('echo', 'perico')
-		.pipe(1, $.file(FILE))
+		.pipe(1, FILE)
 		.do();
 
 	$('echo', 'perico')
-		.pipe(1, $.file(FILE, '+'))
+		.pipe(1, '+:' + FILE)
 		.do();
 
 	expect.is('perico\nperico\n', fs.read_file(FILE));
@@ -548,8 +548,8 @@ test('more < HERE_STRING', function() {
 	const x = {};
 
 	$('more')
-		.pipe(0, $.here('perico'))
-		.pipe(1, $.capture(x))
+		.pipe(0, ['perico'])
+		.pipe(1, x)
 		.do();
 
 	expect.is('perico', x.out);

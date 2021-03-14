@@ -128,22 +128,72 @@ Proc.prototype = {
 
 	/**
 	 * @param [number|number[]] fds? default is [1]
-	 * @param [Proc|Capture|number] where
+	 * @param [Proc|Capture|EphemeralFd|number|{}|string|string[]|null] where
+	 * Polymorphic parameter to express where to pipe to. Depending on the type
+	 * it can be:
+	 *
+	 * -Proc: pipes output of this to the parameter
+	 *     * Valid fds are only 1 or 2
+	 *
+	 * -Capture: pipes output of this to an object variable
+	 *     * Valid fds are 1 and 2 which store to properties `out` and `error`
+	 *
+	 * -EphemeralFd: pipes input/output from/to a file descriptor that is open
+	 *	for the life of the proces only.
+	 *     * All fds are valid (see $.file and $.here for different behaviors)
+	 *
+	 * -number: the source and given fds are piped together
+	 *
+	 * -{}: if an empty object is given it is wrapped in a Capture
+	 *
+	 * -string: the string is wrapped with $.file() with default open mode. If a
+	 *  custom open mode is desired, the file can be prefixed with the mode plus
+	 *  a colon (for example: '+:/tmp/my-file' appends to '/tmp/my-file')
+	 *
+	 * -string[]: the one and only string inside the array is wrapped with 
+	 *  $.here()
+	 *
+	 * -null: same as $.file('/dev/null')
+	 *
 	 */
 	pipe: function(fds, where) {
+		const $ = this.$;
+
+		// Normalize arguments
 		if (where === undefined) {
 			where = fds;
 			fds = [1];
 		}
-
 		if (!Array.isArray(fds)) {
 			fds = [fds];
 		}
 
+		// Handle aliased behaviors
 		if (where === null) {
-			where = this.$.file('/dev/null');
-		}  
+			where = $.file('/dev/null');
+		} 
+		else if (Array.isArray(where) && typeof where[0] === 'string') {
+			where = $.here(where[0]);
+		}
+		else if (typeof where === 'string') {
+			if (where.startsWith('0:')) {
+				where = $.file(where.substring(2), '0');
+			}
+			else if (where.startsWith('+:')) {
+				where = $.file(where.substring(2), '+');
+			}
+			else if (where.startsWith(':')) {
+				where = $.file(where.substring(1), '');
+			}
+			else {
+				where = $.file(where);
+			}
+		}
+		else if (typeof where === 'object' && Object.keys(where).length === 0) {
+			where = $.capture(where);
+		}
 
+		// Do redirection with primitive types
 		if (where.is_a === 'Proc') {
 			// Redirect first fd to where
 			this._pipe[fds[0]] = where;
@@ -153,10 +203,16 @@ Proc.prototype = {
 				this._pipe[fds[i]] = fds[0];
 			}
 		}
-		else {
+		else if (
+			['Capture', 'EphemeralFd'].includes(where.is_a) ||
+			typeof where === 'number'
+		) {
 			for (var i = 0; i < fds.length; i++) {
 				this._pipe[fds[i]] = where;
 			}
+		}
+		else {
+			throw new Error('Unsupported redirection target: ' + where);
 		}
 
 		return this;
