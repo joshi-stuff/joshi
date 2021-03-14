@@ -323,6 +323,95 @@ duk_ret_t duk_throw_errno(duk_context* ctx) {
 	return duk_throw(ctx);
 }
 
+// 
+// Conversion helpers
+//
+size_t cnv_cesu_to_utf_length(const char* cesu) {
+	size_t len = 0;
+
+	while(*cesu) {
+		if (*cesu == 0xED) {
+			len += 4;
+			cesu += 6;
+		}
+		else {
+			len++;
+			cesu++;
+		}
+	}
+
+	return len;
+}
+
+void cnv_cesu_to_utf(const char* cesu, char* utf) {
+	unsigned const char* pc = cesu;
+	unsigned char* pu = utf;
+
+	while (*pc) {
+		if (*pc == 0xED) {
+			cnv_nonbpm_uc_to_utf(cnv_nonbpm_cesu_to_uc(pc), pu);
+
+			pc += 6;
+			pu += 4;
+		}
+		else {
+			*pu = *pc;
+
+			pc++;
+			pu++;
+		}
+	}
+
+	*pu = 0;
+}
+
+void cnv_nonbpm_uc_to_utf(unsigned int x, char utf[4]) {
+	utf[0] = 0xF0 | ((x & 0x1C0000) >> 18);
+	utf[1] = 0x80 | ((x & 0x3F000) >> 12);
+	utf[2] = 0x80 | ((x & 0xFC0) >> 6);
+	utf[3] = 0x80 | (x & 0x3F);
+}
+
+void cnv_nonbpm_uc_to_cesu(unsigned int x, char cesu[6]) {
+	cesu[0] = 0xED;
+	cesu[1] = 0xA0 | (((x & 0x1F0000) -1) >> 16);
+	cesu[2] = 0x80 | ((x & 0xFC00) >> 10);
+	cesu[3] = 0xED;
+	cesu[4] = 0xB0 | ((x & 0x3C0) >> 6);
+	cesu[5] = 0x80 | (x & 0x3F);
+}
+
+unsigned int cnv_nonbpm_cesu_to_uc(const char cesu[6]) {
+	unsigned char a = (cesu[1] + 1) & 0x1F; // 5 bits
+	unsigned char b = cesu[2] & 0x3F;		// 6 bits
+	unsigned char c = cesu[4] & 0x0F;		// 4 bits
+	unsigned char d = cesu[5] & 0x3F;		// 6 bits
+
+	unsigned int x = 0;
+	x |= a << 16;
+	x |= b << 10;
+	x |= c << 6;
+	x |= d;
+
+	return x;
+}
+
+unsigned int cnv_nonbpm_utf_to_uc(const char utf[4]) {
+	unsigned char a = utf[0] & 0x07; // 3 bits
+	unsigned char ab = utf[1] & 0x3F; // 6 bits
+	unsigned char bc = utf[2] & 0x3F; // 6 bits
+	unsigned char d = utf[3] & 0x3F; // 6 bits
+
+	unsigned int x = 0;
+	x |= a << 18;
+	x |= ab << 12;
+	x |= bc << 6;
+	x |= d;
+
+	return x;
+}
+
+
 //
 // Table of builtins
 //
