@@ -168,12 +168,9 @@ Proc.prototype = {
 			fds = [fds];
 		}
 
-		// Handle aliased behaviors
+		// Handle aliased behaviors (except null)
 		if (where === null) {
-			where = $.file('/dev/null');
-		} 
-		else if (Array.isArray(where) && typeof where[0] === 'string') {
-			where = $.here(where[0]);
+			// do nothing
 		}
 		else if (typeof where === 'string') {
 			if (where.startsWith('0:')) {
@@ -189,12 +186,36 @@ Proc.prototype = {
 				where = $.file(where);
 			}
 		}
+
+		// TODO: this is a mess, generalize it for every openable case and single/multi fds
+		// /dev/null
+		if (where === null ) {
+			for (var i = 0; i < fds.length; i++) {
+				this._pipe[fds[i]] = $.file('/dev/null');
+			}
+		}
+		// capure: $.capture
+		else if (where.is_a === 'Capture') {
+			for (var i = 0; i < fds.length; i++) {
+				this._pipe[fds[i]] = where;
+			}
+		}
+		// capture: {}
 		else if (typeof where === 'object' && Object.keys(where).length === 0) {
 			where = $.capture(where);
-		}
 
-		// Do redirection with primitive types
-		if (where.is_a === 'Proc') {
+			for (var i = 0; i < fds.length; i++) {
+				this._pipe[fds[i]] = where;
+			}
+		}
+		// herestring: ['']
+		else if (Array.isArray(where) && typeof where[0] === 'string') {
+			for (var i = 0; i < fds.length; i++) {
+				this._pipe[fds[i]] = $.here(where[0]);
+			}
+		}
+		// Proc: $(...)
+		else if (where.is_a === 'Proc') {
 			// Redirect first fd to where
 			this._pipe[fds[0]] = where;
 
@@ -203,10 +224,14 @@ Proc.prototype = {
 				this._pipe[fds[i]] = fds[0];
 			}
 		}
-		else if (
-			['Capture', 'EphemeralFd'].includes(where.is_a) ||
-			typeof where === 'number'
-		) {
+		// EphemeralFd: $.file, $.here, ...
+		else if (where.is_a === 'EphemeralFd') {
+			for (var i = 0; i < fds.length; i++) {
+				this._pipe[fds[i]] = where;
+			}
+		}
+		// another fd
+		else if (typeof where === 'number') {
 			for (var i = 0; i < fds.length; i++) {
 				this._pipe[fds[i]] = where;
 			}

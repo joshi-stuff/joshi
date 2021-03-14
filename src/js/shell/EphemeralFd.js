@@ -11,6 +11,8 @@ function EphemeralFd($, openFn) {
 EphemeralFd.prototype = {
 
 	open: function(sourceFd) {
+		// TODO: EphemeralFd fails with more than one fd (check if it can be
+		// fixed and made better: for example open several fds)
 		if (this._fd) {
 			throw new Error('EphemeralFd is already open');
 		}
