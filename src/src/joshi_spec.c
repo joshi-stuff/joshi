@@ -24,11 +24,11 @@ typedef struct duk_blk {
 #define duk_push_blkcnt_t(ctx,value) duk_push_int((ctx),(value))
 #define duk_get_blksize_t(ctx,idx) duk_require_int((ctx),(idx))
 #define duk_push_blksize_t(ctx,value) duk_push_int((ctx),(value))
-#define duk_get_char_arr(ctx,idx,out_value) strcpy((out_value),require_string((ctx),(idx)))
+#define duk_get_char_arr(ctx,idx,out_value) cnv_cesu_to_utf(require_string((ctx),(idx)),(out_value))
 #define duk_push_char_arr(ctx,value) duk_push_string((ctx),(value))
-#define duk_get_char_pt(ctx,idx) (duk_is_null((ctx),(idx))||duk_is_undefined((ctx),(idx))?NULL:(char*)duk_require_string((ctx),(idx)))
+static char* duk_get_char_pt(duk_context* ctx, duk_idx_t idx);
 #define duk_push_char_pt(ctx,value) duk_push_string((ctx),(value))
-#define duk_get_const_char_pt(ctx,idx) (duk_is_null((ctx),(idx))||duk_is_undefined((ctx),(idx))?NULL:(const char*)duk_require_string((ctx),(idx)))
+static const char* duk_get_const_char_pt(duk_context* ctx, duk_idx_t idx);
 #define duk_push_const_char_pt(ctx,value) duk_push_string((ctx),(value))
 #define duk_get_dev_t(ctx,idx) duk_require_int((ctx),(idx))
 #define duk_push_dev_t(ctx,value) duk_push_int((ctx),(value))
@@ -105,6 +105,34 @@ static void duk_free_all(duk_context* ctx) {
 	duk_push_heap_stash(ctx);
 	duk_del_prop_string(ctx, -1, "_malloc_area");
 	duk_pop(ctx);
+}
+
+static char* duk_get_char_pt(duk_context* ctx, duk_idx_t idx) {
+	if (duk_is_null(ctx, idx) || duk_is_undefined(ctx, idx)) {
+		return NULL;
+	}
+
+	const char* cesu = duk_require_string(ctx, idx);
+	duk_blk* blk = duk_malloc(ctx, cnv_cesu_to_utf_length(cesu) + 1);
+	char* utf = (char*)blk->data;
+
+	cnv_cesu_to_utf(cesu, utf);
+
+	return utf;
+}
+
+static const char* duk_get_const_char_pt(duk_context* ctx, duk_idx_t idx) {
+	if (duk_is_null(ctx, idx) || duk_is_undefined(ctx, idx)) {
+		return NULL;
+	}
+
+	const char* cesu = duk_require_string(ctx, idx);
+	duk_blk* blk = duk_malloc(ctx, cnv_cesu_to_utf_length(cesu) + 1);
+	char* utf = (char*)blk->data;
+
+	cnv_cesu_to_utf(cesu, utf);
+
+	return utf;
 }
 
 static DIR* duk_get_DIR_pt(duk_context* ctx, duk_idx_t idx) {
@@ -202,7 +230,7 @@ static void duk_get_struct_dirent(duk_context* ctx, duk_idx_t idx, struct dirent
 	value->d_type = duk_get_unsigned_char(ctx, -1);
 	duk_pop(ctx);
 	duk_get_prop_string(ctx, idx, "d_name");
-	strcpy(value->d_name, duk_get_string(ctx, -1));
+	cnv_cesu_to_utf(duk_get_string(ctx, -1), value->d_name);
 	duk_pop(ctx);
 }
 

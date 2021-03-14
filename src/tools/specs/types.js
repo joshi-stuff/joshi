@@ -6,6 +6,7 @@ const BUFFER = tt.BUFFER;
 const BUILTIN = tt.BUILTIN;
 const OPAQUE = tt.OPAQUE;
 const STRING = tt.STRING;
+const STRING_PT = tt.STRING_PT;
 const STRUCT = tt.STRUCT;
 
 return {
@@ -14,8 +15,8 @@ return {
 	'blkcnt_t': ATOMIC('int'),
 	'blksize_t': ATOMIC('int'),
 	'char[]': STRING(),
-	'char*': ATOMIC('string', true),
-	'const char*': ATOMIC('string', true),
+	'char*': STRING_PT(),
+	'const char*': STRING_PT(),
 	'dev_t': ATOMIC('int'),
 	'gid_t': ATOMIC('int'),
 	'mode_t': ATOMIC('int'),
