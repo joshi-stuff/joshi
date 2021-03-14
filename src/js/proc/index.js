@@ -64,10 +64,12 @@ proc.chdir = function(dir) {
 	return j.chdir(dir);
 }
 
-proc.execv = function(pathname, argv, env) {
+function invoke_exec(execfn, pathname, argv, env) {
 	env = env || {};
 
-	argv = argv.slice(0);
+	argv = argv.slice(0).map(function(arg) {
+		return arg.toString();
+	});
 	argv.push(null);
 
 	Object.entries(env).forEach(function(entry) {
@@ -82,7 +84,7 @@ proc.execv = function(pathname, argv, env) {
 	});
 
 	try {
-		return j.execv(pathname, argv);
+		return execfn(pathname, argv);
 	}
 	catch(err) {
 		err.message += ' (' + pathname + ')';
@@ -90,30 +92,12 @@ proc.execv = function(pathname, argv, env) {
 	}
 }
 
+proc.execv = function(pathname, argv, env) {
+	return invoke_exec(j.execv, pathname, argv, env);
+}
+
 proc.execvp = function(file, argv, env) {
-	env = env || {};
-
-	argv = argv.slice(0);
-	argv.push(null);
-
-	Object.entries(env).forEach(function(entry) {
-		const name = entry[0];
-		const value = entry[1];
-
-		if (value !== null) {
-			proc.setenv(name, value);
-		} else {
-			proc.unsetenv(name);
-		}
-	});
-
-	try {
-		return j.execvp(file, argv);
-	}
-	catch(err) {
-		err.message += ' (' + file + ')';
-		throw err;
-	}
+	return invoke_exec(j.execvp, file, argv, env);
 }
 
 proc.exit = function(status) {
