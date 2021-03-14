@@ -1,10 +1,7 @@
 # TODO: migrate my-sway
-# TODO: etc directory holding links to joshi lib dirs
-# TODO: investigate curses
-# TODO: interactive shell
+# TODO: investigate ncurses + panel
+# TODO: interactive shell (nnn + right panel shell)
 # TODO: ES6 on the fly compilation and bytecode cache directory
-# TODO: modify spec to make it more robust and extensible (generate push and pop functions)
-# TODO: add require_type() calls to spec stubs to avoid core dumps
 # TODO: dynamic library integration (for extension) (dlopen,sym,close functions to load symbol tables)
 # TODO: after dynamic library integration: dbus integration
 # TODO: after dynamic library integration: gtk integration

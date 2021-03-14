@@ -11,7 +11,6 @@ const STRUCT = tt.STRUCT;
 
 return {
 	// Atomic types
-	// TODO: new type that uses #define to alias pop and push for atomics
 	'blkcnt_t': ATOMIC('int'),
 	'blksize_t': ATOMIC('int'),
 	'char[]': STRING(),
