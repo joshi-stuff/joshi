@@ -1,6 +1,8 @@
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
+const LF_CODE = '\n'.charCodeAt(0);
+
 const io = {};
 
 // Poll flags
@@ -138,6 +140,32 @@ io.read_bytes = function(fd) {
  */
 io.read_file = function(fd) {
 	return decoder.decode(io.read_bytes(fd));
+}
+
+/*
+ * @deprecated use stream.read_line instead
+ */
+io.read_line = function(fd) {
+	var buf = new Uint8Array(1);
+	var bytes = [];
+
+	while (true) {
+		if (j.read(fd, buf, 1) === 0) {
+			if (!bytes.length) {
+				return null;
+			}
+
+			break;
+		}
+
+		if (buf[0] === LF_CODE) {
+			break;
+		}
+
+		bytes.push(buf[0]);
+	}
+
+	return decoder.decode(new Uint8Array(bytes));
 }
 
 io.safe_close = function(fd) {
