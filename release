@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [ ! -z "$(git status --porcelain)" ]
+then
+	echo "Working copy is not clean. Refusing to continue"
+	exit 1
+fi
+
+if [ "$(git br --show-current)" != "master" ]
+then
+	echo "Not in master branch. Refusing to continue"
+	exit 1
+fi
+
+echo Latest 4 tags are:
+echo
+git tag --sort=-committerdate | head -4
+echo 
+echo -n "Enter desired new version: "
+read VERSION
+
+echo New version will be: $VERSION
+echo -n "Confirm (y/N)? "
+read CONFIRM
+
+if [ "$CONFIRM" != "y" ]
+then 
+	exit 1
+fi
+
+echo ==== Patching PKGBUILD before makepkg...
+sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
+git add PKGBUILD
+git commit -m "Prepare version $VERSION"
+git push
+
+echo ==== Tagging...
+git tag "$VERSION"
+
+echo ==== Pushing tags...
+git push --tags
+
+echo ==== Rebasing stable on top of master...
+git co stable
+git rebase master
+
+echo ==== Pushing stable...
+git push
+
+echo ==== Back to master...
+git co master
+
+echo ==== Installing to local system...
+rm *zst
+makepkg -is --noconfirm
