@@ -1,4 +1,5 @@
 # TODO: migrate my-sway
+# TODO: make atexit not to be inherited by forked processes
 # TODO: investigate ncurses + panel
 # TODO: interactive shell (nnn + right panel shell)
 # TODO: ES6 on the fly compilation and bytecode cache directory
