@@ -459,29 +459,19 @@ test('sleep', function() {
 test('spawn+waitpid', function() {
 	const ECHO = '/usr/bin/echo';
 
-	const pid = proc.spawn(ECHO, [ECHO, '-n']);
+	proc.spawn(ECHO, [ECHO, '-n', 'MESSAGE FROM CHILD PROCESS ']);
+	proc.sleep(1);
 
-	const st = proc.waitpid(pid);
-
-	log('pid=', pid);
-	log('st=', st);
-
-	expect.is(pid, st.value);
-	expect.is(0, st.exit_status);
+	log('expect a message from child process above');
 });
 
 test('spawnp', function() {
 	const ECHO = 'echo';
 
-	const pid = proc.spawnp(ECHO, [ECHO, '-n']);
+	proc.spawnp(ECHO, [ECHO, '-n', 'MESSAGE FROM CHILD PROCESS ']);
+	proc.sleep(1);
 
-	const st = proc.waitpid(pid);
-
-	log('pid=', pid);
-	log('st=', st);
-
-	expect.is(pid, st.value);
-	expect.is(0, st.exit_status);
+	log('expect a message from child process above');
 });
 
 test('execv', function() {

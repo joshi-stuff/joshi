@@ -254,36 +254,61 @@ proc.sleep = function(seconds) {
 	}
 }
 
-proc.spawn = function(file, argv, env) {
-	const pid = proc.fork();
-
-	if (pid === 0) {
-		try {
-			proc.execv(file, argv, env);
-		}
-		catch(err) {
-			io.write_line(2, err.toString());
-			proc.exit(err.errno || -1);
+/**
+ * Launches a new detached child process. The child is detached calling 
+ * proc.fork() twice so that it is unnecessary/impossible to wait for its 
+ * termination.
+ *
+ * @param [string|function] fileOrFunction 
+ * An executable file path or a function with the code to execute. Note that if
+ * you pass a function the following parameters are ignored.
+ *
+ * @param [string[]] argv 
+ * The standard argv vector to pass to the child. Note that position 0 should be 
+ * the name of executable.
+ *
+ * @param [{[name:string}:string] environment variable for child process
+ */
+proc.spawn = function(fileOrFunction, argv, env) {
+	var fn = fileOrFunction;
+	
+	if (typeof fileOrFunction === 'string') {
+		fn = function() {
+			proc.execv(fileOrFunction, argv, env);
 		}
 	}
 
-	return pid;
+	var pid = proc.fork();
+
+	if (pid === 0) {
+		pid = proc.fork();
+
+		if (pid === 0) {
+			try {
+				fn();	
+				proc.exit(0);
+			}
+			catch(err) {
+				io.write_line(2, err.stack);
+				proc.exit(err.errno || -1);
+			}
+		}
+
+		proc.exit(0);
+	}
+
+	proc.waitpid(pid);
 }
 
+/**
+ * This is like proc.spawn(), but it searches for the program in the PATH.
+ *
+ * @see proc.spawn()
+ */
 proc.spawnp = function(file, argv, env) {
-	const pid = proc.fork();
-
-	if (pid === 0) {
-		try {
-			proc.execvp(file, argv, env);
-		}
-		catch(err) {
-			io.write_line(2, err.toString());
-			proc.exit(err.errno || -1);
-		}
-	}
-
-	return pid;
+	proc.spawn(function() {
+		proc.execvp(file, argv, env);
+	});
 }
 
 proc.unsetenv = function(name) {
