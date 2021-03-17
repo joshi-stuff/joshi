@@ -134,8 +134,51 @@ proc.exit = function(status) {
 	j.exit(status);
 }
 
-proc.fork = function() {
-	return j.fork();
+/**
+ * @param [boolean] wait?
+ * @param [function] fn?
+ * @return [{
+ *   value:number, 
+ *   exit_status:number, 
+ *   signaled: boolean, 
+ *   term_signal: number,
+ *   core_dump: boolean, 
+ *   stopped: boolean, 
+ *   stop_signal: number,
+ *   continued: boolean
+ * }] 
+ * If `wait` is `true` returns the exit description, otherwise, the child pid.
+ */
+proc.fork = function(wait, fn) {
+	if (wait && fn === undefined) {
+		fn = wait;
+		wait = false;
+	}
+
+	const pid = j.fork();
+
+	if (pid === 0) {
+		if (fn) {
+			try {
+				fn();
+			} 
+			catch(err) {
+				io.write_line(2, err.stack);
+				proc.exit(err.errno || 1);
+			}
+
+			proc.exit(0);
+		}
+		else {
+			return pid;
+		}
+	}
+
+	if (wait) {
+		return proc.waitpid(pid);
+	}
+
+	return pid;
 }
 
 /**
