@@ -31,7 +31,7 @@ fi
 echo ==== Patching PKGBUILD before makepkg...
 sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
 git add PKGBUILD
-git commit -m "Prepare version $VERSION"
+git commit -m "chore: prepare version $VERSION"
 git push
 
 echo ==== Tagging...
