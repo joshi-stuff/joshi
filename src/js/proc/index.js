@@ -7,7 +7,13 @@ const atexit_handlers = [];
 
 j.atexit(function() {
 	for (var i = atexit_handlers.length - 1; i >= 0; i--) {
-		atexit_handlers[i]();
+		const desc = atexit_handlers[i];
+
+		if (desc.pid && desc.pid !== proc.getpid()) {
+			continue;
+		}
+
+		desc.handler();
 	}
 });
 
@@ -56,8 +62,32 @@ proc.alarm = function(seconds) {
 	return j.alarm(seconds);
 }
 
-proc.atexit = function(fn) {
-	atexit_handlers.push(fn);
+/**
+ * Register function handlers for the exit process event.
+ *
+ * Note that, unlike the libc atexit() function, this one only invokes handlers
+ * which have been registered for the current process, and not its children.
+ *
+ * In libc's atexit(), all handlers are inherited when a fork() is done, leading
+ * to children process to execute atexit() handlers too. In this framework, the 
+ * default is not to inherit unless requested with the first parameter set to
+ * `true`.
+ *
+ * @param [boolean] inherit? whether to inherit the handler in forked children
+ * @param [function] fn handler function
+ */
+proc.atexit = function(inherit, fn) {
+	if (fn === undefined) {
+		fn = inherit;
+		inherit = false;
+	}
+
+	const pid = inherit ? undefined : proc.getpid();
+
+	atexit_handlers.push({
+		handler: fn,
+		pid: pid 
+	});
 }
 
 proc.chdir = function(dir) {
