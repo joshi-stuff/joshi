@@ -483,11 +483,49 @@ test('execvp', function() {
 });
 
 test('atexit', function() {
-	log('expect a message saying "atexit handler called"');
-	proc.atexit(function() {
-		println2('*** atexit handler called ***');
+	const FILE = '/tmp/test_atexit';
+
+	fs.safe_unlink(FILE);
+
+	const rc = proc.fork(true, function() {
+		proc.atexit(function() {
+			fs.write_file(FILE, 'holi');
+		});
+
+		proc.exit(13);
 	});
+
+	log(rc);
+
+	expect.is(13, rc.exit_status);
+	expect.is('holi', fs.read_file(FILE));
 });
+
+test('inherited atexit handlers', function() {
+	const FILE = '/tmp/test_atexiti';
+
+	fs.safe_unlink(FILE);
+
+	const rc = proc.fork(true, function() {
+		proc.atexit(true, function() {
+			const fd = io.append(FILE);
+			io.write_str(fd, 'holi');	
+			io.close(fd);
+		});
+	
+		proc.fork(true, function() {});
+
+		proc.exit(13);
+	});
+
+	expect.is(13, rc.exit_status);
+	expect.is('holiholi', fs.read_file(FILE));
+});
+
+test('not inherited atexit handlers', function() {
+
+});
+
 
 // Test shell
 test('more < FILE', function() {
