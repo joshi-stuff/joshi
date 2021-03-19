@@ -10,7 +10,7 @@
 	},
 	"source": {
 		"include": "./js",
-		"includePattern": "(errno|kern|proc)/index\\.js$",
+		"includePattern": "(errno|io|kern|proc)/index\\.js$",
 		"excludePattern": "(node_modules/|docs)"
 	},
 	"plugins": [
@@ -23,6 +23,7 @@
 		"recurse": true,
 		"verbose": true
 	},
+	"sourceType": "script",
 	"templates": {
 		"cleverLinks": false,
 		"monospaceLinks": false
