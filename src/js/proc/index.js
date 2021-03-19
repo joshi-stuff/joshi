@@ -190,7 +190,7 @@ proc.atexit = function(inherit, fn) {
  * Change process working directory.
  *
  * @returns {number} 0
- * @throws {ErrnoError} 
+ * @throws {SysError} 
  */
 proc.chdir = function(dir) {
 	return j.chdir(dir);
@@ -210,7 +210,7 @@ proc.chdir = function(dir) {
  * @param {ProcExecOptions} [opts={}]
  * Options for process execution.
  *
- * @throws {ErrnoError} 
+ * @throws {SysError} 
  */
 proc.exec = function(executable, args, opts) {
 	if (!Array.isArray(args)) {
@@ -322,7 +322,7 @@ proc.exit = function(status) {
  * If `wait` is `true` returns the result of proc.waitpid(), otherwise, the 
  * return value is 0 in the child and the pid of the child in the parent.
  *
- * @throws {ErrnoError} 
+ * @throws {SysError} 
  */
 proc.fork = function(wait, fn) {
 	if (typeof wait === 'function') {
@@ -387,7 +387,7 @@ proc.fork = function(wait, fn) {
  * @param {true} [getpid] Pass `true` to make the function return daemon's pid
  * @param {function} fn The function that implements daemon's code
  * @returns {void|number} pid of daemon if `getpid = true`
- * @throws {ErrnoError} 
+ * @throws {SysError} 
  */
 proc.fork2 = function(getpid, fn) {
 	if (typeof getpid === 'function') {
@@ -530,7 +530,7 @@ proc.getuid = function() {
  * ID or process group ID that the caller is permitted to signal.
  *
  * @returns {0}
- * @throws {ErrnoError} 
+ * @throws {SysError} 
  */
 proc.kill = function(pid, sig) {
 	if (sig === undefined) {
@@ -547,7 +547,7 @@ proc.kill = function(pid, sig) {
  * @param {string|null} value Value to set or `null` to unset
  * @param {boolean} [overwrite=true] Whether to overwrite the value if it exists
  * @returns {0}
- * @throws ErrnoError
+ * @throws SysError
  */
 proc.setenv = function(name, value, overwrite) {
 	name = name.toString();
@@ -580,7 +580,7 @@ proc.setenv = function(name, value, overwrite) {
  * session acquires a controlling terminal, see credentials(7).
  *
  * @returns {number} The (new) session ID of the calling process
- * @throws ErrnoError
+ * @throws SysError
  */
 proc.setsid = function() {
 	return j.setsid();
@@ -602,7 +602,7 @@ proc.setsid = function() {
  * be called when that signal occurs.
  *
  * @returns {void}
- * @throws ErrnoError
+ * @throws SysError
  */
 proc.signal = function(sig, func) {
 	j.signal(sig, func);
@@ -613,7 +613,7 @@ proc.signal = function(sig, func) {
  *
  * @param {number} seconds Seconds to wait
  * @returns {0} 
- * @throws ErrnoError
+ * @throws SysError
  */
 proc.sleep = function(seconds) {
 	while (seconds > 0) {
@@ -626,7 +626,7 @@ proc.sleep = function(seconds) {
  *
  * @param {string} name Name of environment variable
  * @returns {0}
- * @throws ErrnoError
+ * @throws SysError
  */
 proc.unsetenv = function(name) {
 	return j.unsetenv(name);
@@ -649,7 +649,7 @@ proc.unsetenv = function(name) {
  * Zero or an OR of proc.WNOHANG, proc.WUNTRACED, or proc.WCONTINUED.
  *
  * @return {ProcResult}
- * @throws ErrnoError
+ * @throws SysError
  */
 proc.waitpid = function(pid, options) {
 	if (options === undefined) {

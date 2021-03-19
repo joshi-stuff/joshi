@@ -1,7 +1,7 @@
 /**
  * Errors thrown when libc returns a non zero errno.
  *
- * @typedef {Error} ErrnoError
+ * @typedef {Error} SysError
  * @property {number} errno A valid errno error code
  * @property {string} stack A human readable string with meesage and stack trace
  */
