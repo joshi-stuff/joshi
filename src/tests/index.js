@@ -18,26 +18,8 @@ const test = require('./test.js').run;
 
 term.clear();
 
+require('./kern.js');
 require('./proc.js');
-
-// Test kern
-test('kern.search_path+require.resolve', function() {
-	try {
-		const cwd = fs.realpath('.');
-
-		kern.search_path = [fs.dirname(cwd)];
-
-		const path = require.resolve('src/tests.js');
-
-		expect.is(cwd + '/tests.js', path);
-	} finally {
-		kern.search_path = [];
-	}
-});
-
-test('require.owner_path', function() {
-	expect.is(fs.realpath('./tests.js'), require.owner_path);
-});
 
 // Test fs
 test('[rm|mk]dir+stat', function() {

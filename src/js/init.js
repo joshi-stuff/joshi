@@ -4,6 +4,24 @@ function init(global, j, filepath) {
 
 	// Create anchored require() function
 	function create_require(owner_path) {
+		const normalize = function(path) {
+			const nparts = [];
+			
+			path
+				.split('/')
+				.filter(function(part) {return part !== '.'})
+				.forEach(function(part) {
+					if (part === '..') {
+						parts.pop();
+					}
+					else {
+						nparts.push(part);
+					}
+				});
+
+			return nparts.join('/');
+		}
+
 		const anchored_resolve = function(module) {
 			const i = owner_path.lastIndexOf('/');
 			const owner_dir = owner_path.substr(0, i+1);
@@ -13,15 +31,15 @@ function init(global, j, filepath) {
 			}
 
 			if (module[0] === '.') {
-				return owner_dir + module;
+				return normalize(owner_dir + module);
 			} 
 
 			if(module[0] === '/') {
-				return module;
+				return normalize(module);
 			}
 
 			if (!kern || !kern.search_path.length) {
-				return j.dir + '/' + module;
+				return normalize(j.dir + '/' + module);
 			}
 
 			const dirs = [j.dir].concat(kern.search_path);
@@ -31,16 +49,14 @@ function init(global, j, filepath) {
 				try {
 					const candidate = dirs[i] + '/' + module;
 
-					j.realpath(candidate);
-
-					return candidate;
+					return j.realpath(candidate);
 				} 
 				catch(err) {
 					// ignore
 				}
 			}
 
-			return j.dir + '/' + module;
+			return normalize(j.dir + '/' + module);
 		}
 
 		const anchored_require = function(module) {
