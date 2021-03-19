@@ -345,7 +345,7 @@ proc.fork = function(wait, fn) {
 				fn();
 			} 
 			catch(err) {
-				io.write_line(2, err.stack);
+				io.write_string(2, err.stack + '\n');
 				proc.exit(err.errno || 1);
 			}
 
@@ -416,7 +416,7 @@ proc.fork2 = function(getpid, fn) {
 		if (pid === 0) {
 			if (getpid) {
 				io.close(fds[0]);
-				io.write_str(fds[1], proc.getpid());
+				io.write_string(fds[1], proc.getpid());
 				io.close(fds[1]);
 			}
 
@@ -437,7 +437,7 @@ proc.fork2 = function(getpid, fn) {
 
 	if (getpid) {
 		io.close(fds[1]);
-		child_pid = Number(io.read_file(fds[0]));
+		child_pid = Number(io.read_string(fds[0]));
 		io.close(fds[0]);
 	}
 

@@ -58,7 +58,7 @@ test('atexit > inherited handlers', function() {
 	const rc = proc.fork(true, function() {
 		proc.atexit(true, function() {
 			const fd = io.append(FILE);
-			io.write_str(fd, 'holi');	
+			io.write_string(fd, 'holi');	
 			io.close(fd);
 		});
 	
@@ -79,7 +79,7 @@ test('atexit > not inherited handlers', function() {
 	const rc = proc.fork(true, function() {
 		proc.atexit(function() {
 			const fd = io.append(FILE);
-			io.write_str(fd, 'holi');	
+			io.write_string(fd, 'holi');	
 			io.close(fd);
 		});
 	

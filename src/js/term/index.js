@@ -39,7 +39,7 @@ term.print2 = function() {
 		str += term._toString(arguments[i]);
 	}
 
-	io.write_str(2, str);
+	io.write_string(2, str);
 }
 
 term.print = function() {
@@ -53,7 +53,7 @@ term.print = function() {
 		str += term._toString(arguments[i]);
 	}
 
-	io.write_str(1, str);
+	io.write_string(1, str);
 }
 
 term.println = function() {

@@ -21,11 +21,11 @@ Capture.prototype = {
 
 		this.sources.forEach(function(source) {
 			try {
-				io.lseek(source.fd, 0, io.SEEK_SET);
-				container[source.name] = io.read_file(source.fd);
+				io.seek(source.fd, 0, io.SEEK_SET);
+				container[source.name] = io.read_string(source.fd);
 			} 
 			finally {
-				io.safe_close(source.fd);
+				io.close(source.fd, false);
 			}
 		});
 

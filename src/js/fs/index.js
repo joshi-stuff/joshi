@@ -41,8 +41,8 @@ fs.copy_file = function(from, to, mode) {
 		throw err;
 	}
 	finally {
-		io.safe_close(fdFrom);
-		io.safe_close(fdTo);
+		io.close(fdFrom, false);
+		io.close(fdTo, false);
 	}
 }
 
@@ -216,7 +216,7 @@ fs.read_file = function(path) {
 	const fd = io.open(path);
 
 	try {
-		return io.read_file(fd);
+		return io.read_string(fd);
 	} 
 	finally {
 		io.close(fd);
@@ -262,7 +262,7 @@ fs.write_file = function(path, contents, mode) {
 	const fd = io.truncate(path, mode);
 
 	try {
-		return io.write_str(fd, contents);
+		return io.write_string(fd, contents);
 	} 
 	finally {
 		io.close(fd);

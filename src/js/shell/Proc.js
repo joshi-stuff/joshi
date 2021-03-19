@@ -121,7 +121,7 @@ Proc.prototype = {
 		finally {
 			// Close open fds 
 			for (var i = 0; i < openFds.length; i++) {
-				io.safe_close(openFds[i]);
+				io.close(openFds[i], false);
 			}
 		}
 	},
@@ -349,7 +349,7 @@ Proc.prototype = {
 		catch(err) {
 			// Don't leak open fds
 			for (var i = 0; i < openFds.length; i++) {
-				io.safe_close(openFds[i]);
+				io.close(openFds[i], false);
 			}
 
 			throw err;
@@ -377,8 +377,9 @@ Proc.prototype = {
 					proc.chdir(this._dir);
 				}
 
-				proc.execvp(this.argv[0], this.argv, this._env);
+				proc.exec(this.argv[0], this.argv.slice(1), this._env);
 			} catch(err) {
+				io.write_string(2, err.stack + '\n');
 				proc.exit(err.errno);
 			}
 			// execution ends here
