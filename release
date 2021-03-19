@@ -31,6 +31,12 @@ fi
 echo ==== Patching PKGBUILD before makepkg...
 sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
 git add PKGBUILD
+
+echo ==== Patching src/src/joshi.c before makepkg...
+sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION\"/" src/src/joshi.c
+git add src/src/joshi.c
+
+echo ==== Creating version commit...
 git commit -m "chore: prepare version $VERSION"
 git push
 
@@ -49,6 +55,12 @@ git push
 
 echo ==== Back to master...
 git co master
+
+echo ==== Patching src/src/joshi.c after release...
+sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION-next\"/" src/src/joshi.c
+git add src/src/joshi.c
+git commit -m "chore: update joshi.c with snapshot version"
+git push
 
 echo ==== Installing to local system...
 rm *zst

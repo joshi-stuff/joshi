@@ -5,6 +5,9 @@
 #include "joshi_core.h"
 #include "joshi_spec.h"
 
+// This is patched by release script, don't touch
+#define VERSION "0.0.3-next"
+
 const char* LIB_DIR = "/usr/lib/joshi";
 
 static int joshi_run(
@@ -14,8 +17,14 @@ static void fatal_handler(void *udata, const char *msg);
 void main(int argc, const char *argv[]) {
 	// Check CLI invocation
 	if (argc < 2) {
-		fprintf(stderr, "No script file name provided.\n");
+		fprintf(stderr, "joshi: please specify script to run as argument\n");
 		exit(-1);
+	}
+
+	// Show version when asked
+	if (!strcmp(argv[1], "-v")) {
+		fprintf(stderr, "%s\n", VERSION);
+		exit(0);
 	}
 
 	// Init LIB_DIR
@@ -89,6 +98,9 @@ static int joshi_run(
 
 	duk_push_string(ctx, LIB_DIR);
 	duk_put_prop_string(ctx, idx, "dir");
+
+	duk_push_string(ctx, VERSION);
+	duk_put_prop_string(ctx, idx, "version");
 
 	// [ ... init global joshi ]
 	
