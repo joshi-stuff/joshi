@@ -9,6 +9,7 @@
 # TODO: after dynamic library integration: optimize my-sway
 
 CC = gcc
+DOCDASH_VERSION = 1.2.0
 DUKTAPE_VERSION = 2.6.0
 LIBS = -lm
 
@@ -19,6 +20,10 @@ OBJECTS = \
 	build/joshi_spec.o
 
 all: joshi
+
+docs: docdash-template
+	@rm -rf ./jsdoc
+	jsdoc -c jsdoc.json
 
 joshi: $(OBJECTS)
 	gcc build/*.o -o joshi $(LIBS)
@@ -64,6 +69,26 @@ duktape/duktape.tar: duktape/duktape.tar.xz
 duktape/duktape.tar.xz:
 	@mkdir -p duktape
 	curl https://duktape.org/duktape-$(DUKTAPE_VERSION).tar.xz -o duktape/duktape.tar.xz
+
+
+#
+# Docdash stuff
+#
+docdash-template: docdash/package-lock.json
+
+docdash/package-lock.json: docdash/package.json
+	cd docdash && npm install
+	touch docdash/package-lock.json
+
+docdash/package.json: docdash/docdash.tar.gz
+	cd docdash && tar xvf docdash.tar.gz
+	mv docdash/docdash-$(DOCDASH_VERSION)/* docdash
+	rm -rf docdash/docdash-$(DOCDASH_VERSION)
+	touch docdash/package.json
+
+docdash/docdash.tar.gz:
+	@mkdir -p docdash
+	curl https://codeload.github.com/clenemt/docdash/tar.gz/$(DOCDASH_VERSION) -o docdash/docdash.tar.gz
 
 
 #

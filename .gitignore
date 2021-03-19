@@ -1,7 +1,9 @@
 /joshi-*.zst
 /pkg
 /src/build
+/src/docdash
 /src/duktape
 /src/joshi
+/src/jsdoc
 /src/set_dev_env
 /src/src/duktape

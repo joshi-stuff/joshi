@@ -1,0 +1,30 @@
+{
+	"docdash": {
+		"private": true,
+		"search": true,
+		"static": true,
+		"typedefs": true
+	},
+	"tags": {
+		"allowUnknownTags": false
+	},
+	"source": {
+		"include": "./js",
+		"includePattern": "(errno|proc)/index\\.js$",
+		"excludePattern": "(node_modules/|docs)"
+	},
+	"plugins": [
+		"plugins/markdown"
+	],
+	"opts": {
+		"template": "docdash/",
+		"encoding": "utf8",
+		"destination": "jsdoc/",
+		"recurse": true,
+		"verbose": true
+	},
+	"templates": {
+		"cleverLinks": false,
+		"monospaceLinks": false
+	}
+}
