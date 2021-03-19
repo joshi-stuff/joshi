@@ -18,6 +18,7 @@ const test = require('./test.js').run;
 
 term.clear();
 
+require('./io.js');
 require('./kern.js');
 require('./proc.js');
 
@@ -156,138 +157,6 @@ test('write_file', function() {
 
 	fs.write_file(FILE, 'holi');
 	expect.is('holi', fs.read_file(FILE));
-});
-
-// Test io
-test('append+write_line+close', function() {
-	const FILE = '/tmp/test_append';
-
-	fs.safe_unlink(FILE);
-	const fd = io.append(FILE, 0600);
-	io.write_line(fd, 'line 1');
-	io.lseek(fd, 0, io.SEEK_SET);
-	io.write_line(fd, 'line 2');
-	io.close(fd);
-
-	expect.is('line 1\nline 2\n', fs.read_file(FILE));
-});
-
-test('create', function() {
-	const FILE = '/tmp/test_create';
-
-	fs.safe_unlink(FILE);
-	const fd = io.create(FILE, 0600);
-	io.write_line(fd, 'line 1');
-	io.lseek(fd, 0, io.SEEK_SET);
-	io.write_line(fd, 'line 2');
-	io.close(fd);
-
-	expect.is('line 2\n', fs.read_file(FILE));
-});
-
-test('open+read_file', function() {
-	const FILE = '/tmp/test_open';
-	const CONTENT = 'holi';
-
-	fs.write_file(FILE, CONTENT);
-	const fd = io.open(FILE);
-	const content = io.read_file(fd)
-	io.close(fd);
-
-	expect.is(CONTENT, content);
-});
-
-test('dup', function() {
-	const FILE = '/tmp/test_dup';
-	const CONTENT = 'holi';
-
-	fs.write_file(FILE, CONTENT);
-	const fd1 = io.open(FILE);
-	const fd2 = io.dup(fd1);
-	const content = io.read_file(fd2)
-	io.close(fd1);
-	io.close(fd2);
-
-	expect.is(CONTENT, content);
-});
-
-test('dup2', function() {
-	const FILE = '/tmp/test_dup2';
-	const CONTENT = 'holi';
-
-	fs.write_file(FILE, CONTENT);
-	const fd1 = io.open(FILE);
-	io.dup2(fd1, 13);
-	const content = io.read_file(13)
-	io.close(fd1);
-	io.close(13);
-
-	expect.is(CONTENT, content);
-});
-
-test('pipe+read_line', function() {
-	const CONTENT = 'holi';
-
-	const fd = io.pipe();
-	io.write_line(fd[1], CONTENT);
-	const sd = stream.create(fd[0]);
-	const content = stream.read_line(sd);
-	io.close(fd[0]);
-	io.close(fd[1]);
-
-	expect.is(CONTENT, content);
-});
-
-test('poll', function() {
-	const CONTENT = 'holi';
-
-	const fd = io.pipe();
-
-	const fds = [{
-		fd: fd[0],
-		events: io.POLLIN,
-		revents: 0
-	}];
-
-	expect.is(0, fds[0].revents);
-
-	io.write_line(fd[1], CONTENT);
-	io.poll(fds, 0);
-	expect.is(io.POLLIN, fds[0].revents);
-
-	io.close(fd[0]);
-	io.close(fd[1]);
-});
-
-test('read_bytes', function() {
-	const FILE = '/tmp/test_read_bytes';
-	const CONTENT = 'holi';
-
-	fs.write_file(FILE, CONTENT);
-	const fd = io.open(FILE);
-	const bytes = io.read_bytes(fd);
-	io.close(fd);
-
-	expect.is(4, bytes.length);
-	expect.is(104, bytes[0]);
-	expect.is(111, bytes[1]);
-	expect.is(108, bytes[2]);
-	expect.is(105, bytes[3]);
-});
-
-test('lseek+tell+write_str', function() {
-	const FILE = '/tmp/test_lseek';
-
-	const fd = io.truncate(FILE, 0600);
-
-	io.write_line(fd, 'line 1');
-	io.write_str(fd, 'line 2');
-	expect.is(13, io.tell(fd));
-
-	io.lseek(fd, 2, io.SEEK_SET);
-	expect.is(2, io.tell(fd));
-
-	io.close(fd);
 });
 
 // Test math

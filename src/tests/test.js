@@ -10,6 +10,20 @@ var active_test = '?';
 var active_things = [];
 
 test.expect = {
+	array_equals: function(expected, actual) {
+		if (expected.length !== actual.length) {
+			test.fail('lengths differ:', actual.length, '!==', expected.length);
+		}
+
+		for (var i=0; i < expected.length; i++) {
+			if (expected[i] != actual[i]) {
+				test.fail(
+					'arrays differ at ['+i+']:', actual[i], '!=', expected[i]
+				);
+			}
+		}
+	},
+
 	equals: function(expected, actual) {
 		if (expected != actual) {
 			test.fail(actual, '!=', expected);
