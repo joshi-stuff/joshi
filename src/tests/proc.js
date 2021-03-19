@@ -8,7 +8,6 @@ const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
 
-/*
 test('alarm', function() {
 	const fds = io.pipe();
 
@@ -33,7 +32,6 @@ test('alarm', function() {
 		}).exit_status
 	);
 });
-*/
 
 test('atexit', function() {
 	const FILE = '/tmp/joshi';
