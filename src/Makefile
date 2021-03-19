@@ -19,7 +19,7 @@ OBJECTS = \
 	build/joshi_core.o \
 	build/joshi_spec.o
 
-all: joshi
+all: joshi docs test
 
 docs: docdash-template
 	@rm -rf ./jsdoc
@@ -27,6 +27,9 @@ docs: docdash-template
 
 joshi: $(OBJECTS)
 	gcc build/*.o -o joshi $(LIBS)
+
+test: 
+	./joshi ./tests/index.js
 
 
 #
