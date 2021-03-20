@@ -105,27 +105,41 @@ function init(global, j, filepath) {
 		return anchored_require;
 	}
 
-	// Resolve filepath
-	const main_path = j.realpath(filepath);
-
-	// Read and compile main
-	var main_lines = j.read_file(main_path).split('\n');
-
-	if (main_lines[0].startsWith('#!')) {
-		main_lines[0] = '//' + main_lines[0];
+	// If no script was given run REPL
+	if (filepath === null) {
+		filepath = j.dir + '/repl.js';
 	}
-		
-	const main_source =
-		"function(argv, require){ " +
-		main_lines.join('\n') +
-		" ;}";
+
+	var main_source;
+
+	try {
+		// Resolve filepath
+		const main_path = j.realpath(filepath);
+
+		// Read and compile main
+		var main_lines = j.read_file(main_path).split('\n');
+
+		if (main_lines[0].startsWith('#!')) {
+			main_lines[0] = '//' + main_lines[0];
+		}
+			
+		main_source =
+			"function(argv, require){ " +
+			main_lines.join('\n') +
+			" ;}";
+	}
+	catch(err) {
+		j.printk('Script ' + filepath + ' cannot be read: ' + err + '\n');
+		return -1;
+	}
 
 	var main;
 
 	try {
 		main = j.compile_function(main_source, main_path);
-	} catch(err) {
-		j.printk('Compilation error: ' + err + '\n  at file' + main_path + '\n');
+	} 
+	catch(err) {
+		j.printk('Compilation error in script ' + filepath + ': ' + err + '\n');
 		return -1;
 	}
 

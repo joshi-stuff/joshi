@@ -15,14 +15,8 @@ static int joshi_run(
 static void fatal_handler(void *udata, const char *msg);
 
 void main(int argc, const char *argv[]) {
-	// Check CLI invocation
-	if (argc < 2) {
-		fprintf(stderr, "joshi: please specify script to run as argument\n");
-		exit(-1);
-	}
-
 	// Show version when asked
-	if (!strcmp(argv[1], "-v")) {
+	if (argc >= 2 && !strcmp(argv[1], "-v")) {
 		fprintf(stderr, "%s\n", VERSION);
 		exit(0);
 	}
@@ -45,7 +39,7 @@ void main(int argc, const char *argv[]) {
 	_joshi_duk_context = ctx;
 
 	// Populate joshi object
-	int retval = joshi_run(ctx, argv[1], argc, argv);
+	int retval = joshi_run(ctx, argc>=2 ? argv[1] : NULL, argc, argv);
 
 	// Don't cleanup before exit because atexit would crash
 	// duk_destroy_heap(ctx);
@@ -103,8 +97,13 @@ static int joshi_run(
 	duk_put_prop_string(ctx, idx, "version");
 
 	// [ ... init global joshi ]
-	
-	duk_push_string(ctx, filepath);
+
+	if (filepath) {
+		duk_push_string(ctx, filepath);
+	} 
+	else {
+		duk_push_null(ctx);
+	}
 
 	for( int i=0; i<argc; i++) {
 		duk_push_string(ctx, argv[i]);
