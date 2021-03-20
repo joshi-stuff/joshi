@@ -211,6 +211,14 @@ return {
 		throws: 'errno-on-null'
 	},
 
+	'rmdir': {
+		args: [
+			{ type: 'char*', name: 'pathname' },
+		],
+		returns: { type: 'int' },
+		throws: 'errno'
+	},
+
 	'setenv': {
 		args: [
 			{ type: 'char*', name: 'name' },

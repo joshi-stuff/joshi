@@ -942,6 +942,28 @@ static duk_ret_t _joshi_spec_readdir(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _joshi_spec_rmdir(duk_context* ctx) {
+	char* pathname;
+
+	pathname = duk_get_char_pt(ctx, 0);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	rmdir(pathname);
+
+	if (ret_value == -1) {
+		duk_free_all(ctx);
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	duk_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _joshi_spec_setenv(duk_context* ctx) {
 	char* name;
 	char* value;
@@ -1164,6 +1186,7 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "poll", func: _joshi_spec_poll, argc: 3 },
 	{ name: "read", func: _joshi_spec_read, argc: 3 },
 	{ name: "readdir", func: _joshi_spec_readdir, argc: 1 },
+	{ name: "rmdir", func: _joshi_spec_rmdir, argc: 1 },
 	{ name: "setenv", func: _joshi_spec_setenv, argc: 3 },
 	{ name: "setsid", func: _joshi_spec_setsid, argc: 0 },
 	{ name: "sleep", func: _joshi_spec_sleep, argc: 1 },
@@ -1174,4 +1197,4 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "write", func: _joshi_spec_write, argc: 3 },
 };
 
-size_t joshi_spec_builtins_count = 34;
+size_t joshi_spec_builtins_count = 35;
