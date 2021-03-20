@@ -37,7 +37,7 @@ Capture.prototype = {
 			name: Capture.NAMES[sourceFd] || ('fd' + sourceFd),
 		};
 
-		const filename = fs.mktemp_file('');
+		const filename = fs.create_temp_file('');
 		source.fd = io.create(filename);
 		fs.unlink(filename);
 

@@ -36,7 +36,7 @@ test('alarm', function() {
 test('atexit', function() {
 	const FILE = '/tmp/joshi';
 
-	fs.safe_unlink(FILE);
+	fs.unlink(FILE, false);
 
 	const rc = proc.fork(true, function() {
 		proc.atexit(function() {
@@ -53,7 +53,7 @@ test('atexit', function() {
 test('atexit > inherited handlers', function() {
 	const FILE = '/tmp/joshi';
 
-	fs.safe_unlink(FILE);
+	fs.unlink(FILE, false);
 
 	const rc = proc.fork(true, function() {
 		proc.atexit(true, function() {
@@ -74,7 +74,7 @@ test('atexit > inherited handlers', function() {
 test('atexit > not inherited handlers', function() {
 	const FILE = '/tmp/joshi';
 
-	fs.safe_unlink(FILE);
+	fs.unlink(FILE, false);
 
 	const rc = proc.fork(true, function() {
 		proc.atexit(function() {

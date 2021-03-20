@@ -71,7 +71,7 @@ $.file = function(filepath, mode) {
 
 $.here = function(here_string) {
 	return new EphemeralFd($, function(sourceFd) {
-		const filepath = fs.mktemp_file(here_string, 0400);
+		const filepath = fs.create_temp_file(here_string, 0400);
 		const fd = io.open(filepath);
 		fs.unlink(filepath);
 		return fd;
