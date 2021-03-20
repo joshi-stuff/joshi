@@ -12,7 +12,7 @@ function init(global, j, filepath) {
 				.filter(function(part) {return part !== '.'})
 				.forEach(function(part) {
 					if (part === '..') {
-						parts.pop();
+						nparts.pop();
 					}
 					else {
 						nparts.push(part);
