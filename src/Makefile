@@ -19,7 +19,9 @@ OBJECTS = \
 	build/joshi_core.o \
 	build/joshi_spec.o
 
-all: joshi docs test
+all: joshi
+
+dist: all docs test
 
 docs: docdash-template
 	@rm -rf ./jsdoc
