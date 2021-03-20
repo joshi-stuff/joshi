@@ -3,6 +3,7 @@
  *
  * @typedef {Error} SysError
  * @property {number} errno A valid errno error code
+ * @property {string} message Error description
  * @property {string} stack A human readable string with meesage and stack trace
  */
 
