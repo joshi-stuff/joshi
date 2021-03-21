@@ -364,7 +364,7 @@ function STRING() {
 		}
 
 		return [
-			'char '+VAR+'['+variable.length+'];'
+			'char '+VAR+'['+v.length+'];'
 		];
 	}
 
