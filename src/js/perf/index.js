@@ -23,15 +23,16 @@ PerfData.prototype = {
 	},
 
 	report: function() {
-		println('PERFORMANCE REPORT:', this.labels[0]);
+		var str = 'PERFORMANCE REPORT: ' + this.labels[0];
 
 		for (var i = 1; i < this.samples.length; i++) {
-			println(
-				'   ', this.labels[i], 
-				(this.samples[i]-this.samples[i-1]).toFixed(),
-				'ms'
-			);
+			str += '\n    ';
+			str += this.labels[i] + ' ';
+			str += (this.samples[i]-this.samples[i-1]).toFixed();
+			str += ' ms';
 		}
+
+		return str;
 	},
 }
 
