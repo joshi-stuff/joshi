@@ -1,3 +1,4 @@
+const errno = require('errno');
 const fs = require('fs');
 const io = require('io');
 const proc = require('proc');
@@ -207,7 +208,9 @@ test('fork2 > with getpid', function() {
 		proc.waitpid(pid);
 	} 
 	catch(err) {
-		// ignore (child process may have finished already)
+		if (err.errno !== errno.ECHILD) {
+			throw err;
+		}
 	}
 
 	expect.equals(pid, fs.read_file(FILE));
