@@ -20,22 +20,10 @@ term.clear();
 
 require('./errno.js');
 require('./kern.js');
+require('./math.js');
 require('./io.js');
 require('./fs.js');
 require('./proc.js');
-
-// Test math
-test('get_random_bytes', function() {
-	const bytes = math.get_random_bytes(4);
-
-	expect.is(4, bytes.length);
-
-	var str = '';
-	for (var i=0; i<bytes.length; i++) {
-		str += bytes[i].toString(16);
-	}
-	log(str);
-});
 
 // Test shell
 test('more < FILE', function() {
