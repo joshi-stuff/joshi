@@ -18,6 +18,7 @@ const test = require('./test.js').run;
 
 term.clear();
 
+require('./errno.js');
 require('./io.js');
 require('./kern.js');
 require('./proc.js');
