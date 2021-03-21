@@ -10,7 +10,7 @@
 	},
 	"source": {
 		"include": "./js",
-		"includePattern": "(errno|fs|io|kern|math|proc)/index\\.js$",
+		"includePattern": "(errno|fs|io|kern|math|perf|proc)/index\\.js$",
 		"excludePattern": "(node_modules/|docs)"
 	},
 	"plugins": [
