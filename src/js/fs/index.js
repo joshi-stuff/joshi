@@ -41,6 +41,8 @@ const proc = require('proc');
  * @returns {boolean|undefined} Return `false` to stop listing
  */
 
+const decoder = new TextDecoder();
+
 /** 
  * @exports fs 
  * @readonly
@@ -200,7 +202,7 @@ fs.exists = function(pathname) {
  * @throws {SysError} If anything goes wrong or the path does not exist
  */
 fs.is_block_device = function(pathname) {
-	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFBLK;
+	return (fs.stat(pathname).mode & fs.S_IFMT) === fs.S_IFBLK;
 }
 
 /**
@@ -211,7 +213,7 @@ fs.is_block_device = function(pathname) {
  * @throws {SysError} If anything goes wrong or the path does not exist
  */
 fs.is_char_device = function(pathname) {
-	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFCHR;
+	return (fs.stat(pathname).mode & fs.S_IFMT) === fs.S_IFCHR;
 }
 
 /**
@@ -222,7 +224,7 @@ fs.is_char_device = function(pathname) {
  * @throws {SysError} If anything goes wrong or the path does not exist
  */
 fs.is_directory = function(pathname) {
-	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFDIR;
+	return (fs.stat(pathname).mode & fs.S_IFMT) === fs.S_IFDIR;
 }
 
 /**
@@ -245,7 +247,7 @@ fs.is_executable = function(pathname) {
  * @throws {SysError} If anything goes wrong or the path does not exist
  */
 fs.is_fifo = function(pathname) {
-	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFIFO;
+	return (fs.stat(pathname).mode & fs.S_IFMT) === fs.S_IFIFO;
 }
 
 /**
@@ -256,7 +258,7 @@ fs.is_fifo = function(pathname) {
  * @throws {SysError} If anything goes wrong or the path does not exist
  */
 fs.is_file = function(pathname) {
-	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFREG;
+	return (fs.stat(pathname).mode & fs.S_IFMT) === fs.S_IFREG;
 }
 
 /**
@@ -267,7 +269,7 @@ fs.is_file = function(pathname) {
  * @throws {SysError} If anything goes wrong or the path does not exist
  */
 fs.is_link = function(pathname) {
-	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFLNK;
+	return (fs.stat(pathname).mode & fs.S_IFMT) === fs.S_IFLNK;
 }
 
 /**
@@ -290,7 +292,7 @@ fs.is_readable = function(pathname) {
  * @throws {SysError} If anything goes wrong or the path does not exist
  */
 fs.is_socket = function(pathname) {
-	return (fs.stat(pathname).mode & fs.S_IFMT) & fs.S_IFSOCK;
+	return (fs.stat(pathname).mode & fs.S_IFMT) === fs.S_IFSOCK;
 }
 
 /**
@@ -334,8 +336,9 @@ fs.list_dir = function(name, callback) {
 			: function(item) {items.push(item)};
 
 		dirp = j.opendir(name);
-		
-		for(var i = 0; ; i++) {
+
+		var index = 0;
+		while (true) {
 			const dirent = j.readdir(dirp);
 			const name = dirent.d_name;
 
@@ -343,7 +346,7 @@ fs.list_dir = function(name, callback) {
 				continue;
 			}
 
-			if (cb(name, i) === false) {
+			if (cb(name, index++) === false) {
 				break;
 			}
 		}
@@ -403,7 +406,7 @@ fs.mkdirp = function(pathname, mode) {
 		dirname = '.';
 		initialIndex = 0;
 	}
-	
+
 	const parts = pathname.split('/');
 
 	for (var i = initialIndex; i < parts.length; i++) {
@@ -412,9 +415,95 @@ fs.mkdirp = function(pathname, mode) {
 		if (!fs.exists(dirname)) {
 			fs.mkdir(dirname, mode);
 		}
+		else if (!fs.is_directory(dirname)) {
+			errno.fail(errno.ENOTDIR);
+		}
 	}	
 
 	return 0;
+}
+
+/**
+ * Create a FIFO at a given path
+ *
+ * @param {string} pathname Path of FIFO
+ * @param {number} [mode=0644] Creation mode of FIFO
+ * @returns {0}
+ * @throws {SysError} 
+ */
+fs.mkfifo = function(pathname, mode) {
+	if (mode === undefined) {
+		mode = 0644;
+	}
+
+	return j.mkfifo(pathname, mode);
+}
+
+/**
+ * Normalize a path resolving any `.` or `..` inside and making sure it is an
+ * absolute path.
+ *
+ * Note that this function does not return the canonical path (resolving
+ * symbolic links), just an absolute path in normalized form.
+ *
+ * The path does NOT need to exist for the function to work (as opposed to 
+ * {@link module:fs.realpath}.
+ *
+ * @param {string} path The path to normalize
+ * @returns {string} An absolute path without any `.` or `..` inside
+ */
+fs.normalize_path = function(path) {
+	if (path[0] !== '/') {
+		path = fs.realpath('.') + '/' + path;
+	}
+
+	 const nparts = [];
+
+	 path
+		 .split('/')
+		 .filter(function(part) {return part !== '.'})
+		 .forEach(function(part) {
+			 if (part === '..') {
+				 nparts.pop();
+			 }
+			 else {
+				 nparts.push(part);
+			 }
+		 });
+
+	return nparts.join('/');
+}
+
+/**
+ * Get the path referenced by a symbolic link
+ *
+ * @param {string} path Path to symbolic link
+ *
+ * @param {boolean} [dereference=true]
+ * Whether to dereference link if it is relative
+ *
+ * @returns {string} The target path
+ * @throws {SysError}
+ */
+fs.read_link = function(path, dereference) {
+	if (dereference === undefined) {
+		dereference = true;
+	}
+
+	// We need to use a buffer because readlink does not add the trailing \0
+	const buf = new Uint8Array(384); 
+
+	const length = j.readlink(path, buf, buf.length); 
+
+	buf = buf.subarray(0, length);
+
+	const val = decoder.decode(buf); 
+
+	if (val[0] === '/') {
+		return val;
+	}
+
+	return fs.dirname(path) + '/' + val;
 }
 
 /**
@@ -464,6 +553,10 @@ fs.rmdir = function(path, recursive) {
 		recursive = false;
 	}
 
+	if (recursive && !fs.exists(path)) {
+		return 0;
+	}
+
 	if (recursive) {
 		fs.list_dir(path, function(item) {
 			const item_path = path + '/' + item;
@@ -475,8 +568,6 @@ fs.rmdir = function(path, recursive) {
 				fs.unlink(item_path);
 			}
 		});
-
-		return 0;
 	}
 
 	return j.rmdir(path);
@@ -490,7 +581,7 @@ fs.rmdir = function(path, recursive) {
  * @throws {SysError} 
  */
 fs.stat = function(pathname) {
-	const statbuf = j.stat(pathname).statbuf;
+	const statbuf = j.lstat(pathname).statbuf;
 
 	return {
 		gid: statbuf.st_gid,
