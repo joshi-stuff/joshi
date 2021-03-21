@@ -766,6 +766,33 @@ static duk_ret_t _joshi_spec_lseek(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _joshi_spec_lstat(duk_context* ctx) {
+	char* pathname;
+	struct stat statbuf;
+
+	pathname = duk_get_char_pt(ctx, 0);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	lstat(pathname,&(statbuf));
+
+	if (ret_value == -1) {
+		duk_free_all(ctx);
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_object(ctx);
+	duk_push_struct_stat(ctx, &(statbuf));
+	duk_put_prop_string(ctx, -2, "statbuf");
+	duk_push_int(ctx, ret_value);
+	duk_put_prop_string(ctx, -2, "value");
+
+	duk_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _joshi_spec_mkdir(duk_context* ctx) {
 	char* pathname;
 	mode_t mode;
@@ -778,6 +805,30 @@ static duk_ret_t _joshi_spec_mkdir(duk_context* ctx) {
 	ret_value = 
 
 	mkdir(pathname,mode);
+
+	if (ret_value == -1) {
+		duk_free_all(ctx);
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	duk_free_all(ctx);
+	return 1;
+}
+
+static duk_ret_t _joshi_spec_mkfifo(duk_context* ctx) {
+	char* pathname;
+	mode_t mode;
+
+	pathname = duk_get_char_pt(ctx, 0);
+	mode = duk_get_mode_t(ctx, 1);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	mkfifo(pathname,mode);
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
@@ -942,6 +993,32 @@ static duk_ret_t _joshi_spec_readdir(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _joshi_spec_readlink(duk_context* ctx) {
+	char* pathname;
+	void* buf;
+	size_t bufsiz;
+
+	pathname = duk_get_char_pt(ctx, 0);
+	buf = duk_get_void_pt(ctx, 1);
+	bufsiz = duk_get_size_t(ctx, 2);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	readlink(pathname,buf,bufsiz);
+
+	if (ret_value == -1) {
+		duk_free_all(ctx);
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	duk_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _joshi_spec_rmdir(duk_context* ctx) {
 	char* pathname;
 
@@ -1027,33 +1104,6 @@ static duk_ret_t _joshi_spec_sleep(duk_context* ctx) {
 	}
 
 	duk_push_unsigned_int(ctx, ret_value);
-
-	duk_free_all(ctx);
-	return 1;
-}
-
-static duk_ret_t _joshi_spec_stat(duk_context* ctx) {
-	char* pathname;
-	struct stat statbuf;
-
-	pathname = duk_get_char_pt(ctx, 0);
-
-	errno = 0;
-	int ret_value;
-	ret_value = 
-
-	stat(pathname,&(statbuf));
-
-	if (ret_value == -1) {
-		duk_free_all(ctx);
-		duk_throw_errno(ctx);
-	}
-
-	duk_push_object(ctx);
-	duk_push_struct_stat(ctx, &(statbuf));
-	duk_put_prop_string(ctx, -2, "statbuf");
-	duk_push_int(ctx, ret_value);
-	duk_put_prop_string(ctx, -2, "value");
 
 	duk_free_all(ctx);
 	return 1;
@@ -1179,22 +1229,24 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "getuid", func: _joshi_spec_getuid, argc: 0 },
 	{ name: "kill", func: _joshi_spec_kill, argc: 2 },
 	{ name: "lseek", func: _joshi_spec_lseek, argc: 3 },
+	{ name: "lstat", func: _joshi_spec_lstat, argc: 2 },
 	{ name: "mkdir", func: _joshi_spec_mkdir, argc: 2 },
+	{ name: "mkfifo", func: _joshi_spec_mkfifo, argc: 2 },
 	{ name: "open", func: _joshi_spec_open, argc: 3 },
 	{ name: "opendir", func: _joshi_spec_opendir, argc: 1 },
 	{ name: "pipe", func: _joshi_spec_pipe, argc: 1 },
 	{ name: "poll", func: _joshi_spec_poll, argc: 3 },
 	{ name: "read", func: _joshi_spec_read, argc: 3 },
 	{ name: "readdir", func: _joshi_spec_readdir, argc: 1 },
+	{ name: "readlink", func: _joshi_spec_readlink, argc: 3 },
 	{ name: "rmdir", func: _joshi_spec_rmdir, argc: 1 },
 	{ name: "setenv", func: _joshi_spec_setenv, argc: 3 },
 	{ name: "setsid", func: _joshi_spec_setsid, argc: 0 },
 	{ name: "sleep", func: _joshi_spec_sleep, argc: 1 },
-	{ name: "stat", func: _joshi_spec_stat, argc: 2 },
 	{ name: "unlink", func: _joshi_spec_unlink, argc: 1 },
 	{ name: "unsetenv", func: _joshi_spec_unsetenv, argc: 1 },
 	{ name: "waitpid", func: _joshi_spec_waitpid, argc: 3 },
 	{ name: "write", func: _joshi_spec_write, argc: 3 },
 };
 
-size_t joshi_spec_builtins_count = 35;
+size_t joshi_spec_builtins_count = 37;

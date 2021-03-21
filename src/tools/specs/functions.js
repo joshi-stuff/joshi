@@ -148,7 +148,25 @@ return {
 		throws: 'errno'
 	},
 
+	'lstat': {
+		args: [
+			{ type: 'char*', name: 'pathname' },
+			{ type: 'struct stat', name: 'statbuf', ref: true, out: true },
+		],
+		returns: { type: 'int'},
+		throws: 'errno'
+	},
+
 	'mkdir': {
+		args: [
+			{ type: 'char*', name: 'pathname' },
+			{ type: 'mode_t', name: 'mode' },
+		],
+		returns: { type: 'int' },
+		throws: 'errno'
+	},
+
+	'mkfifo': {
 		args: [
 			{ type: 'char*', name: 'pathname' },
 			{ type: 'mode_t', name: 'mode' },
@@ -211,6 +229,16 @@ return {
 		throws: 'errno-on-null'
 	},
 
+	'readlink': {
+		args: [
+			{ type: 'char*', name: 'pathname' },
+			{ type: 'void*', name: 'buf' },
+			{ type: 'size_t', name: 'bufsiz' },
+		],
+		returns: { type: 'int' },
+		throws: 'errno'
+	},
+
 	'rmdir': {
 		args: [
 			{ type: 'char*', name: 'pathname' },
@@ -240,15 +268,6 @@ return {
 			{ type: 'unsigned int', name: 'seconds' },
 		],
 		returns: { type: 'unsigned int' },
-		throws: 'errno'
-	},
-
-	'stat': {
-		args: [
-			{ type: 'char*', name: 'pathname' },
-			{ type: 'struct stat', name: 'statbuf', ref: true, out: true },
-		],
-		returns: { type: 'int'},
 		throws: 'errno'
 	},
 
