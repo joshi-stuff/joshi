@@ -23,6 +23,7 @@ require('./kern.js');
 require('./math.js');
 require('./perf.js');
 require('./io.js');
+require('./stream.js');
 require('./fs.js');
 require('./proc.js');
 
