@@ -19,16 +19,14 @@ OBJECTS = \
 	build/joshi_core.o \
 	build/joshi_spec.o
 
-all: joshi
+joshi: $(OBJECTS)
+	gcc build/*.o -o joshi $(LIBS)
 
-dist: all docs test
+all: joshi docs test
 
 docs: docdash-template
 	@rm -rf ./jsdoc
 	jsdoc -c jsdoc.json
-
-joshi: $(OBJECTS)
-	gcc build/*.o -o joshi $(LIBS)
 
 test: 
 	./joshi ./tests/index.js
