@@ -5,6 +5,40 @@ const term = require('term');
 const println = term.println;
 const println2 = term.println2;
 
+/**
+ * Interface for generic objects implementing redirections (other than Proc).
+ *
+ * @interface
+ */
+function Redirection() {}
+
+Redirection.prototype = {
+	/**
+	 * Open fd associated to this redirection
+	 *
+	 * @returns {number}
+	 * @throws {SysError}
+	 */
+	open: function(sourceFd) {
+		throw new Error('Not implemented!');
+	},
+
+	/**
+	 * Close fds associated to this redirection
+	 *
+	 * @returns {void}
+	 * @throws {SysError}
+	 */
+	close: function() {
+		throw new Error('Not implemented!');
+	},
+}
+
+/**
+ * @class
+ * @hideconstructor
+ * @memberof shell
+ */
 function Proc($, argv) {
 	this.$ = $;
 	this.is_a = 'Proc';
@@ -22,18 +56,40 @@ function Proc($, argv) {
 
 Proc.prototype = {
 
+	/**
+	 * Set working directory for process
+	 *
+	 * @param {string} dir Path to a directory
+	 * @returns {shell.Proc} 
+	 * The same object where it is being invoked (for chaining)
+	 */
 	dir: function(dir) {
 		this._dir = dir;
 		return this;
 	},
 
+	/**
+	 * Set environment variables for process
+	 *
+	 * @param {object} vars
+	 * A hash of key value pairs. 
+	 *
+	 * Note that a null value unsets the variable.
+	 *
+	 * @returns {shell.Proc} 
+	 * The same object where it is being invoked (for chaining)
+	 */
 	env: function(vars) {
 		this._env = vars;
 		return this;
 	},
 
 	/**
-	 * Execute a full execution graph and wait for it to exit.
+	 * Run a complete execution graph and wait for it to finish.
+	 *
+	 * @returns {ProcResult} The result of waiting for the last (deepest) child
+	 * @see {module:proc.waitpid}
+	 * @throws {SysError}
 	 */
 	do: function() {
 		// Get Procs
@@ -52,9 +108,9 @@ Proc.prototype = {
 		const openFds = [];
 
 		try {
-			// Open pipes
+			// Setup redirections
 			for (var i = 0; i < childProcs.length; i++) {
-				openFds = openFds.concat(childProcs[i]._openPipes());
+				openFds = openFds.concat(childProcs[i]._setupRedirections());
 			}
 
 			// Launch the Procs
@@ -62,7 +118,7 @@ Proc.prototype = {
 				const childProc = childProcs[i];
 
 				childProc._launch(function() {
-					// Setup redirections
+					// Setup redirections storing used fds
 					const fds = Object.keys(childProc._redir);
 					const usedFds = {};
 
@@ -76,7 +132,7 @@ Proc.prototype = {
 						usedFds[fdTo] = true;
 					}
 
-					// Close fds not belonging to child
+					// Close inherited fds not used by this child
 					for (var i = 0; i < openFds.length; i++) {
 						const fd = openFds[i];
 
@@ -96,30 +152,16 @@ Proc.prototype = {
 
 			const result = childProcs[last].wait();
 
-			// Close openables after execution
-			const openables = this._collectOpenables();
-
-			for (var i = 0; i < openables.length; i++) {
-				openables[i].close();
+			// Close redirections after execution
+			const redirections = this._collectRedirections();
+			for (var i = 0; i < redirections.length; i++) {
+				redirections[i].close();
 			}
-
-			// TODO: move this to the real shell
-			/*
-			term.fg(0xD0, 0x80, 0x80);
-			if (result.exit_status != 0) {
-				println('Command exited with code:', result.exit_status);
-			} else if (result.signaled) {
-				println('Command received signal:', result.signaled);
-			} else if (result.core_dump) {
-				println('Command core dumped');
-			}
-			term.reset();
-			*/
 
 			return result;
 		} 
 		finally {
-			// Close open fds 
+			// Close open fds (in case anything goes wrong)
 			for (var i = 0; i < openFds.length; i++) {
 				io.close(openFds[i], false);
 			}
@@ -127,34 +169,56 @@ Proc.prototype = {
 	},
 
 	/**
-	 * @param [number|number[]] fds? default is [1]
-	 * @param [Proc|Capture|EphemeralFd|number|{}|string|string[]|null] where
+	 * Redirect a process file descriptor to a capture 
+	 * {@link module:shell.capture}, file {@link module:shell.file}, here 
+	 * string {@link module:shell.here}, or another process
+	 * {@link module:shell.$}.
+	 *
+	 * @param {number|number[]} [fds=[1]] 
+	 * Process' file descriptors to pipe to the capture, file, here string or 
+	 * process.
+	 *
+	 * Note that, in the case of capture or processes, only output file 
+	 * descriptors make sense.
+	 *
+	 * In the case of here string, only input file descriptors make sense.
+	 *
+	 * @param {object|Proc|number|string|string[]|null} where
 	 * Polymorphic parameter to express where to pipe to. Depending on the type
 	 * it can be:
 	 *
-	 * -Proc: pipes output of this to the parameter
-	 *     * Valid fds are only 1 or 2
+	 * -Proc: redirects output of this process to the other process. Valid
+	 *  source `fds` are 1 (stdout) and 2 (stderr).
 	 *
-	 * -Capture: pipes output of this to an object variable
-	 *     * Valid fds are 1 and 2 which store to properties `out` and `error`
+	 * -Opaque return from {@link module:shell.capture}: redirects output of 
+	 *  this process to an object variable. Valid fds are 1 and 2 which store to 
+	 *  properties `out` and `error`.
 	 *
-	 * -EphemeralFd: pipes input/output from/to a file descriptor that is open
-	 *	for the life of the proces only.
-	 *     * All fds are valid (see $.file and $.here for different behaviors)
+	 * -Opaque return from {@link module:shell.file}: redirects input/output
+	 *  from/to a file. All fds are valid.
 	 *
-	 * -number: the source and given fds are piped together
+	 * -Opaque return from {@link module:shell.here}: redirects input from a 
+	 *  string variable. Only fd 0 (stdin) is valid.
 	 *
-	 * -{}: if an empty object is given it is wrapped in a Capture
+	 * -number: the source fds are redirected to the given fd
 	 *
-	 * -string: the string is wrapped with $.file() with default open mode. If a
-	 *  custom open mode is desired, the file can be prefixed with the mode plus
-	 *  a colon (for example: '+:/tmp/my-file' appends to '/tmp/my-file')
+	 * -{}: if an empty object is given it is wrapped with 
+	 *  {@link module:shell.capture}
+	 *
+	 * -string: the string is wrapped with {@link module:shell.file} with 
+	 *  default open mode. If a custom open mode is desired, the file can be 
+	 *  prefixed with the mode plus a colon (for example: '+:/tmp/my-file' 
+	 *  appends to '/tmp/my-file', '0:out.log' truncates, and so on).
 	 *
 	 * -string[]: the one and only string inside the array is wrapped with 
-	 *  $.here()
+	 *  {@link module:shell.here()}
 	 *
-	 * -null: same as $.file('/dev/null')
+	 * -null: same as `$.file('/dev/null')`
 	 *
+	 * @returns {shell.Proc} 
+	 * The same object where it is being invoked (for chaining)
+	 *
+	 *  @throws {SysError}
 	 */
 	pipe: function(fds, where) {
 		const $ = this.$;
@@ -243,6 +307,12 @@ Proc.prototype = {
 		return this;
 	},
 
+	/**
+	 * Return a string representation of the object
+	 *
+	 * @returns {string}
+	 * @ignore
+	 */
 	toString: function() {
 		return 'Proc{' + 
 			'"' + this.argv.join(' ') + '"' +
@@ -255,38 +325,20 @@ Proc.prototype = {
 	/**
 	 * Wait for process to finish and get its exit status
 	 *
-	 * @return [number] the exit status of the process
+	 * @return {ProcResult} The wait process result 
+	 * @throws {SysError}
+	 * @private
 	 */
 	wait: function() {
 		return proc.waitpid(this.pid);
 	},
 
 	/**
-	 * Recursively collect all this._pipe objects with an open() method (i.e. 
-	 * Capture, EphemeralFd, ...)
+	 * Collect all child Proc objects (excluding the one invoking the method).
+	 *
+	 * @returns {shell.Proc[]}
+	 * @private
 	 */
-	_collectOpenables: function() {
-		const openables = [];
-
-		const fds = Object.keys(this._pipe);
-
-		for (var i = 0; i < fds.length; i++) {
-			const fd = fds[i];
-			const where = this._pipe[fd];
-
-			if (where.is_a === 'Capture') {
-				if (!openables.includes(where)) {
-					openables.push(where);
-				}
-			}
-			else if (where.is_a === 'Proc' ) {
-				openables = openables.concat(where._collectOpenables());
-			}
-		}
-
-		return openables;
-	},
-
 	_collectChildProcs: function() {
 		const childProcs = [];
 
@@ -306,9 +358,51 @@ Proc.prototype = {
 	},
 
 	/**
-	 * Scans this._pipe and puts associated fds in this._redir
+	 * Recursively collect all redirection target objects (i.e. Capture, 
+	 * EphemeralFd, ...)
+	 *
+	 * @returns {Redirection[]} 
+	 * @private
 	 */
-	_openPipes: function() {
+	_collectRedirections: function() {
+		const closeables = [];
+
+		const fds = Object.keys(this._pipe);
+
+		for (var i = 0; i < fds.length; i++) {
+			const fd = fds[i];
+			const where = this._pipe[fd];
+
+			if (typeof where.close === 'function') {
+				if (!closeables.includes(where)) {
+					closeables.push(where);
+				}
+			}
+			else if (where.is_a === 'Proc' ) {
+				// Recurse into child processes
+				closeables = closeables.concat(where._collectRedirections());
+			}
+		}
+
+		return closeables;
+	},
+
+	/**
+	 * Setup redirections collecting all fds and objects in this._pipe and 
+	 * putting their associated fds in this._redir.
+	 *
+	 * Note that any object in this._pipe other than Proc that implements 
+	 * the {@link Redirection} interface (f.e. Capture and EphemeralFd) is handled 
+	 * generically. 
+	 *
+	 * @returns {number[]} 
+	 * An array containing all file descriptors that have been open as a 
+	 * consequence of redirections.
+	 *
+	 * @throws {SysError}
+	 * @private
+	 */
+	_setupRedirections: function() {
 		const openFds = [];
 
 		try {
@@ -359,34 +453,32 @@ Proc.prototype = {
 	},
 
 	/**
-	 * Launch the process without waiting for it.
+	 * Launch the process without waiting for it (only this process, not the
+	 * children)
 	 *
-	 * @param [function] setupCB? invoked right before execvp
-	 * @return [Proc] the child process
+	 * @param {function} [setupCB]
+	 * A function invoked just before exec to setup the child process for
+	 * execution. It doesn't receive parameters or return anything.
+	 *
+	 * @returns {Proc} The Proc where it is being invoked
+	 * @throws {SysError}
+	 * @private
 	 */
 	_launch: function(setupCB) {
-		const pid = proc.fork();
-
-		if (pid === 0) {
-			try {
-				if (setupCB) {
-					setupCB();
-				}
-
-				if (this._dir) {
-					proc.chdir(this._dir);
-				}
-
-				proc.exec(this.argv[0], this.argv.slice(1), this._env);
-			} catch(err) {
-				io.write_string(2, err.stack + '\n');
-				proc.exit(err.errno);
+		const pid = proc.fork(function() {
+			if (setupCB) {
+				setupCB();
 			}
-			// execution ends here
-		} else {
-			// Store child pid for parent
-			this.pid = pid;
-		}
+
+			if (this._dir) {
+				proc.chdir(this._dir);
+			}
+
+			proc.exec(this.argv[0], this.argv.slice(1), this._env);
+		});
+
+		// Store child pid in root process
+		this.pid = pid;
 
 		return this;
 	},

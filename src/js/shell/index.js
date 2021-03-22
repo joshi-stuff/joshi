@@ -10,11 +10,126 @@ const Capture = require('./Capture.js');
 const EphemeralFd = require('./EphemeralFd.js');
 const Proc = require('./Proc.js');
 
-/*
+/**
+ * Note that this module exports the {@link module:shell.$} function as a
+ * property `shell.$` and as `shell` directly.
  *
- * @param [string|...string|string[]]
+ * That means that you can use more than one syntax when requiring it (see 
+ * examples).
+ *
+ * @example
+ * // Recommended syntax
+ * const $ = require('shell');
+ *
+ *
+ *          OR
+ *
+ *
+ * // Alternative syntax
+ * const $ = require('shell').$;
+ *
+ *
+ *          OR
+ *
+ *
+ * // Orthodox syntax... 
+ * const shell = require('shell'); 
+ *
+ * // ...then invoke it with prefix
+ * shell.$(....)
+ *
+ * @exports shell 
  */
-function $() {
+var shell = {};
+
+/** 
+ * Declare a shell command to be wired and executed. This is the base function
+ * to invoke commands in a shell fashion.
+ *
+ * @example
+ * // Execute `ls -l` as bash would do
+ * $('ls', '-l').do();
+ *
+ * @example
+ * // Execute `ls -l > ls.out` as bash would do
+ * $('ls', '-l')
+ *   .pipe(1, $.file('ls.out'))
+ *   .do();
+ *
+ * // Alternative human friendly syntax
+ * $('ls', '-l')
+ *   .pipe(1, 'ls.out')
+ *   .do();
+ *
+ * @example
+ * // Execute `more < ls.out` as bash would do
+ * $('more')
+ *   .pipe(0, $.file('ls.out'))
+ *   .do();
+ *
+ * // Alternative human friendly syntax
+ * $('more')
+ *   .pipe(0, 'ls.out')
+ *   .do();
+ *
+ * @example
+ * // Execute `more <<HERE_STRING_END ... HERE_STRING_END` as bash would do
+ * $('more')
+ *   .pipe(0, $.here('...'))
+ *   .do();
+ *
+ * // Alternative human friendly syntax
+ * $('more')
+ *   .pipe(0, ['...'])
+ *   .do();
+ *
+ * @example
+ * // Execute `X=$(ls -l)` as bash would do
+ * const x = {};
+ * $('ls', '-l')
+ *   .pipe(1, $.capture(x))
+ *   .do();
+ *
+ * // Alternative human friendly syntax
+ * $('ls', '-l')
+ *   .pipe(1, x)
+ *   .do();
+ *
+ * @example
+ * // Execute `rm file >/dev/null 2>&1` as bash would do
+ * $('rm', 'file')
+ *   .pipe([1, 2], $.file('/dev/null'))
+ *   .do();
+ *
+ * // Alternative human friendly syntax
+ * $('rm', 'file')
+ *   .pipe([1, 2], null)
+ *   .do();
+ *
+ * @example
+ * // Execute 
+ * // `cd src && LANG=en ls -l | grep -v node_modules >> files.list 2> /dev/null` 
+ * // as bash would do it
+ * $('ls', '-l')
+ *   .dir('src')
+ *   .env({LANG: 'en'})
+ *   .pipe(
+ *     1, 
+ *     $('grep', '-v', 'node_modules')
+ *       .pipe(1, '+:files.list')
+ *       .pipe(2, null)
+ *   )
+ *   .do();
+ *
+ * @param {...string|string[]} tokens 
+ * Program and arguments to execute as an array or a list of string arguments
+ *
+ * @returns {shell.Proc} 
+ * A Proc object that provides a fluent API to configure the process wiring
+ *
+ * @throws {SysError}
+ */
+shell.$ = function() {
 	const args = [];
 
 	if(arguments.length > 1) {
@@ -32,16 +147,74 @@ function $() {
 	return new Proc($, args);
 }
 
-$.capture = function(container) {
+/* Point `$` to `shell` directly */
+shell = shell.$;
+
+/**
+ * Declare a redirection to save the output or a process to an `object`
+ * variable.
+ *
+ * Note that there's also an alternative human friendly syntax that can be used
+ * instead of `$.capture(...)` (see {@link Proc.pipe}).
+ *
+ * @example
+ * // Execute `X=$(ls -l)` as bash would do
+ * const x = {};
+ * $('ls', '-l')
+ *   .pipe(1, $.capture(x))
+ *   .do();
+ *
+ * @param {object} container 
+ * An empty object where the output of the piped file descriptor will be stored
+ * as a property.
+ *
+ * The names of the properties are `out` and `error` for file descriptors 1 and
+ * 2, and the file descriptor number for the other.
+ *
+ * @return {object} 
+ * An opaque object to be fed to {@link Proc.pipe}
+ *
+ * @throws {SysError}
+ * @see {@link Proc.pipe}
+ */
+shell.capture = function(container) {
 	return new Capture($, container);
 }
 
 /**
- * @param [undefined|''|'0'|'+'] mode
- * Default mode for fd 1 and 2 is '0' (truncate), for the rest it is '' (open).
- * Mode '+' is append.
+ * Create a redirection to pipe a process to/from a file. 
+ *
+ * Note that there's also an alternative human friendly syntax that can be used
+ * instead of `$.capture(...)` (see {@link Proc.pipe}).
+ *
+ * @example
+ * // Execute `ls -l > ls.out` as bash would do
+ * $('ls', '-l')
+ *   .pipe(1, $.file('ls.out'))
+ *   .do();
+ *
+ * @example
+ * // Execute `more < ls.out` as bash would do
+ * $('more')
+ *   .pipe(0, $.file('ls.out'))
+ *   .do();
+ *
+ * @param {string} filepath The path to the file
+ * 
+ * @param {''|'0'|'+'} [mode='0' for stdout/err, '' for the rest]
+ * The open mode for the file.
+ *
+ * Use '' to open the file for read and write.
+ *
+ * Use '0' to open the file with {@link module:io.truncate}.
+ *
+ * Use '+' to open the file with {@link module:io.append}.
+ *
+ * @return {object} An opaque object to be fed to {@link Proc.pipe}
+ * @throws {SysError}
+ * @see {@link Proc.pipe}
  */
-$.file = function(filepath, mode) {
+shell.file = function(filepath, mode) {
 	return new EphemeralFd($, function(sourceFd) {
 		sourceFd = Number(sourceFd);
 
@@ -69,7 +242,24 @@ $.file = function(filepath, mode) {
 	});
 }
 
-$.here = function(here_string) {
+/**
+ * Create a redirection to get a process' input from a here string.
+ *
+ * Note that there's also an alternative human friendly syntax that can be used
+ * instead of `$.capture(...)` (see {@link Proc.pipe}).
+ *
+ * @example
+ * // Execute `more <<HERE_STRING_END ... HERE_STRING_END` as bash would do
+ * $('more')
+ *   .pipe(0, $.here('...'))
+ *   .do();
+ *
+ * @param {string} here_string The contents of the here string
+ * @return {object} An opaque object to be fed to {@link Proc.pipe}
+ * @throws {SysError}
+ * @see {@link Proc.pipe}
+ */
+shell.here = function(here_string) {
 	return new EphemeralFd($, function(sourceFd) {
 		const filepath = fs.create_temp_file(here_string, 0400);
 		const fd = io.open(filepath);
@@ -78,7 +268,14 @@ $.here = function(here_string) {
 	});
 }
 
-$.search_path = function(command) {
+/**
+ * Search PATH environment variable for a certain executable (command)
+ *
+ * @param {string} command Command to look for in PATH
+ * @returns {string|null} The absolute path to the command or null if not found
+ * @throws {SysError}
+ */
+shell.search_path = function(command) {
 	if (command.includes('/')) {
 		return fs.is_executable(command) ? command : null;
 	}
@@ -110,4 +307,4 @@ $.search_path = function(command) {
 	return null;
 }
 
-return $;
+return shell;

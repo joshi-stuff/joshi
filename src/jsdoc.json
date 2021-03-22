@@ -10,8 +10,8 @@
 	},
 	"source": {
 		"include": "./js",
-		"includePattern": "(errno|fs|io|kern|math|perf|proc|stream|term)/index\\.js$",
-		"excludePattern": "(node_modules/|docs)"
+		"includePattern": ".+\\.js$",
+		"excludePattern": ""
 	},
 	"plugins": [
 		"plugins/markdown"
