@@ -144,7 +144,7 @@ shell.$ = function() {
 		throw new Error('Invalid arguments: ' + arguments);
 	}
 
-	return new Proc($, args);
+	return new Proc(shell, args);
 }
 
 /* Point `$` to `shell` directly */
@@ -178,7 +178,7 @@ shell = shell.$;
  * @see {@link Proc.pipe}
  */
 shell.capture = function(container) {
-	return new Capture($, container);
+	return new Capture(shell, container);
 }
 
 /**
@@ -215,7 +215,7 @@ shell.capture = function(container) {
  * @see {@link Proc.pipe}
  */
 shell.file = function(filepath, mode) {
-	return new EphemeralFd($, function(sourceFd) {
+	return new EphemeralFd(shell, function(sourceFd) {
 		sourceFd = Number(sourceFd);
 
 		if (!mode) {
@@ -260,7 +260,7 @@ shell.file = function(filepath, mode) {
  * @see {@link Proc.pipe}
  */
 shell.here = function(here_string) {
-	return new EphemeralFd($, function(sourceFd) {
+	return new EphemeralFd(shell, function(sourceFd) {
 		const filepath = fs.create_temp_file(here_string, 0400);
 		const fd = io.open(filepath);
 		fs.unlink(filepath);

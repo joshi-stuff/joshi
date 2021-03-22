@@ -465,16 +465,18 @@ Proc.prototype = {
 	 * @private
 	 */
 	_launch: function(setupCB) {
+		const self = this;
+
 		const pid = proc.fork(function() {
 			if (setupCB) {
 				setupCB();
 			}
 
-			if (this._dir) {
-				proc.chdir(this._dir);
+			if (self._dir) {
+				proc.chdir(self._dir);
 			}
 
-			proc.exec(this.argv[0], this.argv.slice(1), this._env);
+			proc.exec(self.argv[0], self.argv.slice(1), self._env);
 		});
 
 		// Store child pid in root process
