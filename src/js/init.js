@@ -45,9 +45,9 @@ function init(global, j, filepath) {
 			const dirs = [j.dir].concat(kern.search_path);
 			var foundModule;
 
-			for (var i = 0; i < dirs.length; i++) {
+			for (var k = 0; k < dirs.length; k++) {
 				try {
-					const candidate = dirs[i] + '/' + module;
+					const candidate = dirs[k] + '/' + module;
 
 					return j.realpath(candidate);
 				} 
