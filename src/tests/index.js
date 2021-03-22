@@ -24,6 +24,7 @@ require('./math.js');
 require('./perf.js');
 require('./io.js');
 require('./stream.js');
+require('./term.js');
 require('./fs.js');
 require('./proc.js');
 
