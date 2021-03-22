@@ -6,6 +6,7 @@ const perf = {};
 /**
  * @class
  * @hideconstructor
+ * @memberof perf
  */
 function PerfData(label) {
 	this.labels = [label];
@@ -28,7 +29,7 @@ PerfData.prototype = {
 	/**
 	 * Finish taking measures
 	 *
-	 * @returns {PerfData} The same object for which it has been called
+	 * @returns {perf.PerfData} The same object for which it has been called
 	 */
 	end: function() {
 		this.labels.push('end');
@@ -61,7 +62,7 @@ PerfData.prototype = {
  * Start a performance data collection with a resolution of milliseconds.
  *
  * @param {string} label The name of the data collection
- * @returns {PerfData} An object with methods to perform the collection
+ * @returns {perf.PerfData} An object with methods to perform the collection
  */
 perf.start = function(label) {
 	return new PerfData(label);
