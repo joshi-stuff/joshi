@@ -25,18 +25,21 @@ makedepends=(
 # validpgpkeys=()
 
 pkgver() {
-	git describe --tags	
+	git describe --tags	| sed -e 's/-/\./g'
 }
 
 package() {
-	cd $srcdir
+	cd "$srcdir"
 	
-	mkdir -p $pkgdir/usr/bin
-	cp -a joshi $pkgdir/usr/bin
+	mkdir -p "$pkgdir/usr/bin"
+	cp -a joshi "$pkgdir/usr/bin"
 
-	mkdir -p $pkgdir/usr/lib/joshi
-	cp -aR js/* $pkgdir/usr/lib/joshi
+	mkdir -p "$pkgdir/usr/lib/joshi"
+	cp -aR js/* "$pkgdir/usr/lib/joshi"
 
-	mkdir -p $pkgdir/usr/include/joshi
-	cp -aR src/duktape/*.h $pkgdir/usr/include/joshi
+	mkdir -p "$pkgdir/usr/include/joshi"
+	cp -aR src/duktape/*.h "$pkgdir/usr/include/joshi"
+
+	mkdir -p "$pkgdir/usr/share/doc/joshi"
+	cp -aR jsdoc/* "$pkgdir/usr/share/doc/joshi"
 }
