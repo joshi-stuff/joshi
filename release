@@ -56,12 +56,12 @@ git push
 echo ==== Back to master...
 git co master
 
+echo ==== Installing to local system...
+rm *zst
+makepkg -ifs --noconfirm
+
 echo ==== Patching src/src/joshi.c after release...
 sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION-next\"/" src/src/joshi.c
 git add src/src/joshi.c
 git commit -m "chore: update joshi.c with snapshot version"
 git push
-
-echo ==== Installing to local system...
-rm *zst
-makepkg -ifs --noconfirm
