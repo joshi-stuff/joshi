@@ -28,6 +28,12 @@ pkgver() {
 	git describe --tags	| sed -e 's/-/\./g'
 }
 
+build() {
+	cd "$srcdir"
+	make clean
+	make
+}
+
 package() {
 	cd "$srcdir"
 	

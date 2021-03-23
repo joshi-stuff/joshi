@@ -21,6 +21,11 @@ all: joshi docs
 
 ci: all test
 
+clean: 
+	@rm -rf build
+	@rm -rf jsdoc
+	@rm -f joshi
+
 joshi: $(OBJECTS)
 	gcc build/*.o -o joshi $(LIBS)
 
@@ -92,14 +97,6 @@ docdash/package.json: docdash/docdash.tar.gz
 docdash/docdash.tar.gz:
 	@mkdir -p docdash
 	curl https://codeload.github.com/clenemt/docdash/tar.gz/$(DOCDASH_VERSION) -o docdash/docdash.tar.gz
-
-
-#
-# Clean target
-#
-clean: 
-	@rm -rf build
-	@rm joshi
 
 
 #

@@ -64,4 +64,4 @@ git push
 
 echo ==== Installing to local system...
 rm *zst
-makepkg -is --noconfirm
+makepkg -ifs --noconfirm
