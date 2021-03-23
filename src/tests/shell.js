@@ -8,6 +8,31 @@ const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
 
+test('$().dir', function() {
+	const x = {};
+
+	$('pwd')
+		.dir('/dev')
+		.pipe(1, x)
+		.do();
+
+	expect.is('/dev\n', x.out);
+});
+
+test('$().env', function() {
+	const x = {};
+
+	$('env')
+		.env({MY_VAR: 'my_value'})
+		.pipe(1, x)
+		.do();
+
+	expect.includes('MY_VAR=my_value\n', x.out);
+});
+
+
+/*****/
+
 test('more < FILE', function() {
 	const FILE = '/etc/environment';
 	const x = {};
@@ -79,3 +104,4 @@ test('more < HERE_STRING', function() {
 
 	expect.is('perico', x.out);
 });
+

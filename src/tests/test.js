@@ -30,6 +30,12 @@ test.expect = {
 		}
 	},
 
+	includes: function(expected, actual) {
+		if (!actual.includes(expected)) {
+			test.fail(actual, 'does not include', expected);
+		}
+	},
+
 	is: function(expected, actual) {
 		if (expected !== actual) {
 			test.fail(actual, '!==', expected);
