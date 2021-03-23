@@ -1,9 +1,7 @@
-# TODO: migrate my-sway
-# TODO: make atexit not to be inherited by forked processes
+# TODO: dynamic library integration (for extension) (dlopen,sym,close functions to load symbol tables)
 # TODO: investigate ncurses + panel
 # TODO: interactive shell (nnn + right panel shell)
 # TODO: ES6 on the fly compilation and bytecode cache directory
-# TODO: dynamic library integration (for extension) (dlopen,sym,close functions to load symbol tables)
 # TODO: after dynamic library integration: dbus integration
 # TODO: after dynamic library integration: gtk integration
 # TODO: after dynamic library integration: optimize my-sway
