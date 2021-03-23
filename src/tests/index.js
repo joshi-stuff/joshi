@@ -4,7 +4,7 @@ term.clear();
 
 require('./errno.js');
 require('./kern.js');
-require('./math.js');
+require('./crypto.js');
 require('./perf.js');
 require('./io.js');
 require('./stream.js');

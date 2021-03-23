@@ -1,7 +1,9 @@
 /** 
- * @exports math 
+ * @exports crypto 
  */
-const math = {};
+const crypto = {};
+
+// TODO: add PBKDF2 -> https://github.com/cryptocoinjs/pbkdf2-sha256/blob/master/lib/pbkdf2.js
 
 /**
  * Get true random bytes (returned by the operating system RNG)
@@ -10,7 +12,7 @@ const math = {};
  * @returns {Uint8Array} A buffer with `count` true random bytes
  * @throws {SysError}
  */
-math.get_random_bytes = function(count) {
+crypto.get_random_bytes = function(count) {
 	const buf = new Uint8Array(count);
 
 	var bread = j.getrandom(buf, count, 0);
@@ -36,4 +38,4 @@ math.get_random_bytes = function(count) {
 	return bytes;
 }
 
-return math;
+return crypto;

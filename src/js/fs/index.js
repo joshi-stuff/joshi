@@ -1,6 +1,6 @@
+const crypto = require('crypto');
 const errno = require('errno');
 const io = require('io');
-const math = require('math');
 const proc = require('proc');
 
 /**
@@ -140,7 +140,7 @@ fs.create_temp_file = function(contents, mode) {
 	contents = contents || '';
 	mode = Number(mode || 0600);
 
-	const rnd = math.get_random_bytes(4);
+	const rnd = crypto.get_random_bytes(4);
 	const filename = 
 		'/tmp/joshi_' + 
 			proc.getpid().toString(16) + 
