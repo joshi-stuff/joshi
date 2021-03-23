@@ -476,7 +476,7 @@ Proc.prototype = {
 				proc.chdir(self._dir);
 			}
 
-			proc.exec(self.argv[0], self.argv.slice(1), self._env);
+			proc.exec(self.argv[0], self.argv.slice(1), {env: self._env});
 		});
 
 		// Store child pid in root process
