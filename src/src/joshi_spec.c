@@ -674,14 +674,14 @@ static duk_ret_t _joshi_spec_getgid(duk_context* ctx) {
 	return 1;
 }
 
-static duk_ret_t _joshi_spec_getppid(duk_context* ctx) {
+static duk_ret_t _joshi_spec_getpid(duk_context* ctx) {
 
 
 	errno = 0;
 	pid_t ret_value;
 	ret_value = 
 
-	getppid();
+	getpid();
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
@@ -694,14 +694,14 @@ static duk_ret_t _joshi_spec_getppid(duk_context* ctx) {
 	return 1;
 }
 
-static duk_ret_t _joshi_spec_getpid(duk_context* ctx) {
+static duk_ret_t _joshi_spec_getppid(duk_context* ctx) {
 
 
 	errno = 0;
 	pid_t ret_value;
 	ret_value = 
 
-	getpid();
+	getppid();
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
@@ -1269,8 +1269,8 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "getenv", func: _joshi_spec_getenv, argc: 1 },
 	{ name: "geteuid", func: _joshi_spec_geteuid, argc: 0 },
 	{ name: "getgid", func: _joshi_spec_getgid, argc: 0 },
-	{ name: "getppid", func: _joshi_spec_getppid, argc: 0 },
 	{ name: "getpid", func: _joshi_spec_getpid, argc: 0 },
+	{ name: "getppid", func: _joshi_spec_getppid, argc: 0 },
 	{ name: "getrandom", func: _joshi_spec_getrandom, argc: 3 },
 	{ name: "getuid", func: _joshi_spec_getuid, argc: 0 },
 	{ name: "kill", func: _joshi_spec_kill, argc: 2 },
@@ -1295,4 +1295,4 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "write", func: _joshi_spec_write, argc: 3 },
 };
 
-size_t joshi_spec_builtins_count = 38;
+size_t joshi_spec_builtins_count = 39;
