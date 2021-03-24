@@ -6,7 +6,10 @@ pkgrel=1
 arch=('any')
 url="https://github.com/izaera/joshi"
 license=('GPL3')
-#depends=()
+depends=(
+	'glibc'
+	'libxcrypt'
+)
 #optdepends=()
 makedepends=(
 	'curl'
