@@ -9,7 +9,7 @@
 CC = gcc
 DOCDASH_VERSION = 1.2.0
 DUKTAPE_VERSION = 2.6.0
-LIBS = -lm
+LIBS = -lm -lcrypt
 
 OBJECTS = \
 	build/joshi.o \

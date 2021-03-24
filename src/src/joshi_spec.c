@@ -443,6 +443,30 @@ static duk_ret_t _joshi_spec_closedir(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _joshi_spec_crypt(duk_context* ctx) {
+	char* phrase;
+	char* setting;
+
+	phrase = duk_get_char_pt(ctx, 0);
+	setting = duk_get_char_pt(ctx, 1);
+
+	errno = 0;
+	char* ret_value;
+	ret_value = 
+
+	crypt(phrase,setting);
+
+	if (errno) {
+		duk_free_all(ctx);
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_char_pt(ctx, ret_value);
+
+	duk_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _joshi_spec_dup(duk_context* ctx) {
 	int fildes;
 
@@ -1234,6 +1258,7 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "chdir", func: _joshi_spec_chdir, argc: 1 },
 	{ name: "close", func: _joshi_spec_close, argc: 1 },
 	{ name: "closedir", func: _joshi_spec_closedir, argc: 1 },
+	{ name: "crypt", func: _joshi_spec_crypt, argc: 2 },
 	{ name: "dup", func: _joshi_spec_dup, argc: 1 },
 	{ name: "dup2", func: _joshi_spec_dup2, argc: 2 },
 	{ name: "execv", func: _joshi_spec_execv, argc: 2 },

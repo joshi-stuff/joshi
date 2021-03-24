@@ -3,7 +3,17 @@
  */
 const crypto = {};
 
-// TODO: add PBKDF2 -> https://github.com/cryptocoinjs/pbkdf2-sha256/blob/master/lib/pbkdf2.js
+/**
+ * Securely hash a password using system's crypt function
+ *
+ * @param {string} text The password to hash
+ * @param {string} salt The salt and hashing options
+ * @return {string} The hashed password
+ * @throws {SysError}
+ */
+crypto.crypt = function(text, salt) {
+	return j.crypt(text, salt);
+}
 
 /**
  * Get true random bytes (returned by the operating system RNG)

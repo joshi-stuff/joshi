@@ -32,6 +32,15 @@ return {
 		throws: 'errno'
 	},
 
+	'crypt': {
+		args: [
+			{ type: 'char*', name: 'phrase' },
+			{ type: 'char*', name: 'setting' },
+		],
+		returns: { type: 'char*' },
+		throws: 'errno-alone'
+	},
+
 	'dup': {
 		args: [
 			{ type: 'int', name: 'fildes' },
