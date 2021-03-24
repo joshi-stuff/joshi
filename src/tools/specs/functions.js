@@ -113,6 +113,12 @@ return {
 		throws: 'errno'
 	},
 
+	'getppid': {
+		args: [],
+		returns: { type: 'pid_t' },
+		throws: 'errno'
+	},
+
 	'getrandom': {
 		args: [
 			{ type: 'void*', name: 'buf' },

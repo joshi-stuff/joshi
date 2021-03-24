@@ -491,6 +491,15 @@ proc.getpid = function() {
 }
 
 /**
+ * Get the pid of the parent process.
+ *
+ * @returns {number} A process id
+ */
+proc.getppid = function() {
+	return j.getppid();
+}
+
+/**
  * Get the user id of the running process.
  *
  * @returns {number} A user id

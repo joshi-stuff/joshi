@@ -250,6 +250,18 @@ test('getpid', function() {
 	expect.equals(pid, fs.read_file(FILE));
 });
 
+test('getppid', function() {
+	const ppid = proc.getpid();
+
+	const result = proc.fork(true, function() {
+		proc.exit(proc.getppid() === ppid ? 7 : 3);
+	});
+
+	log('result =', result);
+
+	expect.equals(7, result.exit_status);
+});
+
 test('kill, signal', function() {
 	var called = false;
 
