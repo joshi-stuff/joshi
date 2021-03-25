@@ -160,3 +160,6 @@ test('println2', function() {
 	expect.is('holi\n', out);
 });
 
+//test('set_mode', function() {
+//	// This cannot be tested without user input
+//});

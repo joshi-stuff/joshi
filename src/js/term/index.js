@@ -2,13 +2,35 @@ const io = require('io');
 const stream = require('stream');
 
 /** 
+ * @enum {number}
  * @exports term 
+ * @readonly
  */
-const term = {};
+const term = {
+	/** Canonical terminal mode */
+	CANONICAL: 0,
+	/** Password (canonical without echo) terminal mode */
+	PASSWORD: 1,
+	/** Raw terminal mode */
+	RAW: 2
+};
 
 // See https://en.wikipedia.org/wiki/ANSI_escape_code
 const CSI = String.fromCharCode(0x1B) + '['; 
 const stdin = stream.create(0);
+
+/**
+ * Set text background color to RGB value
+ *
+ * @param {number} r Red value
+ * @param {number} g Green value
+ * @param {number} b Blue value
+ * @returns {void}
+ * @throws {SysError}
+ */
+term.bg = function(r, g, b) {
+	term.print(CSI + '48;2;' + r + ';' + g + ';' + b + 'm');
+}
 
 /**
  * Clear terminal screen and move cursor to (1, 1)
@@ -22,16 +44,17 @@ term.clear = function() {
 }
 
 /**
- * Set text background color to RGB value
+ * Set terminal mode to canonnical, password or raw.
  *
- * @param {number} r Red value
- * @param {number} g Green value
- * @param {number} b Blue value
+ * @param {number} mode
+ * One of {link module:term.CANONICAL}, {link module:term.PASSWORD} and 
+ * {link module:term.RAW} constants.
+ *
  * @returns {void}
  * @throws {SysError}
  */
-term.bg = function(r, g, b) {
-	term.print(CSI + '48;2;' + r + ';' + g + ';' + b + 'm');
+term.set_mode = function(mode) {
+	j.set_term_mode(mode);
 }
 
 /**

@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <termios.h>
 #include <unistd.h>
 
 #include "joshi_core.h"
@@ -154,6 +155,38 @@ duk_ret_t _joshi_realpath(duk_context* ctx) {
 
 	duk_push_string(ctx, resolved_name);
 	return 1;
+}
+	
+duk_ret_t _joshi_set_term_mode(duk_context* ctx) {
+	static struct termios termios_modes[3];
+	static int initialized = 0;
+
+	if (!initialized) {
+		errno = 0;
+		if (tcgetattr(0, termios_modes+0) != 0) {
+			duk_throw_errno(ctx);
+		}
+
+		memcpy(termios_modes+1, termios_modes+0, sizeof(struct termios));
+		termios_modes[1].c_lflag &= ~ECHO;
+
+		cfmakeraw(termios_modes+2);
+
+		initialized = 1;
+	}
+
+	int mode = duk_require_int(ctx, 0);
+
+	if (mode < 0 || mode > 2) {
+		mode = 0;
+	}
+
+	errno = 0;
+	if (tcsetattr(0, TCSANOW, termios_modes+mode) != 0) {
+		duk_throw_errno(ctx);
+	}
+
+	return 0;
 }
 
 duk_ret_t _joshi_signal(duk_context* ctx) {
@@ -421,6 +454,7 @@ BUILTIN joshi_core_builtins[] = {
 	{ name: "printk", func: _joshi_printk, argc: 1 },
 	{ name: "read_file", func: _joshi_read_file, argc: 1 },
 	{ name: "realpath", func: _joshi_realpath, argc: 1 },
+	{ name: "set_term_mode", func: _joshi_set_term_mode, argc: 1 },
 	{ name: "signal", func: _joshi_signal, argc: 2 },
 }; 
 
