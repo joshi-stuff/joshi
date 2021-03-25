@@ -784,6 +784,32 @@ static duk_ret_t _joshi_spec_kill(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _joshi_spec_lchown(duk_context* ctx) {
+	char* pathname;
+	uid_t owner;
+	gid_t group;
+
+	pathname = duk_get_char_pt(ctx, 0);
+	owner = duk_get_uid_t(ctx, 1);
+	group = duk_get_gid_t(ctx, 2);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	lchown(pathname,owner,group);
+
+	if (ret_value == -1) {
+		duk_free_all(ctx);
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	duk_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _joshi_spec_lseek(duk_context* ctx) {
 	int fildes;
 	off_t offset;
@@ -1153,6 +1179,30 @@ static duk_ret_t _joshi_spec_sleep(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _joshi_spec_symlink(duk_context* ctx) {
+	char* path1;
+	char* path2;
+
+	path1 = duk_get_char_pt(ctx, 0);
+	path2 = duk_get_char_pt(ctx, 1);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	symlink(path1,path2);
+
+	if (ret_value == -1) {
+		duk_free_all(ctx);
+		duk_throw_errno(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	duk_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _joshi_spec_unlink(duk_context* ctx) {
 	char* pathname;
 
@@ -1274,6 +1324,7 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "getrandom", func: _joshi_spec_getrandom, argc: 3 },
 	{ name: "getuid", func: _joshi_spec_getuid, argc: 0 },
 	{ name: "kill", func: _joshi_spec_kill, argc: 2 },
+	{ name: "lchown", func: _joshi_spec_lchown, argc: 3 },
 	{ name: "lseek", func: _joshi_spec_lseek, argc: 3 },
 	{ name: "lstat", func: _joshi_spec_lstat, argc: 2 },
 	{ name: "mkdir", func: _joshi_spec_mkdir, argc: 2 },
@@ -1289,10 +1340,11 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "setenv", func: _joshi_spec_setenv, argc: 3 },
 	{ name: "setsid", func: _joshi_spec_setsid, argc: 0 },
 	{ name: "sleep", func: _joshi_spec_sleep, argc: 1 },
+	{ name: "symlink", func: _joshi_spec_symlink, argc: 2 },
 	{ name: "unlink", func: _joshi_spec_unlink, argc: 1 },
 	{ name: "unsetenv", func: _joshi_spec_unsetenv, argc: 1 },
 	{ name: "waitpid", func: _joshi_spec_waitpid, argc: 3 },
 	{ name: "write", func: _joshi_spec_write, argc: 3 },
 };
 
-size_t joshi_spec_builtins_count = 39;
+size_t joshi_spec_builtins_count = 41;

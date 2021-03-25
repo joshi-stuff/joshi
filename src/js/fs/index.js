@@ -80,6 +80,22 @@ fs.basename = function(path) {
 }
 
 /**
+ * Change file owner and group of a file or symbolic link
+ *
+ * @param {number} uid The new owner
+ * @param {number} [gid] The new group (default is to leave untouched)
+ * @returns {0}
+ * @throws {SysError}
+ */
+fs.chown = function(path, uid, gid) {
+	if (gid === undefined) {
+		gid = fs.stat(path).gid;
+	}
+
+	return j.lchown(path, uid, gid);
+}
+
+/**
  * Copy file.
  *
  * Note that if the copy fails, the target file is left in an undefined state.
@@ -594,6 +610,18 @@ fs.stat = function(pathname) {
 		},
 		uid: statbuf.st_uid,
 	};
+}
+
+/**
+ * Create a symbolic link at path2 pointing to path1
+ *
+ * @param {string} path1 Symlink target path 
+ * @param {string} path2 Symlink file path
+ * @returns {0}
+ * @throws {SysError} 
+ */
+fs.symlink = function(path1, path2) {
+	return j.symlink(path1, path2);
 }
 
 /**

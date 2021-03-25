@@ -11,6 +11,36 @@ test('basename', function() {
 	expect.is('holi', fs.basename('holi'));
 });
 
+test('chown', function() {
+	const FILE = '/tmp/joshi';
+
+	fs.unlink(FILE, false);
+	fs.write_file(FILE, '');
+
+	// We cannot assign our files to any other user, so we just do a light test
+	fs.chown(FILE, proc.getuid(), proc.getgid());
+
+	const st = fs.stat(FILE);
+
+	expect.is(proc.getuid(), st.uid);
+	expect.is(proc.getgid(), st.gid);
+});
+
+test('chown > for symlink', function() {
+	const LINK = '/tmp/joshiln';
+
+	fs.unlink(LINK, false);
+	fs.symlink('/etc/passwd', LINK);
+
+	// We cannot assign our files to any other user, so we just do a light test
+	fs.chown(LINK, proc.getuid(), proc.getgid());
+
+	const st = fs.stat(LINK);
+
+	expect.is(proc.getuid(), st.uid);
+	expect.is(proc.getgid(), st.gid);
+});
+
 test('copy_file', function() {
 	const SRC = '/tmp/joshi1';
 	const DEST = '/tmp/joshi2';
@@ -125,9 +155,7 @@ test('is_link', function() {
 	const LINK = '/tmp/joshiln';
 
 	fs.unlink(LINK, false);
-	proc.fork(true, function() {
-		proc.exec('ln', ['-s', '/tmp', LINK]);
-	});
+	fs.symlink('/tmp', LINK);
 
 	expect.is(true, fs.is_link(LINK));
 	expect.is(false, fs.is_link('/'));
@@ -294,9 +322,7 @@ test('read_link', function() {
 	const LINK = '/tmp/joshiln';
 
 	fs.unlink(LINK, false);
-	proc.fork(true, function() {
-		proc.exec('ln', ['-s', '/tmp', LINK]);
-	});
+	fs.symlink('/tmp', LINK);
 
 	expect.is('/tmp', fs.read_link(LINK));
 });
@@ -305,9 +331,7 @@ test('read_link > with relative path', function() {
 	const LINK = '/tmp/joshiln';
 
 	fs.unlink(LINK, false);
-	proc.fork(true, function() {
-		proc.exec('ln', ['-s', '../dev', LINK]);
-	});
+	fs.symlink('../dev', LINK);
 
 	expect.is('/tmp/../dev', fs.read_link(LINK));
 });
@@ -352,6 +376,17 @@ test('stat', function() {
 	expect.is(true, t.access >= NOW);
 	expect.is(true, t.creation >= NOW);
 	expect.is(true, t.modification >= NOW);
+});
+
+test('symlink', function() {
+	const LINK = '/tmp/joshiln';
+
+	fs.unlink(LINK, false);
+	fs.symlink('/etc/passwd', LINK);
+
+	const contents = fs.read_file('/etc/passwd');
+
+	expect.is(contents, fs.read_file(LINK));
 });
 
 test('unlink', function() {

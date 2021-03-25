@@ -153,6 +153,16 @@ return {
 		throws: 'errno'
 	},
 
+	'lchown': {
+		args: [
+			{ type: 'char*', name: 'pathname' },
+			{ type: 'uid_t', name: 'owner' },
+			{ type: 'gid_t', name: 'group' },
+		],
+		returns: { type: 'int' },
+		throws: 'errno'
+	},
+
 	'lseek': {
 		args: [
 			{ type: 'int', name: 'fildes' },
@@ -283,6 +293,15 @@ return {
 			{ type: 'unsigned int', name: 'seconds' },
 		],
 		returns: { type: 'unsigned int' },
+		throws: 'errno'
+	},
+
+	'symlink': {
+		args: [
+			{ type: 'char*', name: 'path1' },
+			{ type: 'char*', name: 'path2' },
+		],
+		returns: { type: 'int' },
 		throws: 'errno'
 	},
 
