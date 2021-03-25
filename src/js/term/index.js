@@ -44,20 +44,6 @@ term.clear = function() {
 }
 
 /**
- * Set terminal mode to canonnical, password or raw.
- *
- * @param {number} mode
- * One of {link module:term.CANONICAL}, {link module:term.PASSWORD} and 
- * {link module:term.RAW} constants.
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.set_mode = function(mode) {
-	j.set_term_mode(mode);
-}
-
-/**
  * Set text foreground color to RGB value
  *
  * @param {number} r Red value
@@ -157,6 +143,20 @@ term.read_line = function() {
  */
 term.reset = function() {
 	term.print(CSI + 'm');
+}
+
+/**
+ * Set terminal mode to canonnical, password or raw.
+ *
+ * @param {number} mode
+ * One of {link module:term.CANONICAL}, {link module:term.PASSWORD} and 
+ * {link module:term.RAW} constants.
+ *
+ * @returns {void}
+ * @throws {SysError}
+ */
+term.set_mode = function(mode) {
+	j.set_term_mode(mode);
 }
 
 /**
