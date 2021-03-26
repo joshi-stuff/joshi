@@ -1,7 +1,7 @@
 # Maintainer: Iván Zaera Avellón <izaera@gmx.es>
 pkgname=joshi
 pkgdesc="JavaScript Oriented Shell Interpreter"
-pkgver=1.3.0
+pkgver=1.3.1
 pkgrel=1
 arch=('any')
 url="https://github.com/izaera/joshi"
