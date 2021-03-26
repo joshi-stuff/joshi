@@ -425,7 +425,7 @@ proc.fork2 = function(getpid, fn) {
 				proc.exit(0);
 			}
 			catch(err) {
-				io.write_line(2, err.stack);
+				io.write_string(2, err.stack);
 				proc.exit(err.errno === undefined ? -1 : err.errno);
 			}
 		}
