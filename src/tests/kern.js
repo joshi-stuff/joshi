@@ -11,6 +11,7 @@ const test = require('./test.js').run;
 test('printk', function() {
 	const FILE = '/tmp/joshi';
 
+	fs.unlink(FILE, false);
 	const fd = io.truncate(FILE);
 
 	proc.fork(true, function() {

@@ -67,8 +67,16 @@ const io = {
 
 const O_APPEND = 02000;
 const O_CREAT = 0100;
-const O_RDWR = 02;
+const O_RDONLY = 0;
+const O_RDWR = 2;
 const O_TRUNC = 01000;
+const O_WRONLY = 1;
+
+const ACCESS_FLAG = {
+	'r': O_RDONLY,
+	'w': O_WRONLY,
+	'rw': O_RDWR
+}
 
 /**
  * Open a file for appending. If the file does not exist it is created. If it 
@@ -77,10 +85,12 @@ const O_TRUNC = 01000;
  * Note that the file pointer will always be set to EOF before any write
  * operation.
  *
+ * Note that the file is always open in write only mode.
+ *
  * @param {string} pathname Path to file
  *
  * @param {number} [mode=0644]
- * Access mode of file in case it needs to be created
+ * File mode bits of file in case it needs to be created
  *
  * @returns {number} The file descriptor
  * @throws {SysError}
@@ -91,7 +101,7 @@ const O_TRUNC = 01000;
 io.append = function(pathname, mode) {
 	mode = Number(mode || 0644);
 
-	return j.open(pathname, O_CREAT|O_APPEND|O_RDWR, mode);
+	return j.open(pathname, O_CREAT|O_APPEND|O_WRONLY, mode);
 }
 
 /**
@@ -122,7 +132,10 @@ io.close = function(fd, fail_if_closed) {
  * @param {string} pathname Path to file
  *
  * @param {number} [mode=0644]
- * Access mode of file in case it needs to be created
+ * File mode bits of file in case it needs to be created
+ *
+ * @param {string} [access='rw']
+ * Access mode of file ('r', 'w', or 'rw')
  *
  * @returns {number} The file descriptor
  * @throws {SysError}
@@ -130,10 +143,23 @@ io.close = function(fd, fail_if_closed) {
  * @see {module:io.open}
  * @see {module:io.truncate}
  */
-io.create = function(pathname, mode) {
-	mode = Number(mode || 0644);
+io.create = function(pathname, mode, access) {
+	if (mode === undefined && access === undefined) {
+		mode = 0644;
+		access = 'rw';
+	} 
+	else if (access === undefined && typeof mode === 'string') {
+		access = mode;
+		mode = 0644;
+	}
+	else if (access === undefined) {
+		access = 'rw'
+	}
 
-	return j.open(pathname, O_CREAT|O_RDWR, mode);
+	mode = Number(mode);
+	access = access.toString();
+
+	return j.open(pathname, O_CREAT|ACCESS_FLAG[access], mode);
 }
 
 /**
@@ -163,6 +189,7 @@ io.dup2 = function(openFd, changedFd) {
  * Open an existing file.
  *
  * @param {string} pathname Path to file
+ * @param {string} [access='rw'] Access mode ('r', 'w', or 'rw')
  *
  * @returns {number} The file descriptor
  * @throws {SysError}
@@ -170,9 +197,13 @@ io.dup2 = function(openFd, changedFd) {
  * @see {module:io.create}
  * @see {module:io.truncate}
  */
-io.open = function(pathname) {
+io.open = function(pathname, access) {
+	if (access === undefined) {
+		access = 'rw';
+	}
+
 	try {
-		return j.open(pathname, 0, 0);
+		return j.open(pathname, ACCESS_FLAG[access], 0);
 	}
 	catch(err) {
 		err.message += ' (' + pathname + ')';
@@ -377,7 +408,10 @@ io.tell = function(fd) {
  * @param {string} pathname Path to file
  *
  * @param {number} [mode=0644]
- * Access mode of file in case it needs to be created
+ * File mode bits of file in case it needs to be created
+ *
+ * @param {string} [access='rw']
+ * Access mode of file ('r', 'w', or 'rw')
  *
  * @returns {number} The file descriptor
  * @throws {SysError}
@@ -385,10 +419,23 @@ io.tell = function(fd) {
  * @see {module:io.create}
  * @see {module:io.open}
  */
-io.truncate = function(pathname, mode) {
-	mode = mode || 0644;
+io.truncate = function(pathname, mode, access) {
+	if (mode === undefined && access === undefined) {
+		mode = 0644;
+		access = 'rw';
+	} 
+	else if (access === undefined && typeof mode === 'string') {
+		access = mode;
+		mode = 0644;
+	}
+	else if (access === undefined) {
+		access = 'rw'
+	}
 
-	return j.open(pathname, O_CREAT|O_TRUNC|O_RDWR, Number(mode));
+	mode = Number(mode);
+	access = access.toString();
+
+	return j.open(pathname, O_CREAT|O_TRUNC|ACCESS_FLAG[access], mode);
 }
 
 /**

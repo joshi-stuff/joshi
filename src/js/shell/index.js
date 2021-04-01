@@ -204,7 +204,7 @@ shell.capture = function(container) {
  * @param {''|'0'|'+'} [mode='0' for stdout/err, '' for the rest]
  * The open mode for the file.
  *
- * Use '' to open the file for read and write.
+ * Use '' to open the file with {@link module:io.open}.
  *
  * Use '0' to open the file with {@link module:io.truncate}.
  *
@@ -227,15 +227,24 @@ shell.file = function(filepath, mode) {
 			}
 		}
 
+		var access = 'rw';
+
+		if (sourceFd === 0) {
+			access = 'r';
+		}
+		else if (sourceFd === 1 || sourceFd === 2) {
+			access = 'w';
+		}
+
 		switch(mode) {
 			case '':
-				return io.open(filepath);
+				return io.open(filepath, access);
 
 			case '+':
 				return io.append(filepath);
 
 			case '0':
-				return io.truncate(filepath);
+				return io.truncate(filepath, access);
 		}
 
 		throw new Error('Unknown mode: ' + mode);
@@ -262,7 +271,7 @@ shell.file = function(filepath, mode) {
 shell.here = function(here_string) {
 	return new EphemeralFd(shell, function(sourceFd) {
 		const filepath = fs.create_temp_file(here_string, 0400);
-		const fd = io.open(filepath);
+		const fd = io.open(filepath, 'r');
 		fs.unlink(filepath);
 		return fd;
 	});

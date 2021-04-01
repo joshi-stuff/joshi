@@ -531,7 +531,7 @@ fs.read_link = function(path, dereference) {
  * @see {module:io.read_string}
  */
 fs.read_file = function(path) {
-	const fd = io.open(path);
+	const fd = io.open(path, 'r');
 
 	try {
 		return io.read_string(fd);
@@ -664,10 +664,14 @@ fs.unlink = function(pathname, fail_if_not_found) {
  * @see {@link module:io.write_string}
  */
 fs.write_file = function(path, contents, mode) {
+	if (mode === undefined) {
+		mode = 0644;
+	}
+
 	var fd;
 
 	try {
-		fd = io.truncate(path, mode);
+		fd = io.truncate(path, mode, 'w');
 
 		return io.write_string(fd, contents);
 	} 

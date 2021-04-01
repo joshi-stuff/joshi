@@ -122,6 +122,54 @@ test('open', function() {
 	});
 });
 
+test('open > for read and write', function() {
+	const FILE = '/tmp/joshi';
+
+	io.close(io.truncate(FILE));
+
+	const fd = io.open(FILE, 'rw');
+	
+	io.write_string(fd, 'holi');
+
+	io.seek(fd, 0);
+
+	expect.is('holi', io.read_string(fd));
+
+	io.close(fd);
+});
+
+test('open > for read only', function() {
+	const FILE = '/tmp/joshi';
+
+	io.close(io.truncate(FILE));
+
+	const fd = io.open(FILE, 'r');
+	
+	expect.throws(function() {
+		io.write_string(fd, 'holi');
+	});
+
+	expect.is('', io.read_string(fd));
+
+	io.close(fd);
+});
+
+test('open > for write only', function() {
+	const FILE = '/tmp/joshi';
+
+	io.close(io.truncate(FILE));
+
+	const fd = io.open(FILE, 'w');
+	
+	expect.throws(function() {
+		io.read_string(fd);
+	});
+
+	io.write_string(fd, 'holi');
+
+	io.close(fd);
+});
+
 test('pipe', function() {
 	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37, 38, 38, 40, 41, 42]);
 
