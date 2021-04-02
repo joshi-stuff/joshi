@@ -290,12 +290,17 @@ io.read = function(fd, buf, count) {
 		count = buf.length;
 
 		const bleft = buf.length;
+		var chunk_buf = buf; 
 
 		while (true) {
-			const bread = j.read(fd, buf, bleft);
+			const bread = j.read(fd, chunk_buf, bleft);
 
 			if (bread === 0) {
 				break;
+			}
+
+			if (buf !== chunk_buf) {
+				buf.set(chunk_buf.subarray(0, bread), buf.length - bleft);
 			}
 
 			bleft -= bread;
@@ -304,7 +309,9 @@ io.read = function(fd, buf, count) {
 				break;
 			}
 
-			buf = new Uint8Array(buf, bread);
+			if (buf === chunk_buf) {
+				chunk_buf = new Uint8Array(bleft);
+			}
 		}
 
 		return count - bleft;
