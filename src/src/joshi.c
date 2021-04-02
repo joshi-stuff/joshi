@@ -6,7 +6,7 @@
 #include "joshi_spec.h"
 
 // This is patched by release script, don't touch
-#define VERSION "1.4.0-next"
+#define VERSION "1.4.1"
 
 const char* LIB_DIR = "/usr/lib/joshi";
 
