@@ -11,7 +11,7 @@ return {
 				1,
 				cleanup_code
 			),
-			'	duk_throw_errno(ctx);',
+			'	joshi_throw_syserror(ctx);',
 			'}',
 		];
 	},
@@ -23,7 +23,7 @@ return {
 				1,
 				cleanup_code
 			),
-			'	duk_throw_errno(ctx);',
+			'	joshi_throw_syserror(ctx);',
 			'}',
 		];
 	},
@@ -37,7 +37,7 @@ return {
 				1,
 				cleanup_code
 			),
-			'	duk_throw_errno(ctx);',
+			'	joshi_throw_syserror(ctx);',
 			'}',
 		];
 	},

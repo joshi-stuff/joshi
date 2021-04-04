@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+// TODO: support custom code block enclosed in comments
+
 const generate = require('./generate.js');
 
 // Generators
@@ -71,7 +73,6 @@ function main(argv) {
 		[].concat(
 			require('./specs/header.js'),
 			'',
-			'#include "joshi_core.h"',
 			'#include "joshi_spec.h"', 
 			'',
 			'typedef struct duk_blk {',
@@ -110,7 +111,7 @@ function main(argv) {
 			generate_pop_push_functions(types),
 			generate_stubs(functions, throws, types),
 			'',
-			'BUILTIN joshi_spec_builtins[] = {',
+			'JOSHI_FN_DECL joshi_spec_fn_decls[] = {',
 			generate.tabify(
 				1,
 				Object.entries(functions).reduce(function(lines, entry) {
@@ -125,7 +126,7 @@ function main(argv) {
 			),
 			'};',
 			'',
-			'size_t joshi_spec_builtins_count = ' + Object.keys(functions).length + ';' 
+			'size_t joshi_spec_fn_decls_count = ' + Object.keys(functions).length + ';' 
 		).join('\n')
 	);
 }

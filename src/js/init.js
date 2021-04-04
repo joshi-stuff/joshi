@@ -26,7 +26,7 @@ function init(global, j, filepath) {
 			const i = owner_path.lastIndexOf('/');
 			const owner_dir = owner_path.substr(0, i+1);
 
-			if (!module.endsWith('.js')) {
+			if (!module.endsWith('.js') && !module.endsWith('.so')) {
 				module += '/index.js';
 			}
 
@@ -67,20 +67,28 @@ function init(global, j, filepath) {
 			}
 
 			try {
-				const is_core_module = filepath.startsWith(j.dir);
-				const args = is_core_module ? "require, j" : "require";
+				if (filepath.endsWith('.js')) {	
+					const is_core_module = filepath.startsWith(j.dir);
+					const args = is_core_module ? "require, j" : "require";
 
-				const source =
-					"function("+args+"){ " +
-					j.read_file(filepath) +
-					" ;}";
+					const source =
+						"function("+args+"){ " +
+						j.read_file(filepath) +
+						" ;}";
 
-				var fn = j.compile_function(source, filepath);
+					const fn = j.compile_function(source, filepath);
 
-				modules_cache[filepath] = 
-					is_core_module 
-					? fn(create_require(filepath), j) 
-					: fn(create_require(filepath));
+					modules_cache[filepath] = 
+						is_core_module 
+							? fn(create_require(filepath), j) 
+							: fn(create_require(filepath));
+				}
+				else if (filepath.endsWith('.so')) {
+					modules_cache[filepath] = j.require_so(filepath);
+				}
+				else {
+					throw new Error('Unknown module type: ' + filepath);
+				}
 
 				return modules_cache[filepath];
 			} 

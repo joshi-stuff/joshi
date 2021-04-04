@@ -12,7 +12,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "joshi_core.h"
 #include "joshi_spec.h"
 
 typedef struct duk_blk {
@@ -390,7 +389,7 @@ static duk_ret_t _joshi_spec_chdir(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -412,7 +411,7 @@ static duk_ret_t _joshi_spec_close(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -434,7 +433,7 @@ static duk_ret_t _joshi_spec_closedir(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -458,7 +457,7 @@ static duk_ret_t _joshi_spec_crypt(duk_context* ctx) {
 
 	if (errno) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_char_pt(ctx, ret_value);
@@ -480,7 +479,7 @@ static duk_ret_t _joshi_spec_dup(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -504,7 +503,7 @@ static duk_ret_t _joshi_spec_dup2(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -528,7 +527,7 @@ static duk_ret_t _joshi_spec_execv(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -552,7 +551,7 @@ static duk_ret_t _joshi_spec_execvp(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -587,7 +586,7 @@ static duk_ret_t _joshi_spec_fork(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_pid_t(ctx, ret_value);
@@ -607,7 +606,7 @@ static duk_ret_t _joshi_spec_getegid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_uid_t(ctx, ret_value);
@@ -645,7 +644,7 @@ static duk_ret_t _joshi_spec_geteuid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_uid_t(ctx, ret_value);
@@ -665,7 +664,7 @@ static duk_ret_t _joshi_spec_getgid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_uid_t(ctx, ret_value);
@@ -685,7 +684,7 @@ static duk_ret_t _joshi_spec_getpid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_pid_t(ctx, ret_value);
@@ -705,7 +704,7 @@ static duk_ret_t _joshi_spec_getppid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_pid_t(ctx, ret_value);
@@ -731,7 +730,7 @@ static duk_ret_t _joshi_spec_getrandom(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_ssize_t(ctx, ret_value);
@@ -751,7 +750,7 @@ static duk_ret_t _joshi_spec_getuid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_uid_t(ctx, ret_value);
@@ -775,7 +774,7 @@ static duk_ret_t _joshi_spec_kill(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -801,7 +800,7 @@ static duk_ret_t _joshi_spec_lchown(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -827,7 +826,7 @@ static duk_ret_t _joshi_spec_lseek(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_off_t(ctx, ret_value);
@@ -850,7 +849,7 @@ static duk_ret_t _joshi_spec_lstat(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_object(ctx);
@@ -878,7 +877,7 @@ static duk_ret_t _joshi_spec_mkdir(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -902,7 +901,7 @@ static duk_ret_t _joshi_spec_mkfifo(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -928,7 +927,7 @@ static duk_ret_t _joshi_spec_open(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -950,7 +949,7 @@ static duk_ret_t _joshi_spec_opendir(duk_context* ctx) {
 
 	if (ret_value == NULL) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_DIR_pt(ctx, ret_value);
@@ -972,7 +971,7 @@ static duk_ret_t _joshi_spec_pipe(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_object(ctx);
@@ -1002,7 +1001,7 @@ static duk_ret_t _joshi_spec_poll(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_object(ctx);
@@ -1032,7 +1031,7 @@ static duk_ret_t _joshi_spec_read(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_ssize_t(ctx, ret_value);
@@ -1054,7 +1053,7 @@ static duk_ret_t _joshi_spec_readdir(duk_context* ctx) {
 
 	if (ret_value == NULL) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_struct_dirent(ctx, ret_value);
@@ -1080,7 +1079,7 @@ static duk_ret_t _joshi_spec_readlink(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -1102,7 +1101,7 @@ static duk_ret_t _joshi_spec_rmdir(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -1128,7 +1127,7 @@ static duk_ret_t _joshi_spec_setenv(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -1148,7 +1147,7 @@ static duk_ret_t _joshi_spec_setsid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_pid_t(ctx, ret_value);
@@ -1170,7 +1169,7 @@ static duk_ret_t _joshi_spec_sleep(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_unsigned_int(ctx, ret_value);
@@ -1194,7 +1193,7 @@ static duk_ret_t _joshi_spec_symlink(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -1216,7 +1215,7 @@ static duk_ret_t _joshi_spec_unlink(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -1238,7 +1237,7 @@ static duk_ret_t _joshi_spec_unsetenv(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_int(ctx, ret_value);
@@ -1263,7 +1262,7 @@ static duk_ret_t _joshi_spec_waitpid(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_object(ctx);
@@ -1293,7 +1292,7 @@ static duk_ret_t _joshi_spec_write(duk_context* ctx) {
 
 	if (ret_value == -1) {
 		duk_free_all(ctx);
-		duk_throw_errno(ctx);
+		joshi_throw_syserror(ctx);
 	}
 
 	duk_push_ssize_t(ctx, ret_value);
@@ -1303,7 +1302,7 @@ static duk_ret_t _joshi_spec_write(duk_context* ctx) {
 }
 
 
-BUILTIN joshi_spec_builtins[] = {
+JOSHI_FN_DECL joshi_spec_fn_decls[] = {
 	{ name: "alarm", func: _joshi_spec_alarm, argc: 1 },
 	{ name: "chdir", func: _joshi_spec_chdir, argc: 1 },
 	{ name: "close", func: _joshi_spec_close, argc: 1 },
@@ -1347,4 +1346,4 @@ BUILTIN joshi_spec_builtins[] = {
 	{ name: "write", func: _joshi_spec_write, argc: 3 },
 };
 
-size_t joshi_spec_builtins_count = 41;
+size_t joshi_spec_fn_decls_count = 41;
