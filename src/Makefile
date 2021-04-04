@@ -9,41 +9,58 @@
 CC = gcc
 DOCDASH_VERSION = 1.2.0
 DUKTAPE_VERSION = 2.6.0
-LIBS = -lm -lcrypt
 
-OBJECTS = \
+DUKTAPE_HEADERS = src/duktape/duktape.h src/duktape/duk_config.h
+JOSHI_HEADERS = $(DUKTAPE_HEADERS) src/joshi.h
+
+JOSHI_OBJECTS = \
 	build/joshi.o \
 	build/duktape.o \
 	build/joshi_core.o \
-	build/joshi_spec.o
+	build/joshi_spec.o 
+JOSHI_TUI_OBJECTS = \
+	build/joshi_tui.o
 
-all: joshi docs 
+all: joshi js/joshi_tui.so docs 
 
 ci: all test
 
 clean: 
 	@rm -rf build
 	@rm -rf jsdoc
+	@rm -f js/joshi_tui.so
 	@rm -f joshi
 
-joshi: $(OBJECTS)
-	gcc build/*.o -o joshi $(LIBS)
+joshi: $(JOSHI_OBJECTS)
+	gcc $(JOSHI_OBJECTS) -lcrypt -ldl -lm -o $@ -Wl,--export-dynamic
+
+js/joshi_tui.so: $(JOSHI_TUI_OBJECTS)
+	gcc $(JOSHI_TUI_OBJECTS) -lcurses -o $@ -shared
 
 docs: docdash-template
 	@rm -rf ./jsdoc
 	jsdoc -c jsdoc.json
 
 test: 
-	./joshi ./tests/index.js
+	JOSHI_LIB_DIR=`pwd`/js ./joshi ./tests/index.js
 
 
 #
 # Dependencies
 #
-build/duktape.o: src/duktape/duktape.h src/duktape/duk_config.h
-build/joshi.o: src/joshi_core.h src/duktape/duktape.h src/duktape/duk_config.h
-build/joshi_core.o: src/joshi_core.h src/duktape/duktape.h src/duktape/duk_config.h
-build/joshi_spec.o: src/joshi_spec.h src/duktape/duktape.h src/duktape/duk_config.h
+build/duktape.o: $(DUKTAPE_HEADERS)
+build/joshi.o: $(JOSHI_HEADERS) src/joshi_core.h src/joshi_spec.h
+build/joshi_core.o: $(JOSHI_HEADERS) src/joshi_core.h
+build/joshi_spec.o: $(JOSHI_HEADERS) src/joshi_spec.h
+build/joshi_tui.o: $(JOSHI_HEADERS)
+
+
+#
+# Implicit rules
+#
+build/%.o: src/%.c
+	@mkdir -p build
+	$(CC) -o $@ -Isrc -Isrc/duktape -c $< -fPIC
 
 
 #
@@ -53,8 +70,8 @@ fix-spec:
 	git checkout src/joshi_spec.c
 
 spec: 
-	@rm src/joshi_spec.c >/dev/null 2>&1
-	./joshi ./tools/spec.js ./src
+	@rm -f src/joshi_spec.c >/dev/null 2>&1
+	joshi ./tools/spec.js ./src
 
 
 #
@@ -97,11 +114,3 @@ docdash/package.json: docdash/docdash.tar.gz
 docdash/docdash.tar.gz:
 	@mkdir -p docdash
 	curl https://codeload.github.com/clenemt/docdash/tar.gz/$(DOCDASH_VERSION) -o docdash/docdash.tar.gz
-
-
-#
-# Implicit rules
-#
-build/%.o: src/%.c
-	@mkdir -p build
-	$(CC) -o $@ -Isrc -Isrc/duktape -c $<

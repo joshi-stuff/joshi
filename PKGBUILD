@@ -48,6 +48,7 @@ package() {
 
 	mkdir -p "$pkgdir/usr/include/joshi"
 	cp -aR src/duktape/*.h "$pkgdir/usr/include/joshi"
+	cp -a src/joshi.h "$pkgdir/usr/include/joshi"
 
 	mkdir -p "$pkgdir/usr/share/doc/joshi"
 	cp -aR jsdoc/* "$pkgdir/usr/share/doc/joshi"
