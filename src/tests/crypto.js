@@ -22,3 +22,37 @@ test('get_random_bytes', function() {
 	}
 	log(str);
 });
+
+test('sha256 > with perfect size buffer', function() {
+	const hash = crypto.sha256(
+		'1234567890123456789012345678901234567890123456789012345'
+	);
+
+	expect.is(
+		'03C3A70E99ED5EECCD80F73771FCF1ECE643D939D9ECC76F25544B0233F708E9',
+		hash	
+	);
+});
+
+test('sha256 > with single padding needed', function() {
+	const hash = crypto.sha256(
+		'12345678901234567890123456789012345678901234567890'
+	);
+
+	expect.is(
+		'F58FFFBA129AA67EC63BF12571A42977C0B785D3B2A93CC0538557C91DA2115D',
+		hash	
+	);
+});
+
+test('sha256 > with double padding needed', function() {
+	const hash = crypto.sha256(
+		'En un lugar de la Mancha de cuyo nombre no quiero acordarme...'
+	);
+
+	expect.is(
+		'18BD46DB70C25F5AF60AEAF927754B9D212CADFAA650895631775DE3BBB44114',
+		hash	
+	);
+});
+
