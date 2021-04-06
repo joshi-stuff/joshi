@@ -10,14 +10,17 @@ CC = gcc
 DOCDASH_VERSION = 1.2.0
 DUKTAPE_VERSION = 2.6.0
 
-DUKTAPE_HEADERS = src/duktape/duktape.h src/duktape/duk_config.h
-JOSHI_HEADERS = $(DUKTAPE_HEADERS) src/joshi.h
+DUKTAPE_HEADERS = \
+	src/duktape/duktape.h \
+	src/duktape/duk_config.h
+JOSHI_HEADERS = \
+	$(DUKTAPE_HEADERS) \
+	src/joshi.h
 
 JOSHI_OBJECTS = \
 	build/joshi.o \
 	build/duktape.o \
-	build/joshi_core.o \
-	build/joshi_spec.o 
+	build/joshi_core.o 
 JOSHI_TUI_OBJECTS = \
 	build/joshi_tui.o
 
@@ -49,9 +52,8 @@ test:
 # Dependencies
 #
 build/duktape.o: $(DUKTAPE_HEADERS)
-build/joshi.o: $(JOSHI_HEADERS) src/joshi_core.h src/joshi_spec.h
+build/joshi.o: $(JOSHI_HEADERS) src/joshi_core.h
 build/joshi_core.o: $(JOSHI_HEADERS) src/joshi_core.h
-build/joshi_spec.o: $(JOSHI_HEADERS) src/joshi_spec.h
 build/joshi_tui.o: $(JOSHI_HEADERS)
 
 
@@ -67,11 +69,10 @@ build/%.o: src/%.c
 # Spec stuff
 #
 fix-spec:
-	git checkout src/joshi_spec.c
+	git checkout src/joshi_core.c
 
 spec: 
-	@rm -f src/joshi_spec.c >/dev/null 2>&1
-	joshi ./tools/spec.js ./src
+	./joshpec/joshspec ./specs/core
 
 
 #
