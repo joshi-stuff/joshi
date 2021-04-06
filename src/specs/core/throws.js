@@ -1,4 +1,4 @@
-const generate = require('../generate.js');
+const generate = require('generate.js');
 
 return {
 

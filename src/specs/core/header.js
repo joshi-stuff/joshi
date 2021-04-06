@@ -1,5 +1,6 @@
 return [
 	'#include <dirent.h>',
+	'#include <dlfcn.h>',
 	'#include <errno.h>',
 	'#include <fcntl.h>',
 	'#include <poll.h>',
@@ -11,5 +12,6 @@ return [
 	'#include <sys/stat.h>',
 	'#include <sys/types.h>',
 	'#include <sys/wait.h>',
+	'#include <termios.h>',
 	'#include <unistd.h>',
 ];

@@ -1,4 +1,4 @@
-const tt = require('../type-types.js');
+const tt = require('type-types.js');
 
 const ARRAY = tt.ARRAY;
 const ATOMIC = tt.ATOMIC;

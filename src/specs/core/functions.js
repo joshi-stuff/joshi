@@ -1,4 +1,20 @@
+const CUSTOMIZED = function(argc) {
+	const args = [];
+
+	for (var i = 0; i < argc; i++) {
+		args.push({ type: 'int', name: 'arg'+i });
+	}
+
+	return {
+		args: args,
+		returns: { type: 'void' },
+		throws: 'nothing'
+	};
+}
+
 return {
+
+	/* System calls */
 
 	'alarm': {
 		args: [
@@ -264,6 +280,14 @@ return {
 		throws: 'errno'
 	},
 
+	'realpath': {
+		args: [
+			{ type: 'char*', name: 'filepath' }
+		],
+		returns: { type: 'char*' },
+		throws: 'errno-on-null'
+	},
+
 	'rmdir': {
 		args: [
 			{ type: 'char*', name: 'pathname' },
@@ -340,4 +364,14 @@ return {
 		returns: { type: 'ssize_t' },
 		throws: 'errno'
 	},
+
+	/* Custom helper functions */
+	'atexit': CUSTOMIZED(1),
+	'compile_function': CUSTOMIZED(2),
+	'printk': CUSTOMIZED(1),
+	'read_file': CUSTOMIZED(1), 
+	'require_so': CUSTOMIZED(1),
+	'set_term_mode': CUSTOMIZED(1),
+	'signal': CUSTOMIZED(2),
+
 };
