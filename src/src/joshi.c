@@ -4,7 +4,6 @@
 
 #include "joshi.h"
 #include "joshi_core.h"
-#include "joshi_spec.h"
 
 // This is patched by release script, don't touch
 #define VERSION "1.4.1-next"
@@ -48,6 +47,32 @@ void main(int argc, const char *argv[]) {
 	// duk_destroy_heap(ctx);
 
 	exit(retval);
+}
+
+JOSHI_MBLOCK* joshi_mblock_alloc(duk_context* ctx, duk_size_t size) {
+	duk_push_heap_stash(ctx);
+	duk_get_prop_string(ctx, -1, "_joshi_mblocks");
+
+	if (duk_is_undefined(ctx, -1)) {
+		duk_pop(ctx);
+		duk_push_array(ctx);
+		duk_put_prop_string(ctx, -2, "_joshi_mblocks");
+		duk_get_prop_string(ctx, -1, "_joshi_mblocks");
+	}
+
+	JOSHI_MBLOCK* mblock = 
+		duk_push_fixed_buffer(ctx, sizeof(duk_size_t) + size);
+	mblock->size = size;
+	duk_put_prop_index(ctx, -2, duk_get_length(ctx, -2));
+	duk_pop_2(ctx);
+
+	return mblock;
+}
+
+void joshi_mblock_free_all(duk_context* ctx) {
+	duk_push_heap_stash(ctx);
+	duk_del_prop_string(ctx, -1, "_joshi_mblocks");
+	duk_pop(ctx);
 }
 
 void cnv_cesu_to_utf(const char* cesu, char* utf) {
@@ -295,15 +320,8 @@ static int run_js(
 	duk_push_c_function(ctx, joshi_throw_syserror, 0);
 	duk_put_prop_string(ctx, idx, "throw_syserror");
 
-	for(int i=0; i<joshi_core_fn_decls_count; i++) {
-		JOSHI_FN_DECL* bin = joshi_core_fn_decls+i;
-
-		duk_push_c_function(ctx, bin->func, bin->argc);
-		duk_put_prop_string(ctx, idx, bin->name);
-	}
-
-	for(int i=0; i<joshi_spec_fn_decls_count; i++) {
-		JOSHI_FN_DECL* bin = joshi_spec_fn_decls+i;
+	for(int i=0; i<joshi_fn_decls_count; i++) {
+		JOSHI_FN_DECL* bin = joshi_fn_decls+i;
 
 		duk_push_c_function(ctx, bin->func, bin->argc);
 		duk_put_prop_string(ctx, idx, bin->name);
