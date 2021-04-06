@@ -1,4 +1,6 @@
-const generate = {};
+const generate = {
+	FN_NAME_PREFIX: '_js_',
+};
 
 generate.check_return = function(fn, throws, types, cleanup_code) {
 	const throw_name = fn.throws;
@@ -131,7 +133,7 @@ generate.stub = function(fnName, functions, throws, types) {
 	const retVar = fn.returns;
 	
 	const lines = [].concat(
-		'static duk_ret_t _joshi_spec_'+FN+'(duk_context* ctx) {',
+		'static duk_ret_t '+generate.FN_NAME_PREFIX+FN+'(duk_context* ctx) {',
 		generate.tabify(
 			1, 
 			args.reduce(function(lines, arg, idx) {
@@ -167,7 +169,7 @@ generate.stub = function(fnName, functions, throws, types) {
 		generate.tabify(
 			1, 
 			generate.check_return(fn, throws, types, [
-				'duk_free_all(ctx);'	
+				'joshi_mblock_free_all(ctx);'	
 			])
 		),
 		''
@@ -199,7 +201,7 @@ generate.stub = function(fnName, functions, throws, types) {
 
 	return lines.concat(
 		'',
-		'	duk_free_all(ctx);',
+		'	joshi_mblock_free_all(ctx);',
 		retVar ? [
 			'	return 1;' 
 		] : [

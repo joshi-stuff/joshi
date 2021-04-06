@@ -1,0 +1,200 @@
+#!/bin/env joshi
+
+const fs = require('fs');
+const kern = require('kern');
+
+const begin_custom_code_marker = '/* BEGIN CUSTOM USER CODE */';
+const end_custom_code_marker = '/* END CUSTOM USER CODE */';
+
+const generate = require('./generate.js');
+
+// Generators
+function generate_pop_push_declarations(types) {
+	return Object.keys(types).reduce(function(lines, typeName) {
+		return lines.concat(
+			generate.pop_declaration(typeName, types),
+			generate.push_declaration(typeName, types)
+		);
+	}, []);
+}
+
+function generate_pop_push_functions(types) {
+	return Object.keys(types).reduce(function(lines, typeName) {
+		const popLines = generate.pop_function(typeName, types);
+		const pushLines = generate.push_function(typeName, types);
+
+		if (popLines.length !== 0) {
+			popLines.push('');
+		}
+
+		if (pushLines.length !== 0) {
+			pushLines.push('');
+		}
+
+		return lines.concat(
+			popLines,
+			pushLines
+		);
+	}, []);
+}
+
+function generate_stubs(functions, throws, types) {
+	return Object.keys(functions).reduce(function(lines, fn_name) {
+		const fn = functions[fn_name];
+
+		if (fn.disable) {
+			return lines;
+		}
+
+		return lines.concat(
+			generate.stub(fn_name, functions, throws, types),
+			''
+		);
+	}, []);
+}
+
+// Helpers
+function normalize_config(cfg) {
+	cfg.file = fs.normalize_path(
+		fs.dirname(require.resolve(cfg.module)) + 
+		'/' + 
+		cfg.file
+	);
+
+	Object.values(cfg.functions).forEach(function(fn) {
+		if (fn.returns && !fn.returns.name) {
+			fn.returns.name = 'ret_value';
+		}
+	});
+
+	return cfg;
+}
+
+function compute_function_updates(cfg) {
+	const custom_fns = {};
+
+	// Detect which functions are inside custom code 
+	const custom_code = get_custom_code(cfg);
+	const lines = custom_code.split('\n');
+
+	lines.forEach(function(line) {
+		line = line.trim();
+
+		const i = line.indexOf(generate.FN_NAME_PREFIX);
+
+		if (i !== -1) {
+			const j = line.indexOf('(', i);
+
+			const fn_name = line.substring(
+				i + generate.FN_NAME_PREFIX.length,
+				j
+			).trim();
+
+			custom_fns[fn_name] = true;
+		}
+	});
+
+	Object.entries(cfg.functions).forEach(function(entry) {
+		const fn_name = entry[0];
+		const fn_def = entry[1];
+
+		if (custom_fns[fn_name]) {
+			fn_def.disable = true;
+		}
+	});
+
+	return cfg;
+}
+
+function get_custom_code(cfg) {
+	var custom_code = '';
+
+	if (fs.exists(cfg.file)) {
+		const lines = fs.read_file(cfg.file).split('\n');
+		var in_custom_code = false;
+
+		lines.forEach(function(line) {
+			if (line.trim().startsWith(begin_custom_code_marker)) {
+				in_custom_code = true;
+				return;
+			}
+
+			if (line.trim().startsWith(end_custom_code_marker)) {
+				in_custom_code = false;
+				return;
+			}
+
+			if (in_custom_code) {
+				custom_code += line + '\n';
+			}
+		});
+
+		custom_code = custom_code.trim();
+	}
+	
+	return custom_code;
+}
+
+// Main loop
+function main(argv) {
+	if (argv.length != 3) {
+		println2('usage: joshspec <config module name>');
+		proc.exit(1);
+	}
+
+	var cfg_module = argv[2];
+
+	if (cfg_module[0] === '.') {
+		cfg_module = fs.realpath('./' + cfg_module);
+	}
+
+	kern.search_path.push(fs.dirname(require.owner_path));
+
+	var cfg = require(cfg_module);
+
+	cfg.module = cfg_module;
+	cfg = normalize_config(cfg);
+	cfg = compute_function_updates(cfg);
+
+	const file = cfg.file;
+	const functions = cfg.functions;
+	const throws = cfg.throws;
+	const types = cfg.types;
+
+	const lines = [].concat(
+		cfg.header,
+		'',
+		'#include "joshi.h"', 
+		'',
+		generate_pop_push_declarations(types),
+		'',
+		generate_pop_push_functions(types),
+		generate_stubs(functions, throws, types),
+		begin_custom_code_marker,
+		get_custom_code(cfg),
+		end_custom_code_marker,
+		'',
+		'JOSHI_FN_DECL joshi_fn_decls[] = {',
+		generate.tabify(
+			1,
+			Object.entries(functions).reduce(function(lines, entry) {
+				const FN = entry[0];
+				const fn = entry[1];
+
+				return lines.concat(
+					'{ name: "'+FN+'", func: '+generate.FN_NAME_PREFIX+FN+
+						', argc: '+fn.args.length+' },'
+				);
+			}, [])
+		),
+		'};',
+		'',
+		'size_t joshi_fn_decls_count = ' + Object.keys(functions).length + ';'
+	);
+
+	fs.write_file(file, lines.join('\n'));
+}
+
+main(argv);
+
+// vi: ft=javascript

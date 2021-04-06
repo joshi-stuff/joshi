@@ -8,7 +8,7 @@ function ARRAY(IT) {
 		const T = type_name;
 		const ST = generate.sid(T);
 
-		return 'static duk_blk* duk_get_'+ST+'(duk_context* ctx, duk_idx_t idx)';
+		return 'static JOSHI_MBLOCK* duk_get_'+ST+'(duk_context* ctx, duk_idx_t idx)';
 	}
 
 	def.pop_decl = function(type_name, types) {
@@ -25,7 +25,7 @@ function ARRAY(IT) {
 			raw_pop_decl(type_name, types) + ' {',
 			generate.tabify(1, [
 				'duk_size_t length = duk_get_length(ctx, idx);',
-				'duk_blk* blk = duk_malloc(ctx, length*sizeof('+IT+'));',
+				'JOSHI_MBLOCK* blk = joshi_mblock_alloc(ctx, length*sizeof('+IT+'));',
 				IT+'* value = ('+IT+'*)blk->data;',
 				'',
 				'for (duk_idx_t i = 0; i < length; i++) {',
@@ -47,7 +47,7 @@ function ARRAY(IT) {
 		const T = type_name;
 		const ST = generate.sid(T);
 
-		return 'static void duk_push_'+ST+'(duk_context* ctx, duk_blk* blk)';
+		return 'static void duk_push_'+ST+'(duk_context* ctx, JOSHI_MBLOCK* blk)';
 	}
 
 	def.push_decl = function(type_name, types) {
@@ -84,7 +84,7 @@ function ARRAY(IT) {
 		}
 
 		return [
-			'duk_blk* '+v.name+';'
+			'JOSHI_MBLOCK* '+v.name+';'
 		];
 	}
 
@@ -238,7 +238,7 @@ function BUFFER() {
 		const ST = generate.sid(T);
 
 		// If one day we need push support for buffers we must turn it into a
-		// duk_blk type so that we keep track of its size
+		// JOSHI_MBLOCK type so that we keep track of its size
 		//
 		return [
 			'/* duk_push_'+ST+': buffer types do not need/have push support */'
@@ -457,7 +457,7 @@ function STRING_PT() {
 			'	}',
 			'',
 			'	const char* cesu = duk_require_string(ctx, idx);',
-			'	duk_blk* blk = duk_malloc(ctx, cnv_cesu_to_utf_length(cesu) + 1);',
+			'	JOSHI_MBLOCK* blk = joshi_mblock_alloc(ctx, cnv_cesu_to_utf_length(cesu) + 1);',
 			'	char* utf = (char*)blk->data;',
 			'',
 			'	cnv_cesu_to_utf(cesu, utf);',
