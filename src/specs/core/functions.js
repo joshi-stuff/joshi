@@ -7,7 +7,7 @@ const CUSTOMIZED = function(argc) {
 
 	return {
 		args: args,
-		returns: { type: 'void' },
+		returns: { type: 'int' },
 		throws: 'nothing'
 	};
 }

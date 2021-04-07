@@ -1,13 +1,11 @@
-const tt = require('type-types.js');
-
-const ARRAY = tt.ARRAY;
-const ATOMIC = tt.ATOMIC;
-const BUFFER = tt.BUFFER;
-const BUILTIN = tt.BUILTIN;
-const OPAQUE = tt.OPAQUE;
-const STRING = tt.STRING;
-const STRING_PT = tt.STRING_PT;
-const STRUCT = tt.STRUCT;
+const ARRAY = require('types/ARRAY.js');
+const ATOMIC = require('types/ATOMIC.js');
+const BUFFER = require('types/BUFFER.js');
+const BUILTIN = require('types/BUILTIN.js');
+const OPAQUE = require('types/OPAQUE.js');
+const STRING = require('types/STRING.js');
+const STRING_PT = require('types/STRING_PT.js');
+const STRUCT = require('types/STRUCT.js');
 
 return {
 	// Atomic types
