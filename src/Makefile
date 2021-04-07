@@ -70,9 +70,11 @@ build/%.o: src/%.c
 #
 fix-spec:
 	git checkout src/joshi_core.c
+	git checkout src/joshi_tui.c
 
 spec: 
 	./joshpec/joshspec ./specs/core
+	./joshpec/joshspec ./specs/tui
 
 
 #
