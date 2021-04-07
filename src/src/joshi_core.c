@@ -1,6 +1,5 @@
 #include <dirent.h>
 #include <dlfcn.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
@@ -13,6 +12,7 @@
 #include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "joshi.h"
 
