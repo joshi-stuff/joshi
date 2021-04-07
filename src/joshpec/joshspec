@@ -163,6 +163,7 @@ function main(argv) {
 
 	const lines = [].concat(
 		cfg.header,
+		'#include <errno.h>', 
 		'',
 		'#include "joshi.h"', 
 		'',
