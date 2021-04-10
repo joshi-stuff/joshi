@@ -16,6 +16,3 @@ return function BUILTIN(JT) {
 
 	return def;
 }
-
-
-
