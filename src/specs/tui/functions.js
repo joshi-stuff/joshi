@@ -22,6 +22,14 @@ return {
 		throws: 'error'
 	},
 
+	'delwin': {
+		args: [
+			{ type: 'WINDOW*', name: 'win' },
+		],
+		returns: { type: 'int' },
+		throws: 'error'
+	},
+
 	'endwin': {
 		args: [],
 		returns: { type: 'int' },
@@ -48,6 +56,17 @@ return {
 		throws: 'error'
 	},
 
+	'init_color': {
+		args: [
+			{ type: 'int', name: 'color' },
+			{ type: 'int', name: 'r' },
+			{ type: 'int', name: 'g' },
+			{ type: 'int', name: 'b' },
+		],
+		returns: { type: 'int' },
+		throws: 'error'
+	},
+
 	'init_pair': {
 		args: [
 			{ type: 'int', name: 'pair' },
@@ -59,6 +78,27 @@ return {
 	},
 
 	'initscr': CUSTOMIZED(0),
+
+	'mvwin': {
+		args: [
+			{ type: 'WINDOW*', name: 'win' },
+			{ type: 'int', name: 'y' },
+			{ type: 'int', name: 'x' },
+		],
+		returns: { type: 'int' },
+		throws: 'error'
+	},
+
+	'newwin': {
+		args: [
+			{ type: 'int', name: 'nlines' },
+			{ type: 'int', name: 'ncols' },
+			{ type: 'int', name: 'y' },
+			{ type: 'int', name: 'x' },
+		],
+		returns: { type: 'WINDOW*' },
+		throws: 'error-on-null'
+	},
 
 	'waddstr': {
 		args: [
@@ -91,7 +131,32 @@ return {
 		throws: 'error'
 	},
 
+	'wclear': {
+		args: [
+			{ type: 'WINDOW*', name: 'win' },
+		],
+		returns: { type: 'int' },
+		throws: 'error'
+	},
+
+	'werase': {
+		args: [
+			{ type: 'WINDOW*', name: 'win' },
+		],
+		returns: { type: 'int' },
+		throws: 'error'
+	},
+
 	'wgetch': CUSTOMIZED(0),
+
+	'winsstr': {
+		args: [
+			{ type: 'WINDOW*', name: 'win' },
+			{ type: 'char*', name: 'str' },
+		],
+		returns: { type: 'int' },
+		throws: 'error'
+	},
 
 	'wmove': {
 		args: [

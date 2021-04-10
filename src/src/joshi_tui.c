@@ -1,3 +1,4 @@
+#include <locale.h>
 #include <ncurses.h>
 #include <errno.h>
 
@@ -44,6 +45,29 @@ static duk_ret_t _js_curs_set(duk_context* ctx) {
 	ret_value = 
 
 	curs_set(visibility);
+
+	if (ret_value == ERR) {
+		joshi_mblock_free_all(ctx);
+		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
+		duk_throw(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
+static duk_ret_t _js_delwin(duk_context* ctx) {
+	WINDOW* win;
+
+	win = duk_get_WINDOW_pt(ctx, 0);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	delwin(win);
 
 	if (ret_value == ERR) {
 		joshi_mblock_free_all(ctx);
@@ -140,6 +164,35 @@ static duk_ret_t _js_getyx(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _js_init_color(duk_context* ctx) {
+	int color;
+	int r;
+	int g;
+	int b;
+
+	color = duk_get_int(ctx, 0);
+	r = duk_get_int(ctx, 1);
+	g = duk_get_int(ctx, 2);
+	b = duk_get_int(ctx, 3);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	init_color(color,r,g,b);
+
+	if (ret_value == ERR) {
+		joshi_mblock_free_all(ctx);
+		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
+		duk_throw(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _js_init_pair(duk_context* ctx) {
 	int pair;
 	int fg;
@@ -162,6 +215,62 @@ static duk_ret_t _js_init_pair(duk_context* ctx) {
 	}
 
 	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
+static duk_ret_t _js_mvwin(duk_context* ctx) {
+	WINDOW* win;
+	int y;
+	int x;
+
+	win = duk_get_WINDOW_pt(ctx, 0);
+	y = duk_get_int(ctx, 1);
+	x = duk_get_int(ctx, 2);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	mvwin(win,y,x);
+
+	if (ret_value == ERR) {
+		joshi_mblock_free_all(ctx);
+		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
+		duk_throw(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
+static duk_ret_t _js_newwin(duk_context* ctx) {
+	int nlines;
+	int ncols;
+	int y;
+	int x;
+
+	nlines = duk_get_int(ctx, 0);
+	ncols = duk_get_int(ctx, 1);
+	y = duk_get_int(ctx, 2);
+	x = duk_get_int(ctx, 3);
+
+	errno = 0;
+	WINDOW* ret_value;
+	ret_value = 
+
+	newwin(nlines,ncols,y,x);
+
+	if (ret_value == NULL) {
+		joshi_mblock_free_all(ctx);
+		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
+		duk_throw(ctx);
+	}
+
+	duk_push_WINDOW_pt(ctx, ret_value);
 
 	joshi_mblock_free_all(ctx);
 	return 1;
@@ -250,6 +359,77 @@ static duk_ret_t _js_wattr_set(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _js_wclear(duk_context* ctx) {
+	WINDOW* win;
+
+	win = duk_get_WINDOW_pt(ctx, 0);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	wclear(win);
+
+	if (ret_value == ERR) {
+		joshi_mblock_free_all(ctx);
+		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
+		duk_throw(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
+static duk_ret_t _js_werase(duk_context* ctx) {
+	WINDOW* win;
+
+	win = duk_get_WINDOW_pt(ctx, 0);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	werase(win);
+
+	if (ret_value == ERR) {
+		joshi_mblock_free_all(ctx);
+		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
+		duk_throw(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
+static duk_ret_t _js_winsstr(duk_context* ctx) {
+	WINDOW* win;
+	char* str;
+
+	win = duk_get_WINDOW_pt(ctx, 0);
+	str = duk_get_char_pt(ctx, 1);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	winsstr(win,str);
+
+	if (ret_value == ERR) {
+		joshi_mblock_free_all(ctx);
+		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
+		duk_throw(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _js_wmove(duk_context* ctx) {
 	WINDOW* win;
 	int y;
@@ -308,6 +488,8 @@ static duk_ret_t _js_wrefresh(duk_context* ctx) {
 	}
 
 static duk_ret_t _js_initscr(duk_context* ctx) {
+	setlocale(LC_CTYPE, "");
+
 	WINDOW* win = initscr();
 	if (!win) {
 		duk_push_error_object(ctx, DUK_ERR_ERROR, "ncurses call failed");
@@ -317,6 +499,7 @@ static duk_ret_t _js_initscr(duk_context* ctx) {
 	CHECK_RC(raw());
 	CHECK_RC(keypad(stdscr, TRUE));
 	CHECK_RC(noecho());
+	CHECK_RC(set_escdelay(125));
 
 	if (has_colors()) {
 		CHECK_RC(start_color());
@@ -347,17 +530,24 @@ static duk_ret_t _js_wgetch(duk_context* ctx) {
 
 JOSHI_FN_DECL joshi_fn_decls[] = {
 	{ name: "curs_set", func: _js_curs_set, argc: 1 },
+	{ name: "delwin", func: _js_delwin, argc: 1 },
 	{ name: "endwin", func: _js_endwin, argc: 0 },
 	{ name: "getmaxyx", func: _js_getmaxyx, argc: 3 },
 	{ name: "getyx", func: _js_getyx, argc: 3 },
+	{ name: "init_color", func: _js_init_color, argc: 4 },
 	{ name: "init_pair", func: _js_init_pair, argc: 3 },
 	{ name: "initscr", func: _js_initscr, argc: 0 },
+	{ name: "mvwin", func: _js_mvwin, argc: 3 },
+	{ name: "newwin", func: _js_newwin, argc: 4 },
 	{ name: "waddstr", func: _js_waddstr, argc: 2 },
 	{ name: "wattr_get", func: _js_wattr_get, argc: 4 },
 	{ name: "wattr_set", func: _js_wattr_set, argc: 4 },
+	{ name: "wclear", func: _js_wclear, argc: 1 },
+	{ name: "werase", func: _js_werase, argc: 1 },
 	{ name: "wgetch", func: _js_wgetch, argc: 0 },
+	{ name: "winsstr", func: _js_winsstr, argc: 2 },
 	{ name: "wmove", func: _js_wmove, argc: 3 },
 	{ name: "wrefresh", func: _js_wrefresh, argc: 1 },
 };
 
-size_t joshi_fn_decls_count = 12;
+size_t joshi_fn_decls_count = 19;
