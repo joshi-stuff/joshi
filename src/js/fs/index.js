@@ -183,6 +183,9 @@ fs.dirname = function(path) {
 	if (i === -1) {
 		return '.';
 	}
+	else if (i === 0) {
+		return '/';
+	}
 	else {
 		return path.substring(0, i);
 	}
@@ -515,11 +518,13 @@ fs.read_link = function(path, dereference) {
 
 	const val = decoder.decode(buf); 
 
-	if (val[0] === '/') {
+	if (val[0] === '/' || !dereference) {
 		return val;
 	}
 
-	return fs.dirname(path) + '/' + val;
+	const dir = fs.dirname(path);
+
+	return (dir === '/' ? '' : dir) + '/' + val;
 }
 
 /**
