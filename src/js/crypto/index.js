@@ -92,6 +92,10 @@ crypto.sha256 = function(data) {
 /**
  * SHA-256 implementation taken from https://github.com/geraintluff/sha256 with
  * slight modifications to support Uint8Array
+ *
+ * @param {Uint8Array} data
+ * @return {Uint8Array}
+ * @private
  */
 function sha256(data) {
 	const maxWord = Math.pow(2, 32);

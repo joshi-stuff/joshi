@@ -53,6 +53,7 @@ const term = require('term');
  * Default draw mode to use when clearing window or painting borders
  *
  * @see {@link module:tui.set_default_draw_mode}
+ * @private
  */
 var default_draw_mode;
 
@@ -69,11 +70,14 @@ const cursor = {
 
 /**
  * Next color id to use when calling {@link module:tui.add_colors}
+ * @module tui
+ * @private
  */
 var next_color = 8;
 
 /**
  * Next color pair id to use when calling {@link module:tui.add_draw_modes}
+ * @private
  */
 var next_pair = 1;
 
@@ -127,6 +131,9 @@ const tui = {
 	COLOR_CYAN:    6,
 	COLOR_WHITE:   7,
 
+	/**
+	 * @type {object}
+	 */
 	DEFAULT_BORDER: {
 		lt: '┌',
 		t: '─',
@@ -165,7 +172,14 @@ const tui = {
 	KEY_PPAGE: 0523,
 	KEY_RESIZE: 0632,
 
+	/**
+	 * @type {boolean}
+	 */
 	can_change_color: undefined,
+
+	/**
+	 * @type {boolean}
+	 */
 	has_colors: undefined,
 	max_color_pairs: undefined,
 	max_colors: undefined,
