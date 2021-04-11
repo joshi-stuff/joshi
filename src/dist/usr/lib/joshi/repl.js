@@ -8,6 +8,7 @@ const proc = require('proc');
 const $ = require('shell');
 const stream = require('stream');
 const term = require('term');
+const tui = require('tui');
 
 while (true) {
 	term.print('> ');
