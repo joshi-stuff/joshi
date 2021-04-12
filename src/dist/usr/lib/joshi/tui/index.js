@@ -463,7 +463,9 @@ tui.print = function() {
 			str += ' ';
 		}
 
-		str += term.to_string(arguments[i]);
+		str += term.to_string(arguments[i])
+			.replace('\t', '    ')
+			.replace('\n', '↩');
 
 		if (str.length >= cols_avail) {
 			break;
