@@ -38,6 +38,21 @@ Array.prototype.includes = function(item) {
 	return false;
 }
 
+Array.prototype.reduce = function(callback, init_val) {
+	var first_index = 0;
+
+	if (init_val === undefined) {
+		init_val = this[0];
+		first_index = 1;
+	}
+
+	for (var i = first_index; i < this.length; i++) {
+		init_val = callback(init_val, this[i], i, this);
+	}
+
+	return init_val;
+}
+
 Object.entries = function(obj) {
 	const entries = [];
 
