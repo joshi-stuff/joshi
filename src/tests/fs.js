@@ -194,6 +194,16 @@ test('is_writable', function() {
 	expect.is(false, fs.is_writable(FILE2));
 });
 
+test('join', function() {
+	expect.is('/etc', fs.join('/', 'etc'));
+	expect.is('/etc/passwd', fs.join('/etc', 'passwd'));
+	expect.is('/etc/nginx/nginx.conf', fs.join('/etc', 'nginx/nginx.conf'));
+	expect.is(fs.normalize_path('tmp/file'), fs.join('tmp', 'file'));
+	expect.throws(function() {
+		fs.join('/etc', '/passwd');
+	});
+});
+
 test('list_dir', function() {
 	const DIR = '/tmp/joshidir';
 	const FILE1 = 'file1';

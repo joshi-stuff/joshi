@@ -327,6 +327,25 @@ fs.is_writable = function(pathname) {
 }
 
 /**
+ * Join two paths and normalize the result
+ *
+ * @param {string} path1 Left part of the path
+ * @param {string} path2 Right part of the path
+ * @returns {string}
+ * @throws {SysError}
+ * @see {module:fs.normalize_path}
+ */
+fs.join = function(path1, path2) {
+	if (path2[0] === '/') {
+		errno.fail(errno.EINVAL);
+	}
+
+	path = path1 === '/' ? (path1 + path2) : (path1 + '/' + path2);
+
+	return fs.normalize_path(path);
+}
+
+/**
  * List items of a directory (not including `.` and `..`).
  *
  * The order of listing is determined by the underlying filesystem.
