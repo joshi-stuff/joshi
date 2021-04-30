@@ -120,15 +120,17 @@ wui.disconnect = function(id) {
 		throw new Error('Window does not exist: ' + id);
 	}
 
-	if (entry.widget) {
+	const widget = entry.widget;
+
+	if (widget) {
 		debug(widget.class.name + '.' + entry.id, 'set_win', undefined);
-		entry.widget.set_win();
+		widget.set_win();
 	}
 
 	debug('wui', 'disconnect', id);
 
-	widget = entry.widget;
 	entry.widget = undefined;
+	tui.clear(entry.win);
 
 	return widget;
 }
