@@ -288,6 +288,15 @@ return {
 		throws: 'errno-on-null'
 	},
 
+	'rename': {
+		args: [
+			{ type: 'char*', name: 'oldpath' },
+			{ type: 'char*', name: 'newpath' },
+		],
+		returns: { type: 'int' },
+		throws: 'errno'
+	},
+
 	'rmdir': {
 		args: [
 			{ type: 'char*', name: 'pathname' },

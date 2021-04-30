@@ -581,6 +581,18 @@ fs.realpath = function(path) {
 }
 
 /**
+ * Move a file or directory
+ *
+ * @param {string} oldpath Path to rename
+ * @param {string} newpath New path of renamed file/dir
+ * @returns {0}
+ * @throws {SysError} 
+ */
+fs.rename = function(oldpath, newpath) {
+	return j.rename(oldpath, newpath);
+}
+
+/**
  * Delete a directory 
  *
  * @param {string} path Path of directory

@@ -1059,6 +1059,30 @@ static duk_ret_t _js_readlink(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _js_rename(duk_context* ctx) {
+	char* oldpath;
+	char* newpath;
+
+	oldpath = duk_get_char_pt(ctx, 0);
+	newpath = duk_get_char_pt(ctx, 1);
+
+	errno = 0;
+	int ret_value;
+	ret_value = 
+
+	rename(oldpath,newpath);
+
+	if (ret_value == -1) {
+		joshi_mblock_free_all(ctx);
+		joshi_throw_syserror(ctx);
+	}
+
+	duk_push_int(ctx, ret_value);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _js_rmdir(duk_context* ctx) {
 	char* pathname;
 
@@ -1581,6 +1605,7 @@ JOSHI_FN_DECL joshi_fn_decls[] = {
 	{ name: "readdir", func: _js_readdir, argc: 1 },
 	{ name: "readlink", func: _js_readlink, argc: 3 },
 	{ name: "realpath", func: _js_realpath, argc: 1 },
+	{ name: "rename", func: _js_rename, argc: 2 },
 	{ name: "rmdir", func: _js_rmdir, argc: 1 },
 	{ name: "setenv", func: _js_setenv, argc: 3 },
 	{ name: "setsid", func: _js_setsid, argc: 0 },
@@ -1599,4 +1624,4 @@ JOSHI_FN_DECL joshi_fn_decls[] = {
 	{ name: "signal", func: _js_signal, argc: 2 },
 };
 
-size_t joshi_fn_decls_count = 49;
+size_t joshi_fn_decls_count = 50;
