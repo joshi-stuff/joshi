@@ -9,7 +9,7 @@
 		"allowUnknownTags": false
 	},
 	"source": {
-		"include": "./js",
+		"include": "./dist/usr/lib/joshi",
 		"includePattern": ".+\\.js$",
 		"excludePattern": ""
 	},
@@ -19,7 +19,7 @@
 	"opts": {
 		"template": "docdash/",
 		"encoding": "utf8",
-		"destination": "jsdoc/",
+		"destination": "dist/usr/share/doc/joshi",
 		"recurse": true,
 		"verbose": true
 	},

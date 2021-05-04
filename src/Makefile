@@ -10,13 +10,23 @@ CC = gcc
 DOCDASH_VERSION = 1.2.0
 DUKTAPE_VERSION = 2.6.0
 
+PREFIX = dist
+
+BIN = $(PREFIX)/usr/bin
+LIB = $(PREFIX)/usr/lib
+SHARE = $(PREFIX)/usr/share
+
+JOSHI = $(BIN)/joshi
+JOSHI_TUI = $(LIB)/joshi/joshi_tui.so
+JOSHPEC = $(LIB)/joshpec/joshpec
+DOCS = $(SHARE)/doc/joshi
+
 DUKTAPE_HEADERS = \
 	src/duktape/duktape.h \
 	src/duktape/duk_config.h
 JOSHI_HEADERS = \
 	$(DUKTAPE_HEADERS) \
 	src/joshi.h
-
 JOSHI_OBJECTS = \
 	build/joshi.o \
 	build/duktape.o \
@@ -24,28 +34,28 @@ JOSHI_OBJECTS = \
 JOSHI_TUI_OBJECTS = \
 	build/joshi_tui.o
 
-all: joshi js/joshi_tui.so docs 
+all: $(JOSHI) $(JOSHI_TUI) $(DOCS)
 
 ci: all test
 
 clean: 
 	@rm -rf build
-	@rm -rf jsdoc
-	@rm -f js/joshi_tui.so
-	@rm -f joshi
+	@rm -f $(JOSHI)
+	@rm -f $(JOSHI_TUI)
+	@rm -rf $(DOCS)
 
-joshi: $(JOSHI_OBJECTS)
+$(JOSHI): $(JOSHI_OBJECTS)
 	gcc $(JOSHI_OBJECTS) -lcrypt -ldl -lm -o $@ -Wl,--export-dynamic
 
-js/joshi_tui.so: $(JOSHI_TUI_OBJECTS)
+$(JOSHI_TUI): $(JOSHI_TUI_OBJECTS)
 	gcc $(JOSHI_TUI_OBJECTS) -lcurses -o $@ -shared
 
-docs: docdash-template
-	@rm -rf ./jsdoc
+$(DOCS): docdash-template
+	@rm -rf $(DOCS)
 	jsdoc -c jsdoc.json
 
 test: 
-	JOSHI_LIB_DIR=`pwd`/js ./joshi ./tests/index.js
+	JOSHI_LIB_DIR="$(realpath $(LIB)/joshi)" $(JOSHI) ./tests/index.js
 
 
 #
@@ -73,8 +83,8 @@ fix-spec:
 	git checkout src/joshi_tui.c
 
 spec: 
-	./joshpec/joshspec ./specs/core
-	./joshpec/joshspec ./specs/tui
+	$(JOSHPEC) ./specs/core
+	$(JOSHPEC) ./specs/tui
 
 
 #

@@ -3,8 +3,9 @@
 /src/build
 /src/docdash
 /src/duktape
+/src/dist/usr/bin/joshi
+/src/dist/usr/lib/joshi/joshi_tui.so
+/src/dist/usr/share/doc/joshi
+/src/josh
 /src/joshi
-/src/js/joshi_tui.so
-/src/jsdoc
-/src/set_dev_env
 /src/src/duktape
