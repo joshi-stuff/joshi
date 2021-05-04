@@ -4,8 +4,7 @@
 const perf = {};
 
 /**
- * @class
- * @hideconstructor
+ * @interface
  * @memberof perf
  */
 function PerfData(label) {

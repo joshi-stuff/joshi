@@ -9,6 +9,7 @@ const println2 = term.println2;
  * Interface for generic objects implementing redirections (other than Proc).
  *
  * @interface
+ * @memberof shell
  */
 function Redirection() {}
 
@@ -35,8 +36,7 @@ Redirection.prototype = {
 }
 
 /**
- * @class
- * @hideconstructor
+ * @interface
  * @memberof shell
  */
 function Proc($, argv) {
