@@ -1,7 +1,7 @@
 # Maintainer: Iván Zaera Avellón <izaera@gmx.es>
 pkgname=joshi
 pkgdesc="JavaScript Oriented Shell Interpreter"
-pkgver=1.4.1
+pkgver=1.4.1.54.ga9f7cf4
 pkgrel=1
 arch=('any')
 url="https://github.com/izaera/joshi"
@@ -10,22 +10,19 @@ depends=(
 	'glibc'
 	'libxcrypt'
 )
-#optdepends=()
+optdepends=(
+	'ncurses: terminal support'
+)
 makedepends=(
+	'binutils'
+	'coreutils'
 	'curl'
 	'gcc'
+	'git'
 	'make'
+	'python2'
+	'sed'
 )
-# backup=()
-#install=joshi.install
-
-#FILES=$(git ls-tree -r master --full-tree --name-only)
-#echo $FILES > /tmp/kk
-#source=($FILES)
-
-# noextract=("${source[@]%%::*}")
-# md5sums=()
-# validpgpkeys=()
 
 pkgver() {
 	git describe --tags	| sed -e 's/-/\./g'
@@ -38,18 +35,7 @@ build() {
 }
 
 package() {
-	cd "$srcdir"
+	cd "$srcdir/dist"
 	
-	mkdir -p "$pkgdir/usr/bin"
-	cp -a joshi "$pkgdir/usr/bin"
-
-	mkdir -p "$pkgdir/usr/lib/joshi"
-	cp -aR js/* "$pkgdir/usr/lib/joshi"
-
-	mkdir -p "$pkgdir/usr/include/joshi"
-	cp -aR src/duktape/*.h "$pkgdir/usr/include/joshi"
-	cp -a src/joshi.h "$pkgdir/usr/include/joshi"
-
-	mkdir -p "$pkgdir/usr/share/doc/joshi"
-	cp -aR jsdoc/* "$pkgdir/usr/share/doc/joshi"
+	cp -aR * "$pkgdir"
 }
