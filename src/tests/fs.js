@@ -353,6 +353,20 @@ test('realpath', function() {
 	});
 });
 
+test('rename', function() {
+	const FILE = '/tmp/joshi';
+	const TARGET = '/tmp/joshi.target';
+
+	fs.unlink(FILE, false);
+	fs.unlink(TARGET, false);
+	fs.write_file(FILE, 'holi');
+	fs.rename(FILE, TARGET);
+
+	expect.is(false, fs.exists(FILE));
+	expect.is('holi', fs.read_file(TARGET));
+
+});
+
 test('rmdir', function() {
 	const DIR = '/tmp/joshidir';
 
