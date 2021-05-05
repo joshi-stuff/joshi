@@ -20,6 +20,7 @@ makedepends=(
 	'gcc'
 	'git'
 	'make'
+	'nodejs'
 	'python2'
 	'sed'
 )

@@ -34,6 +34,10 @@ JOSHI_OBJECTS = \
 JOSHI_TUI_OBJECTS = \
 	build/joshi_tui.o
 
+
+#
+# External targets
+#
 all: $(JOSHI) $(JOSHI_TUI) $(DOCS)
 
 ci: all test
@@ -44,18 +48,25 @@ clean:
 	@rm -f $(JOSHI_TUI)
 	@rm -rf $(DOCS)
 
+docs: $(DOCS)
+
+test: 
+	JOSHI_LIB_DIR="$(realpath $(LIB)/joshi)" $(JOSHI) ./tests/index.js
+
+
+#
+# Internal targets
+#
 $(JOSHI): $(JOSHI_OBJECTS)
+	mkdir -p dist/usr/bin
 	gcc $(JOSHI_OBJECTS) -lcrypt -ldl -lm -o $@ -Wl,--export-dynamic
 
 $(JOSHI_TUI): $(JOSHI_TUI_OBJECTS)
 	gcc $(JOSHI_TUI_OBJECTS) -lcurses -o $@ -shared
 
-$(DOCS): docdash-template
+$(DOCS): docdash
 	@rm -rf $(DOCS)
-	jsdoc -c jsdoc.json
-
-test: 
-	JOSHI_LIB_DIR="$(realpath $(LIB)/joshi)" $(JOSHI) ./tests/index.js
+	./docdash/node_modules/.bin/jsdoc -c jsdoc.json
 
 
 #
@@ -105,18 +116,11 @@ duktape:
 #
 # Docdash stuff
 #
-docdash-template: docdash/package-lock.json
-
-docdash/package-lock.json: docdash/package.json
-	cd docdash && npm install
-	touch docdash/package-lock.json
-
-docdash/package.json: docdash/docdash.tar.gz
+docdash:
+	@mkdir -p docdash
+	curl https://codeload.github.com/clenemt/docdash/tar.gz/$(DOCDASH_VERSION) -o docdash/docdash.tar.gz
 	cd docdash && tar xvf docdash.tar.gz
 	mv docdash/docdash-$(DOCDASH_VERSION)/* docdash
 	rm -rf docdash/docdash-$(DOCDASH_VERSION)
-	touch docdash/package.json
-
-docdash/docdash.tar.gz:
-	@mkdir -p docdash
-	curl https://codeload.github.com/clenemt/docdash/tar.gz/$(DOCDASH_VERSION) -o docdash/docdash.tar.gz
+	cd docdash && npm install
+	cd docdash && npm install jsdoc

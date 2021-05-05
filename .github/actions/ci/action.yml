@@ -1,0 +1,10 @@
+name: Arch Linux 'make ci'
+description: Runs 'make ci' on Arch Linux
+
+branding:
+  icon: triangle
+  color: blue
+
+runs:
+  using: docker
+  image: Dockerfile
