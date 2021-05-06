@@ -91,15 +91,8 @@ test('exists', function() {
 });
 
 test('is_block_device', function() {
-	const items = fs.list_dir('/dev/block');
-	var DEV = '/dev/block/' + items[0];
+	var DEV = '/dev/loop0';
 	
-	while (fs.is_link(DEV)) {
-		DEV = fs.read_link(DEV);
-	}
-
-	log('dev =', DEV);
-
 	expect.is(true, fs.is_block_device(DEV));
 	expect.is(false, fs.is_block_device('/dev/null'));
 	expect.is(false, fs.is_block_device('/dev'));
