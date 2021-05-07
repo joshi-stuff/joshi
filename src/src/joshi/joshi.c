@@ -8,6 +8,7 @@
 // This is patched by release script, don't touch
 #define VERSION "1.5.0-next"
 
+// TODO: get LIB_DIR from executable path (argv[0])
 const char* LIB_DIR = "/usr/lib/joshi";
 
 duk_context* _joshi_duk_context;
