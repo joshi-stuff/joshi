@@ -5,9 +5,10 @@ const expect = require('./test.js').expect;
 const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
+const tmp = require('./test.js').tmp;
 
 test('append', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('append');
 
 	io.close(io.truncate(FILE));
 
@@ -25,7 +26,7 @@ test('append', function() {
 });
 
 test('close', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('close');
 
 	const fd = io.truncate(FILE);
 	io.close(fd);
@@ -39,7 +40,7 @@ test('close', function() {
 });
 
 test('close > with fail_if_closed=false', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('close_with_fail_if_closed_false');
 
 	const fd = io.truncate(FILE);
 	io.close(fd);
@@ -47,7 +48,7 @@ test('close > with fail_if_closed=false', function() {
 });
 
 test('create', function() {
-	var FILE = '/tmp/joshi';
+	const FILE = tmp('create');
 
 	for (var i = 0; ; i++) {
 		try {
@@ -78,7 +79,7 @@ test('create', function() {
 });
 
 test('dup', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('dup');
 
 	const fd = io.truncate(FILE);
 	io.write_string(fd, 'holi');
@@ -94,7 +95,7 @@ test('dup', function() {
 });
 
 test('dup2', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('dup2');
 
 	const fd = io.truncate(FILE);
 	io.write_string(fd, 'holi');
@@ -110,7 +111,7 @@ test('dup2', function() {
 });
 
 test('open', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('open');
 
 	io.close(io.truncate(FILE));
 
@@ -123,7 +124,7 @@ test('open', function() {
 });
 
 test('open > for read and write', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('open_for_read_and_write');
 
 	io.close(io.truncate(FILE));
 
@@ -139,7 +140,7 @@ test('open > for read and write', function() {
 });
 
 test('open > for read only', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('open_for_read_only');
 
 	io.close(io.truncate(FILE));
 
@@ -155,7 +156,7 @@ test('open > for read only', function() {
 });
 
 test('open > for write only', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('open_for_write_only');
 
 	io.close(io.truncate(FILE));
 
@@ -208,7 +209,7 @@ test('poll', function() {
 });
 
 test('read', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('read');
 	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37, 38, 38, 40, 41, 42]);
 
 	var fd = io.truncate(FILE);
@@ -225,7 +226,7 @@ test('read', function() {
 });
 
 test('read > with given count', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('read_with_given_count');
 	const DATA = new Uint8Array([32]);
 
 	var fd = io.truncate(FILE);
@@ -243,7 +244,7 @@ test('read > with given count', function() {
 });
 
 test('read_fully', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('read_fully');
 
 	const data = new Uint8Array(4096*4+512);
 
@@ -265,7 +266,7 @@ test('read_fully', function() {
 });
 
 test('read_string', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('read_string');
 	const DATA = new Uint8Array([
 		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
 	]);
@@ -282,7 +283,7 @@ test('read_string', function() {
 });
 
 test('seek', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('seek');
 	const DATA = new Uint8Array([
 		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
 	]);
@@ -299,7 +300,7 @@ test('seek', function() {
 });
 
 test('tell', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('tell');
 	const DATA = new Uint8Array([
 		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
 	]);
@@ -318,7 +319,7 @@ test('tell', function() {
 });
 
 test('truncate', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('truncate');
 	const DATA = new Uint8Array([
 		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
 	]);
@@ -338,7 +339,7 @@ test('truncate', function() {
 });
 
 test('write > with given count', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('write_with_given_count');
 	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37]);
 
 	var fd = io.truncate(FILE);
@@ -354,7 +355,7 @@ test('write > with given count', function() {
 });
 
 test('write_string', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('write_string');
 	const DATA = new Uint8Array([
 		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
 	]);

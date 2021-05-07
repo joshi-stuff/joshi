@@ -1,3 +1,4 @@
+const fs = require('fs');
 const proc = require('proc');
 const term = require('term');
 
@@ -8,6 +9,21 @@ const test = {};
 
 var active_test = '?';
 var active_things = [];
+
+function zap(path) {
+	if (fs.exists(path)) {
+		if (fs.is_directory(path)) {
+			fs.rmdir(path, true);
+		}
+		else {
+			fs.unlink(path);
+		}
+	}
+}
+
+test.TMP = '/tmp/joshi';
+zap(test.TMP);
+fs.mkdirp(test.TMP);
 
 test.expect = {
 	array_equals: function(expected, actual) {
@@ -98,6 +114,14 @@ test.run = function(name, fn) {
 	term.reset();
 
 	active_test = '?';
+}
+
+test.tmp = function(path) {
+	const tmp_path = fs.join(test.TMP, path);
+	
+	zap(tmp_path);
+
+	return tmp_path;
 }
 
 return test;

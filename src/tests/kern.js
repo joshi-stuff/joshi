@@ -7,11 +7,11 @@ const expect = require('./test.js').expect;
 const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
+const tmp = require('./test.js').tmp;
 
 test('printk', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('printk');
 
-	fs.unlink(FILE, false);
 	const fd = io.truncate(FILE);
 
 	proc.fork(true, function() {

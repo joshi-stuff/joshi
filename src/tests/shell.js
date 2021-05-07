@@ -7,6 +7,7 @@ const expect = require('./test.js').expect;
 const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
+const tmp = require('./test.js').tmp;
 
 test('$().dir', function() {
 	const x = {};
@@ -46,7 +47,7 @@ test('more < FILE', function() {
 });
 
 test('echo perico > FILE', function() {
-	const FILE = '/tmp/test_truncate';
+	const FILE = tmp('redirect');
 
 	$('echo', 'perico')
 		.pipe(1, '0:' + FILE)
@@ -56,7 +57,7 @@ test('echo perico > FILE', function() {
 });
 
 test('echo perico >> FILE', function() {
-	const FILE = '/tmp/test_append';
+	const FILE = tmp('redirect_append');
 
 	$('echo', 'perico')
 		.pipe(1, FILE)
@@ -70,9 +71,7 @@ test('echo perico >> FILE', function() {
 });
 
 test('echo perico > null', function() {
-	const FILE = '/tmp/test_append';
-
-	fs.unlink(FILE, false);
+	const FILE = tmp('redirect_null');
 
 	const fd = io.truncate(FILE);
 

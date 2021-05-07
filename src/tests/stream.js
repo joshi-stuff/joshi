@@ -6,9 +6,12 @@ const expect = require('./test.js').expect;
 const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
+const tmp = require('./test.js').tmp;
 
 test('read_line', function() {
-	const fd = io.truncate('/tmp/joshi');
+	const FILE = tmp('read_line');
+
+	const fd = io.truncate(FILE);
 	io.write_string(fd, 'holi\nadios\nincomplete');
 	io.seek(fd, 0);
 
@@ -23,7 +26,9 @@ test('read_line', function() {
 
 
 test('read_until', function() {
-	const fd = io.truncate('/tmp/joshi');
+	const FILE = tmp('read_until');
+
+	const fd = io.truncate(FILE);
 	io.write_string(fd, 'error:message,5\n');
 	io.seek(fd, 0);
 

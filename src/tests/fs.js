@@ -5,6 +5,7 @@ const expect = require('./test.js').expect;
 const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
+const tmp = require('./test.js').tmp;
 
 test('basename', function() {
 	expect.is('holi', fs.basename('/usr/share/holi'));
@@ -12,9 +13,8 @@ test('basename', function() {
 });
 
 test('chown', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('chown');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '');
 
 	// We cannot assign our files to any other user, so we just do a light test
@@ -27,9 +27,8 @@ test('chown', function() {
 });
 
 test('chown > for symlink', function() {
-	const LINK = '/tmp/joshiln';
+	const LINK = tmp('chown_for_symlink');
 
-	fs.unlink(LINK, false);
 	fs.symlink('/etc/passwd', LINK);
 
 	// We cannot assign our files to any other user, so we just do a light test
@@ -42,8 +41,8 @@ test('chown > for symlink', function() {
 });
 
 test('copy_file', function() {
-	const SRC = '/tmp/joshi1';
-	const DEST = '/tmp/joshi2';
+	const SRC = tmp('copy_file_src');
+	const DEST = tmp('copy_file_dest');
 	const CONTENT = 'holi';
 
 	fs.write_file(SRC, CONTENT, 0600);
@@ -82,9 +81,8 @@ test('dirname', function() {
 });
 
 test('exists', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('exists');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '');
 
 	expect.is(true, fs.exists(FILE));
@@ -109,9 +107,8 @@ test('is_directory', function() {
 });
 
 test('is_executable', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('is_executable');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '', 0700);
 
 	expect.is(true, fs.is_executable(FILE));
@@ -123,9 +120,8 @@ test('is_executable', function() {
 });
 
 test('is_fifo', function() {
-	const FIFO = '/tmp/joshi';
+	const FIFO = tmp('is_fifo');
 
-	fs.unlink(FIFO, false);
 	fs.mkfifo(FIFO);
 
 	expect.is(true, fs.is_fifo(FIFO));
@@ -134,9 +130,8 @@ test('is_fifo', function() {
 });
 
 test('is_file', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('is_file');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '');
 
 	expect.is(true, fs.is_file(FILE));
@@ -145,9 +140,8 @@ test('is_file', function() {
 });
 
 test('is_link', function() {
-	const LINK = '/tmp/joshiln';
+	const LINK = tmp('is_link');
 
-	fs.unlink(LINK, false);
 	fs.symlink('/tmp', LINK);
 
 	expect.is(true, fs.is_link(LINK));
@@ -155,9 +149,8 @@ test('is_link', function() {
 });
 
 test('is_readable', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('is_readable');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '', 0600);
 
 	expect.is(true, fs.is_readable(FILE));
@@ -173,15 +166,13 @@ test('is_readable', function() {
 //});
 
 test('is_writable', function() {
-	const FILE = '/tmp/joshi';
-	const FILE2 = '/tmp/joshi2';
+	const FILE = tmp('is_writable');
+	const FILE2 = tmp('is_writable_2');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '', 0600);
 
 	expect.is(true, fs.is_writable(FILE));
 
-	fs.unlink(FILE2, false);
 	fs.copy_file(FILE, FILE2, 0400);
 
 	expect.is(false, fs.is_writable(FILE2));
@@ -198,11 +189,10 @@ test('join', function() {
 });
 
 test('list_dir', function() {
-	const DIR = '/tmp/joshidir';
+	const DIR = tmp('list_dir');
 	const FILE1 = 'file1';
 	const FILE2 = 'file2';
 
-	fs.rmdir(DIR, true);
 	fs.mkdirp(DIR);
 
 	fs.write_file(DIR + '/' + FILE1, FILE1, 0600);
@@ -216,11 +206,10 @@ test('list_dir', function() {
 });
 
 test('list_dir > with callback', function() {
-	const DIR = '/tmp/joshidir';
+	const DIR = tmp('list_dir_with_callback');
 	const FILE1 = 'file1';
 	const FILE2 = 'file2';
 
-	fs.rmdir(DIR, true);
 	fs.mkdirp(DIR);
 
 	fs.write_file(DIR + '/' + FILE1, FILE1, 0600);
@@ -239,11 +228,10 @@ test('list_dir > with callback', function() {
 });
 
 test('list_dir > with callback, cancelling', function() {
-	const DIR = '/tmp/joshidir';
+	const DIR = tmp('list_dir_with_callback_cancelling');
 	const FILE1 = 'file1';
 	const FILE2 = 'file2';
 
-	fs.rmdir(DIR, true);
 	fs.mkdirp(DIR);
 
 	fs.write_file(DIR + '/' + FILE1, FILE1, 0600);
@@ -265,18 +253,16 @@ test('list_dir > with callback, cancelling', function() {
 });
 
 test('mkdir', function() {
-	const DIR = '/tmp/joshidir';
+	const DIR = tmp('mkdir');
 
-	fs.rmdir(DIR, true);
 	fs.mkdirp(DIR);
 
 	expect.is(true, fs.is_directory(DIR));
 });
 
 test('mkdir > with mode', function() {
-	const DIR = '/tmp/joshidir';
+	const DIR = tmp('mkdir_with_mode');
 
-	fs.rmdir(DIR, true);
 	fs.mkdirp(DIR, 0700);
 
 	expect.is(true, fs.is_directory(DIR));
@@ -284,10 +270,9 @@ test('mkdir > with mode', function() {
 });
 
 test('mkdirp', function() {
-	const BASEDIR = '/tmp/joshidir';
+	const BASEDIR = tmp('mkdirp');
 	const DIR = BASEDIR + '/and/more/dirs';
 
-	fs.rmdir(BASEDIR, true);
 	fs.mkdirp(DIR);
 
 	expect.is(true, fs.is_directory(DIR));
@@ -296,9 +281,8 @@ test('mkdirp', function() {
 });
 
 test('mkfifo', function() {
-	const FIFO = '/tmp/joshi';
+	const FIFO = tmp('mkfifo');
 
-	fs.unlink(FIFO, false);
 	fs.mkfifo(FIFO);
 
 	expect.is(true, fs.is_fifo(FIFO));
@@ -313,30 +297,27 @@ test('normalize_path', function() {
 });
 
 test('read_file', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('read_file');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, 'holi');
 
 	expect.is('holi', fs.read_file(FILE));
 });
 
 test('read_link', function() {
-	const LINK = '/tmp/joshiln';
+	const LINK = tmp('read_link');
 
-	fs.unlink(LINK, false);
 	fs.symlink('/tmp', LINK);
 
 	expect.is('/tmp', fs.read_link(LINK));
 });
 
 test('read_link > with relative path', function() {
-	const LINK = '/tmp/joshiln';
+	const LINK = tmp('read_link_with_relative_path');
 
-	fs.unlink(LINK, false);
 	fs.symlink('../dev', LINK);
 
-	expect.is('/tmp/../dev', fs.read_link(LINK));
+	expect.is(fs.dirname(LINK) + '/../dev', fs.read_link(LINK));
 });
 
 test('realpath', function() {
@@ -347,11 +328,9 @@ test('realpath', function() {
 });
 
 test('rename', function() {
-	const FILE = '/tmp/joshi';
-	const TARGET = '/tmp/joshi.target';
+	const FILE = tmp('rename');
+	const TARGET = tmp('rename_target');
 
-	fs.unlink(FILE, false);
-	fs.unlink(TARGET, false);
 	fs.write_file(FILE, 'holi');
 	fs.rename(FILE, TARGET);
 
@@ -361,9 +340,8 @@ test('rename', function() {
 });
 
 test('rmdir', function() {
-	const DIR = '/tmp/joshidir';
+	const DIR = tmp('rmdir');
 
-	fs.rmdir(DIR, true)
 	fs.mkdir(DIR);
 
 	expect.is(true, fs.is_directory(DIR));
@@ -374,10 +352,9 @@ test('rmdir', function() {
 });
 
 test('stat', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('stat');
 	const NOW = Math.floor(new Date().getTime() / 1000);
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '1234', 0200);
 
 	const st = fs.stat(FILE);
@@ -396,9 +373,8 @@ test('stat', function() {
 });
 
 test('symlink', function() {
-	const LINK = '/tmp/joshiln';
+	const LINK = tmp('symlink');
 
-	fs.unlink(LINK, false);
 	fs.symlink('/etc/passwd', LINK);
 
 	const contents = fs.read_file('/etc/passwd');
@@ -407,9 +383,8 @@ test('symlink', function() {
 });
 
 test('unlink', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('unlink');
 
-	fs.unlink(FILE, false);
 	fs.write_file(FILE, '');
 
 	fs.unlink(FILE);
@@ -425,7 +400,7 @@ test('unlink', function() {
 });
 
 test('write_file', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('write_file');
 
 	fs.write_file(FILE, 'holi');
 

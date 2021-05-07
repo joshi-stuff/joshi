@@ -8,6 +8,7 @@ const expect = require('./test.js').expect;
 const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
+const tmp = require('./test.js').tmp;
 
 test('alarm', function() {
 	const fds = io.pipe();
@@ -35,9 +36,7 @@ test('alarm', function() {
 });
 
 test('atexit', function() {
-	const FILE = '/tmp/joshi';
-
-	fs.unlink(FILE, false);
+	const FILE = tmp('atexit');
 
 	const rc = proc.fork(true, function() {
 		proc.atexit(function() {
@@ -52,9 +51,7 @@ test('atexit', function() {
 });
 
 test('atexit > inherited handlers', function() {
-	const FILE = '/tmp/joshi';
-
-	fs.unlink(FILE, false);
+	const FILE = tmp('atexit_inherited_handlers');
 
 	const rc = proc.fork(true, function() {
 		proc.atexit(true, function() {
@@ -73,9 +70,7 @@ test('atexit > inherited handlers', function() {
 });
 
 test('atexit > not inherited handlers', function() {
-	const FILE = '/tmp/joshi';
-
-	fs.unlink(FILE, false);
+	const FILE = tmp('atexit_not_inherited_handlers');
 
 	const rc = proc.fork(true, function() {
 		proc.atexit(function() {
@@ -102,7 +97,7 @@ test('chdir', function() {
 });
 
 test('exec > with path search', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('exec_with_path_search');
 
 	const fd = io.truncate(FILE);
 
@@ -117,7 +112,7 @@ test('exec > with path search', function() {
 });
 
 test('exec > without path search', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('exec_without_path_search');
 
 	const fd = io.truncate(FILE);
 
@@ -136,7 +131,7 @@ test('exec > without path search', function() {
 });
 
 test('exec > with dir', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('exec_with_dir');
 
 	const fd = io.truncate(FILE);
 
@@ -151,7 +146,7 @@ test('exec > with dir', function() {
 });
 
 test('exec > with env', function() {
-	const FILE = '/tmp/joshi';
+	const FILE = tmp('exec_with_env');
 
 	const fd = io.truncate(FILE);
 
@@ -182,9 +177,7 @@ test('exit', function() {
 //});
 
 test('fork2', function() {
-	const FILE = '/tmp/joshi';
-
-	fs.unlink(FILE);
+	const FILE = tmp('fork2');
 
 	proc.fork2(function() {
 		fs.write_file(FILE, 'holi');
@@ -196,9 +189,7 @@ test('fork2', function() {
 });
 
 test('fork2 > with getpid', function() {
-	const FILE = '/tmp/joshi';
-
-	fs.unlink(FILE);
+	const FILE = tmp('fork2_with_getpid');
 
 	const pid = proc.fork2(true, function() {
 		fs.write_file(FILE, proc.getpid());
@@ -237,9 +228,7 @@ test('geteuid, getuid', function() {
 });
 
 test('getpid', function() {
-	const FILE = '/tmp/joshi';
-
-	fs.unlink(FILE);
+	const FILE = tmp('getpid');
 
 	const pid = proc.fork(function() {
 		fs.write_file(FILE, proc.getpid());
