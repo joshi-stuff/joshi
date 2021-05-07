@@ -1,4 +1,4 @@
-# Maintainer: Iván Zaera Avellón <izaera@gmx.es>
+# Maintainer: Iván Zaera Avellón <izaera at gmx dot es>
 pkgname=joshi
 pkgdesc="JavaScript Oriented Shell Interpreter"
 pkgver=1.5.0
@@ -32,11 +32,10 @@ pkgver() {
 build() {
 	cd "$srcdir"
 	make clean
-	make
+	make compile docs
 }
 
 package() {
-	cd "$srcdir/dist"
-	
-	cp -aR * "$pkgdir"
+	cd "$srcdir"
+	PREFIX="$pkgdir/usr" make install
 }
