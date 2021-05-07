@@ -411,23 +411,30 @@ proc.fork2 = function(getpid, fn) {
 	var pid = proc.fork();
 
 	if (pid === 0) {
-		pid = proc.fork();
+		try {
+			pid = proc.fork();
 
-		if (pid === 0) {
-			if (getpid) {
-				io.close(fds[0]);
-				io.write_string(fds[1], proc.getpid());
-				io.close(fds[1]);
-			}
+			if (pid === 0) {
+				try {
+					if (getpid) {
+						io.close(fds[0]);
+						io.write_string(fds[1], proc.getpid());
+						io.close(fds[1]);
+					}
 
-			try {
-				fn();	
+					fn();	
+				}
+				catch(err) {
+					io.write_string(2, err.stack);
+					proc.exit(err.errno === undefined ? -1 : err.errno);
+				}
+
 				proc.exit(0);
 			}
-			catch(err) {
-				io.write_string(2, err.stack);
-				proc.exit(err.errno === undefined ? -1 : err.errno);
-			}
+		}
+		catch(err) {
+			io.write_string(2, err.stack);
+			proc.exit(err.errno === undefined ? -1 : err.errno);
 		}
 
 		proc.exit(0);
