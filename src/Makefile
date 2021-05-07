@@ -40,6 +40,9 @@ JOSHI_TUI_OBJECTS = \
 #
 all: $(JOSHI) $(JOSHI_TUI) $(DOCS)
 
+test: 
+	JOSHI_LIB_DIR="$(realpath $(LIB)/joshi)" $(JOSHI) ./tests/index.js
+
 ci: all test
 
 clean: 
@@ -50,8 +53,8 @@ clean:
 
 docs: $(DOCS)
 
-test: 
-	JOSHI_LIB_DIR="$(realpath $(LIB)/joshi)" $(JOSHI) ./tests/index.js
+release:
+	./scripts/release
 
 
 #

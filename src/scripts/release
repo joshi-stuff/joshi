@@ -12,6 +12,13 @@ then
 	exit 1
 fi
 
+echo ==== Building and passing CI to check validity...
+if ! make ci docs
+then
+	echo "Checks failed. Refusing to continue"
+	exit 1
+fi
+
 echo Latest 4 tags are:
 echo
 git tag --sort=-committerdate | head -4
@@ -28,13 +35,9 @@ then
 	exit 1
 fi
 
-echo ==== Patching PKGBUILD before makepkg...
-sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
-git add PKGBUILD
-
-echo ==== Patching src/src/joshi.c before makepkg...
-sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION\"/" src/src/joshi.c
-git add src/src/joshi.c
+echo ==== Patching src/joshi.c version number...
+sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION\"/" src/joshi.c
+git add src/joshi.c
 
 echo ==== Creating version commit...
 git commit -m "chore: prepare version $VERSION"
@@ -57,8 +60,13 @@ echo ==== Back to master...
 git co master
 
 echo ==== Installing to local system...
-rm *zst
-makepkg -ifs --noconfirm
+echo -n "Do you want to install to /usr/local (y/N)? "
+read CONFIRM
+
+if [ "$CONFIRM" == "y" ]
+then 
+	sudo DESTDIR=/usr/local make install
+fi
 
 echo ==== Patching src/src/joshi.c after release...
 sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION-next\"/" src/src/joshi.c
