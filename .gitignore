@@ -1,10 +1,5 @@
 /joshi-*.zst
 /pkg
 /src/build
-/src/docdash
-/src/duktape
-/src/dist/usr/bin/joshi
-/src/dist/usr/lib/joshi/joshi_tui.so
-/src/dist/usr/share/doc/joshi
-/src/josh
-/src/joshi
+/src/.docdash
+/src/.duktape
