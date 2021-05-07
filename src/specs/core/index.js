@@ -1,5 +1,5 @@
 return {
-	file: '../../src/joshi_core.c',
+	file: '../../src/joshi/joshi_core.c',
 	functions: require('./functions.js'),
 	header: require('./header.js'),
 	throws: require('./throws.js'),
