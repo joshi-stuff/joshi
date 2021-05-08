@@ -7,23 +7,11 @@ const println2 = term.println2;
 
 const test = {};
 
+const TMP = '/tmp/joshi';
+
 var active_test = '?';
 var active_things = [];
-
-function zap(path) {
-	if (fs.exists(path)) {
-		if (fs.is_directory(path)) {
-			fs.rmdir(path, true);
-		}
-		else {
-			fs.unlink(path);
-		}
-	}
-}
-
-test.TMP = '/tmp/joshi';
-zap(test.TMP);
-fs.mkdirp(test.TMP);
+var failures;
 
 test.expect = {
 	array_equals: function(expected, actual) {
@@ -73,14 +61,48 @@ test.expect = {
 }
 
 test.fail = function() {
-	const things = ['🔴', 'failed:'];
+	const msg = '';
 
 	for (var i=0; i<arguments.length; i++) {
-		things.push(arguments[i]);
+		if (i > 0) {
+			msg += ' ';
+		}
+		msg += arguments[i];
 	}
 
-	println2.apply(println2, things);
-	println2(new Error().stack.split('\n').slice(1).join('\n'));
+	throw new Error(msg);
+}
+
+test.finish = function() {
+	if (!failures.length) {
+		proc.exit(0);
+	}
+
+	println2('');
+	println2('===============================================================');
+	println2('= Summary of failed tests');
+	println2('===============================================================');
+	println2('');
+
+	failures.forEach(function(failure) {
+		const err = failure.err;
+		const test = failure.test;
+		const things = failure.things;
+
+		if (things) {
+			things.unshift(':');
+			things.unshift(test);
+			things.unshift('🔴');
+			println2.apply(null, things);
+		}
+		else {
+			println2('🔴', test + ':', err.toString().replace(/^Error: /, ''));
+		}
+
+		println2(err.stack.split('\n').slice(1).join('\n'));
+		println2('');
+	});
+
 	proc.exit(1);
 }
 
@@ -102,9 +124,11 @@ test.run = function(name, fn) {
 		fn();
 		println2('✅');
 	} catch(err) {
-		println2('🔴', 'failed:', err.toString());
-		println2(err.stack.split('\n').slice(1).join('\n'));
-		proc.exit(1);
+		failures.push({
+			err: err,
+			test: active_test,
+		});
+		println2('🔴');
 	}
 
 	term.fg(128, 128, 128);
@@ -116,12 +140,32 @@ test.run = function(name, fn) {
 	active_test = '?';
 }
 
+test.start = function() {
+	term.clear();
+	
+	zap(TMP);
+	fs.mkdirp(TMP);
+
+	failures = [];
+}
+
 test.tmp = function(path) {
-	const tmp_path = fs.join(test.TMP, path);
+	const tmp_path = fs.join(TMP, path);
 	
 	zap(tmp_path);
 
 	return tmp_path;
+}
+
+function zap(path) {
+	if (fs.exists(path)) {
+		if (fs.is_directory(path)) {
+			fs.rmdir(path, true);
+		}
+		else {
+			fs.unlink(path);
+		}
+	}
 }
 
 return test;

@@ -1,6 +1,6 @@
-const term = require('term');
+const test = require('./test.js');
 
-term.clear();
+test.start();
 
 require('./errno.js');
 require('./kern.js');
@@ -12,3 +12,5 @@ require('./term.js');
 require('./fs.js');
 require('./proc.js');
 require('./shell.js');
+
+test.finish();
