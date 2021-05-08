@@ -195,14 +195,15 @@ test('fork2 > with getpid', function() {
 		fs.write_file(FILE, proc.getpid());
 	});
 
-	try {
-		proc.waitpid(pid);
-	} 
-	catch(err) {
-		if (err.errno !== errno.ECHILD) {
-			throw err;
+	var countdown = 3;
+	while (fs.exists('/proc/' + pid)) {
+		if (!countdown) {
+			fail('timeout waiting for child proc to finish');
 		}
-	}
+
+		proc.sleep(1);
+		countdown--;
+	} 
 
 	expect.equals(pid, fs.read_file(FILE));
 });
