@@ -19,9 +19,9 @@
 
 ## Comparison to Node.js or similar tools
 
-### Why should I use joshi instead of Node.js
+### Why you should use joshi instead of Node.js
 
-The main reasons why I created `joshi` are:
+The main reasons why `joshi` was created are:
 
 1. It is by far much simpler than `Node.js`: this is because `Duktape` is just
    one C file implementing the whole JavaScript engine.
@@ -29,8 +29,8 @@ The main reasons why I created `joshi` are:
    `libxcrypt` and, optionally, `ncurses` are needed.
 3. The API is designed to expose `POSIX`/`Linux` APIs: if you know how to use
    `POSIX` APIs, you know how to use `joshi`.
-4. The programming model is not asynchronous: we use the old `fork` process
-   model (we don't even have/need threads yet).
+4. The programming model is not asynchronous: it uses the old `fork` process
+   model (it doesn't even have/need threads yet).
 5. Exposing a native API is as easy as creating a JSON file and running
    `joshpec`: this tool generates a stub so that you can call C functions from
    JavaScript.
@@ -38,16 +38,14 @@ The main reasons why I created `joshi` are:
    optimized for small systems, `joshi` is very lightweight, with a reasonable 
    performance.
 
-### Why shouldn't I use joshi
+### Why you shouldn't use joshi
 
 Because `joshi` is something new you should not expect a lot of support or
 goodies from the community.
 
 Also, it is important to keep in mind that `joshi` is targeting `Linux` systems
-(and especially [ArchLinux](https://archlinux.org/)) for developing terminal
-tools or daemons.
-
-So, don't create web servers or any other performance critical tool with it!
+for developing terminal tools or daemons. So, don't create web servers or any
+other performance critical tool with it!
 
 Finally, `Duktape` only supports `ECMAScript 5`, however there are plans to 
 support `ECMAScript 6+` in the future. But for now, if you want to use
@@ -58,15 +56,11 @@ does NOT support sourcemaps) the source lines of your code.
 ## How to install
 
 For now, `joshi` can only be automatically installed in `ArchLinux`, using the
-[AUR](https://aur.archlinux.org/).
-
-This Git repository is itself an AUR repository, so you just need to clone it 
-and follow the steps
-[described in ArchLinux wiki](https://wiki.archlinux.org/title/Arch_User_Repository)
-to install it.
+[AUR](https://aur.archlinux.org/packages/joshi).
 
 > 👀 If you want to contribute or provide an installation for any other Linux
-> distro, please file an issue so that we can integrate it here (if necessary)
+> distro, please file an issue or send a PR changing anything necessary to
+> integrate it here.
 
 ## How to build the project
 
@@ -76,39 +70,66 @@ platform, the small set of dependencies needed makes it highly portable (as long
 as it is compiled in a `POSIX`/`Linux` system).
 
 For the time being it is not prepared to be compiled in `Windows` or `Mac`. In
-theory it should be easy to port, but I don't need it and I find that the
-JavaScript APIs could look unnatural in non-Linux systems (and especially in 
-Windows). However, the project is open to contribution for ports if someone
-finds it useful.
+theory it should be easy to port, but it is possible that the JavaScript APIs
+may look unnatural in non-Linux systems (and especially in Windows). However,
+the project is open to contribution for ports if someone finds it useful.
 
 ### Building the binary
 
 The steps are quite easy. All you need is `make`, `gcc`, and two or three more
 dependencies (you can see the list in the 
-[PKGBUILD file](https://github.com/izaera/joshi/blob/master/PKGBUILD), section
-`makedepends`).
+[PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=joshi),
+section `makedepends`).
 
-Once everything is installed, head up to the
-[src directory](https://github.com/izaera/joshi/tree/master/src) and simply run
-`make`.
+Once everything is installed, go to the project folder and simply run `make`.
 
-That will invoke the `all` target of
+That will invoke the `compile` target of
 [Makefile](https://github.com/izaera/joshi/blob/master/src/Makefile) which, in 
-turn, will build the binaries and create the docs.
-
-Once the process is finished, you will have a complete runnable installation of
-`joshi` in the
-[dist folder](https://github.com/izaera/joshi/tree/master/src/dist) of the
+turn, will build the binaries and put them in the `build/joshi` subfolder of the
 project.
 
-You can run `joshi` from there if you want. All you need to do is to export an
-environment variable with the name `JOSHI_LIB_DIR` pointing to the 
-[dist/usr/lib/joshi directory](https://github.com/izaera/joshi/tree/master/src/dist/usr/lib/joshi)
-and then invoke the `joshi` binary (built when running `make`) at
-`dist/usr/bin`.
+After that, you may test the recently built `joshi` binary by running
+`make test`. If everything goes OK you will all tests green.
 
-Another alternative is to install it to your `ArchLinux` as explained in the 
-previous section.
+### Building the docs
+
+To build the API docs just run `make docs`. That will leave the documentation 
+built by [jsdoc](https://jsdoc.app/) in the `build/jsdoc` subfolder of the
+project.
+
+### Installing joshi manually
+
+We recommend to use your distro's package manager to install `joshi` (as
+explained in [How to install](#how-to-install)). However, if you want to make a
+custom installation of `joshi` you may simply run
+`PREFIX=/usr/local make install` with the `root` user (of course, you can change
+`/usr/local` by `/usr`, `opt`, or any prefix you like).
+
+That will install:
+
+- The `joshi` command (at `$PREFIX/bin`)
+- The documentation (at `$PREFIX/share/doc/joshi`)
+- The JavaScript API libraries (at `$PREFIX/lib`)
+- The include files needed to build native modules (at `$PREFIX/include`)
+- The `joshpec` code generator used to build native module stubs (at 
+  `$PREFIX/lib/joshpec`)
+
+### Diverting joshi's library folder
+
+There are times when you need to run a locally built `joshi` and make it load 
+the JavaScript library from a development location (for example to diagnose a
+bug, or to develop a new feature). 
+
+For those cases, you can export an environment variable with the name
+`JOSHI_LIB_DIR` pointing to the root folder of the JavaScript library
+(for example: the [src/library](./tree/master/src/library) folder of the
+project).
+
+In absence of the `JOSHI_LIB_DIR` environment variable `joshi` looks for the
+library based on the location of the `joshi` executable. If `joshi` is run from
+`/usr/bin/joshi`, it will load the library at `/usr/lib/joshi`, if it is run
+from `/usr/local/bin/joshi`, it will look for the library at
+`/usr/local/lib/joshi` and so on...
 
 ### Makefile targets
 
@@ -116,11 +137,14 @@ Currently, the
 [Makefile](https://github.com/izaera/joshi/blob/master/src/Makefile) understands
 the following targets:
 
-1. `all`: builds everything (binaries and docs)
-2. `ci`: same as all, and tests the package
-3. `clean`: removes generated files from the source tree
-4. `docs`: builds the docs
-5. `test`: runs the tests (without building first)
+1. `compile`: builds binaries (`joshi` and needed `.so` files)
+2. `test`: run the project's automated tests
+3. `docs`: builds the docs
+4. `ci`: compiles and tests (invoked from GitHub workflows)
+5. `clean`: removed any build artifact (wipes the project's `build` folder)
+6. `install`: installs the package
+7. `release`: runs the release process (tweaks version numbers, commits and tags
+   source in Git).
 
 ### Used tools
 
@@ -146,9 +170,10 @@ can hint you on how to fix it (or maybe even fix it if I have the time 😀).
 If you fix the bug, feel free to send a pull request so that I can merge.
 
 If you need a new feature and want to send a pull request for it, file an issue 
-first to see if it fits. Beware that I want to keep the tool simple and very 
-opinionated on what is implemented and what isn't, being **simplicity and lack
-of dependencies** the main mantra, so don't get too fancy 😅.
+first to see if it fits in the product. Beware that I want to keep the tool
+simple and very opinionated on what it is supposed to do and how to do it, being
+**simplicity and lack of dependencies** the main mantra, so don't get too fancy
+😅.
 
 In any case, `joshi` provides support for invoking any shared library (`.so` 
 files) so there's nothing you can't do even if the core of the product doesn't 
@@ -161,10 +186,10 @@ The project uses [JSDoc](https://jsdoc.app/) to generate its documentation.
 > 📚 Browse the documentation at the
 > [project's site](https://izaera.github.io/joshi)
 
-The
-API is divided in packages, like `fs`, `io`, `proc`, etc. 
+The API is divided in packages, like `fs`, `io`, `proc`, etc. 
 
-> The whole list of packages is [here](./tree/master/src/dist/usr/lib/joshi).
+> The whole list of packages is in the [src/library](./tree/master/src/library)
+> folder of the project.
 
 The scope of each package should -hopefully- be clear given its name, and the 
 functions inside it too. 
