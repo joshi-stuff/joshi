@@ -158,7 +158,7 @@ These two downloads are completely automated using `curl`.
 
 ## Support
 
-In a nutshell: there's no support ¯\_(ツ)_/¯
+In a nutshell: there's no support ¯\\\_(ツ)\_/¯
 
 I develop this project for my own needs and in my spare time, so don't expect me
 to fix any of your issues under any SLA.
