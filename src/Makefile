@@ -36,12 +36,18 @@ JOSHI_TUI_OBJECTS = \
 #
 compile: $(JOSHI) $(JOSHI_TUI)
 
+format: 
+	npx prettier --write **/*.js
+
+lint:
+	npx prettier --check **/*.js
+
 test: 
 	JOSHI_LIB_DIR="$(realpath src/library)" $(JOSHI) ./tests/index.js
 
 docs: $(DOCS)
 
-ci: clean compile test
+ci: clean lint compile test
 
 clean: 
 	@rm -rf build
