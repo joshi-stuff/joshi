@@ -1,5 +1,3 @@
-/joshi-*.zst
-/pkg
-/src/build
-/src/.docdash
-/src/.duktape
+/build
+/.docdash
+/.duktape
