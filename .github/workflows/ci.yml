@@ -25,8 +25,17 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: make ci
-        # Uncomment the next line to run CI in an Arch Linux virtual machine 
-        # uses: izaera/joshi/.github/actions/ci@master
-        run: cd src && make ci
+      # Runs CI steps
+      - name: make lint
+        run: cd src && make lint
+
+      - name: make compile
+        run: cd src && make compile
+
+      - name: make test
+        run: cd src && make test
+
+      # Uncomment the next task to run CI in an Arch Linux virtual machine 
+      # - name: make ci
+      # uses: izaera/joshi/.github/actions/ci@master
+      
