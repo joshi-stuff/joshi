@@ -7,10 +7,10 @@ const fail = require('./test.js').fail;
 const log = require('./test.js').log;
 const test = require('./test.js').run;
 
-test('bg', function() {
+test('bg', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 1);
 
@@ -24,10 +24,10 @@ test('bg', function() {
 	expect.is(true, out.includes('48;2;1;2;3m'));
 });
 
-test('clear', function() {
+test('clear', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 1);
 
@@ -41,10 +41,10 @@ test('clear', function() {
 	expect.is(true, out.includes('2J'));
 });
 
-test('fg', function() {
+test('fg', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 1);
 
@@ -58,10 +58,10 @@ test('fg', function() {
 	expect.is(true, out.includes('38;2;1;2;3m'));
 });
 
-test('hide_cursor', function() {
+test('hide_cursor', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 1);
 
@@ -75,10 +75,10 @@ test('hide_cursor', function() {
 	expect.is(true, out.includes('?25l'));
 });
 
-test('move_to', function() {
+test('move_to', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 1);
 
@@ -92,10 +92,10 @@ test('move_to', function() {
 	expect.is(true, out.includes('7;13H'));
 });
 
-test('print', function() {
+test('print', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 1);
 
@@ -109,10 +109,10 @@ test('print', function() {
 	expect.is('holi', out);
 });
 
-test('print2', function() {
+test('print2', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 2);
 
@@ -126,10 +126,10 @@ test('print2', function() {
 	expect.is('holi', out);
 });
 
-test('println', function() {
+test('println', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 1);
 
@@ -143,10 +143,10 @@ test('println', function() {
 	expect.is('holi\n', out);
 });
 
-test('println2', function() {
+test('println2', function () {
 	const fd = io.pipe();
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.close(fd[0]);
 		io.dup2(fd[1], 2);
 

@@ -9,44 +9,34 @@ const log = require('./test.js').log;
 const test = require('./test.js').run;
 const tmp = require('./test.js').tmp;
 
-test('$().dir', function() {
+test('$().dir', function () {
 	const x = {};
 
-	$('pwd')
-		.dir('/dev')
-		.pipe(1, x)
-		.do();
+	$('pwd').dir('/dev').pipe(1, x).do();
 
 	expect.is('/dev\n', x.out);
 });
 
-test('$().env', function() {
+test('$().env', function () {
 	const x = {};
 
-	$('env')
-		.env({MY_VAR: 'my_value'})
-		.pipe(1, x)
-		.do();
+	$('env').env({ MY_VAR: 'my_value' }).pipe(1, x).do();
 
 	expect.includes('MY_VAR=my_value\n', x.out);
 });
 
-
 /*****/
 
-test('more < FILE', function() {
+test('more < FILE', function () {
 	const FILE = '/etc/environment';
 	const x = {};
 
-	$('more')
-		.pipe(0, FILE)
-		.pipe(1, x)
-		.do();
+	$('more').pipe(0, FILE).pipe(1, x).do();
 
 	expect.is(fs.read_file(FILE), x.out);
 });
 
-test('echo perico > FILE', function() {
+test('echo perico > FILE', function () {
 	const FILE = tmp('redirect');
 
 	$('echo', 'perico')
@@ -56,12 +46,10 @@ test('echo perico > FILE', function() {
 	expect.is('perico\n', fs.read_file(FILE));
 });
 
-test('echo perico >> FILE', function() {
+test('echo perico >> FILE', function () {
 	const FILE = tmp('redirect_append');
 
-	$('echo', 'perico')
-		.pipe(1, FILE)
-		.do();
+	$('echo', 'perico').pipe(1, FILE).do();
 
 	$('echo', 'perico')
 		.pipe(1, '+:' + FILE)
@@ -70,19 +58,17 @@ test('echo perico >> FILE', function() {
 	expect.is('perico\nperico\n', fs.read_file(FILE));
 });
 
-test('echo perico > null', function() {
+test('echo perico > null', function () {
 	const FILE = tmp('redirect_null');
 
 	const fd = io.truncate(FILE);
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.dup2(fd, 1);
 
 		io.write_string(1, 'holi');
 
-		$('echo', 'perico')
-			.pipe(1, null)
-			.do();
+		$('echo', 'perico').pipe(1, null).do();
 	});
 
 	io.seek(fd, 0);
@@ -93,14 +79,10 @@ test('echo perico > null', function() {
 	expect.is('holi', str);
 });
 
-test('more < HERE_STRING', function() {
+test('more < HERE_STRING', function () {
 	const x = {};
 
-	$('more')
-		.pipe(0, ['perico'])
-		.pipe(1, x)
-		.do();
+	$('more').pipe(0, ['perico']).pipe(1, x).do();
 
 	expect.is('perico', x.out);
 });
-

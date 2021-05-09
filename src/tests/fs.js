@@ -7,12 +7,12 @@ const log = require('./test.js').log;
 const test = require('./test.js').run;
 const tmp = require('./test.js').tmp;
 
-test('basename', function() {
+test('basename', function () {
 	expect.is('holi', fs.basename('/usr/share/holi'));
 	expect.is('holi', fs.basename('holi'));
 });
 
-test('chown', function() {
+test('chown', function () {
 	const FILE = tmp('chown');
 
 	fs.write_file(FILE, '');
@@ -26,7 +26,7 @@ test('chown', function() {
 	expect.is(proc.getgid(), st.gid);
 });
 
-test('chown > for symlink', function() {
+test('chown > for symlink', function () {
 	const LINK = tmp('chown_for_symlink');
 
 	fs.symlink('/etc/passwd', LINK);
@@ -40,20 +40,20 @@ test('chown > for symlink', function() {
 	expect.is(proc.getgid(), st.gid);
 });
 
-test('copy_file', function() {
+test('copy_file', function () {
 	const SRC = tmp('copy_file_src');
 	const DEST = tmp('copy_file_dest');
 	const CONTENT = 'holi';
 
 	fs.write_file(SRC, CONTENT, 0600);
-	
+
 	fs.unlink(DEST, false);
 	fs.copy_file(SRC, DEST, 0644);
 
 	var st = fs.stat(DEST);
 	expect.is(proc.getuid(), st.uid);
 	expect.is(proc.getgid(), st.gid);
-	expect.is(0644, (st.mode & 0777));
+	expect.is(0644, st.mode & 0777);
 
 	expect.is(CONTENT, fs.read_file(DEST));
 
@@ -63,10 +63,10 @@ test('copy_file', function() {
 	st = fs.stat(DEST);
 	expect.is(proc.getuid(), st.uid);
 	expect.is(proc.getgid(), st.gid);
-	expect.is(0600, (st.mode & 0777));
+	expect.is(0600, st.mode & 0777);
 });
 
-test('create_temp_file', function() {
+test('create_temp_file', function () {
 	const CONTENT = 'holi';
 
 	const filename = fs.create_temp_file(CONTENT);
@@ -75,12 +75,12 @@ test('create_temp_file', function() {
 	expect.is(CONTENT, fs.read_file(filename));
 });
 
-test('dirname', function() {
+test('dirname', function () {
 	expect.is('/usr/share', fs.dirname('/usr/share/holi'));
 	expect.is('.', fs.dirname('holi'));
 });
 
-test('exists', function() {
+test('exists', function () {
 	const FILE = tmp('exists');
 
 	fs.write_file(FILE, '');
@@ -88,25 +88,25 @@ test('exists', function() {
 	expect.is(true, fs.exists(FILE));
 });
 
-test('is_block_device', function() {
+test('is_block_device', function () {
 	var DEV = '/dev/loop0';
-	
+
 	expect.is(true, fs.is_block_device(DEV));
 	expect.is(false, fs.is_block_device('/dev/null'));
 	expect.is(false, fs.is_block_device('/dev'));
 });
 
-test('is_char_device', function() {
+test('is_char_device', function () {
 	expect.is(true, fs.is_char_device('/dev/null'));
 	expect.is(false, fs.is_char_device('/dev'));
 });
 
-test('is_directory', function() {
+test('is_directory', function () {
 	expect.is(true, fs.is_directory('/dev'));
 	expect.is(false, fs.is_directory('/dev/null'));
 });
 
-test('is_executable', function() {
+test('is_executable', function () {
 	const FILE = tmp('is_executable');
 
 	fs.write_file(FILE, '', 0700);
@@ -119,7 +119,7 @@ test('is_executable', function() {
 	expect.is(false, fs.is_executable(FILE));
 });
 
-test('is_fifo', function() {
+test('is_fifo', function () {
 	const FIFO = tmp('is_fifo');
 
 	fs.mkfifo(FIFO);
@@ -129,7 +129,7 @@ test('is_fifo', function() {
 	expect.is(false, fs.is_fifo('/dev/null'));
 });
 
-test('is_file', function() {
+test('is_file', function () {
 	const FILE = tmp('is_file');
 
 	fs.write_file(FILE, '');
@@ -139,7 +139,7 @@ test('is_file', function() {
 	expect.is(false, fs.is_file('/dev/null'));
 });
 
-test('is_link', function() {
+test('is_link', function () {
 	const LINK = tmp('is_link');
 
 	fs.symlink('/tmp', LINK);
@@ -148,7 +148,7 @@ test('is_link', function() {
 	expect.is(false, fs.is_link('/'));
 });
 
-test('is_readable', function() {
+test('is_readable', function () {
 	const FILE = tmp('is_readable');
 
 	fs.write_file(FILE, '', 0600);
@@ -165,7 +165,7 @@ test('is_readable', function() {
 //	// There's no easy way to test is_socket
 //});
 
-test('is_writable', function() {
+test('is_writable', function () {
 	const FILE = tmp('is_writable');
 	const FILE2 = tmp('is_writable_2');
 
@@ -178,17 +178,17 @@ test('is_writable', function() {
 	expect.is(false, fs.is_writable(FILE2));
 });
 
-test('join', function() {
+test('join', function () {
 	expect.is('/etc', fs.join('/', 'etc'));
 	expect.is('/etc/passwd', fs.join('/etc', 'passwd'));
 	expect.is('/etc/nginx/nginx.conf', fs.join('/etc', 'nginx/nginx.conf'));
 	expect.is(fs.normalize_path('tmp/file'), fs.join('tmp', 'file'));
-	expect.throws(function() {
+	expect.throws(function () {
 		fs.join('/etc', '/passwd');
 	});
 });
 
-test('list_dir', function() {
+test('list_dir', function () {
 	const DIR = tmp('list_dir');
 	const FILE1 = 'file1';
 	const FILE2 = 'file2';
@@ -205,7 +205,7 @@ test('list_dir', function() {
 	expect.is(FILE2, items[1]);
 });
 
-test('list_dir > with callback', function() {
+test('list_dir > with callback', function () {
 	const DIR = tmp('list_dir_with_callback');
 	const FILE1 = 'file1';
 	const FILE2 = 'file2';
@@ -218,7 +218,7 @@ test('list_dir > with callback', function() {
 	const items = [];
 	const indexes = [];
 
-	fs.list_dir(DIR, function(item, i) {
+	fs.list_dir(DIR, function (item, i) {
 		items.push(item);
 		indexes.push(i);
 	});
@@ -227,7 +227,7 @@ test('list_dir > with callback', function() {
 	expect.array_equals([FILE1, FILE2], items.sort());
 });
 
-test('list_dir > with callback, cancelling', function() {
+test('list_dir > with callback, cancelling', function () {
 	const DIR = tmp('list_dir_with_callback_cancelling');
 	const FILE1 = 'file1';
 	const FILE2 = 'file2';
@@ -240,7 +240,7 @@ test('list_dir > with callback, cancelling', function() {
 	const items = [];
 	const indexes = [];
 
-	fs.list_dir(DIR, function(item, i) {
+	fs.list_dir(DIR, function (item, i) {
 		items.push(item);
 		indexes.push(i);
 
@@ -252,7 +252,7 @@ test('list_dir > with callback, cancelling', function() {
 	expect.is(true, items[0] === FILE1 || items[0] === FILE2);
 });
 
-test('mkdir', function() {
+test('mkdir', function () {
 	const DIR = tmp('mkdir');
 
 	fs.mkdirp(DIR);
@@ -260,7 +260,7 @@ test('mkdir', function() {
 	expect.is(true, fs.is_directory(DIR));
 });
 
-test('mkdir > with mode', function() {
+test('mkdir > with mode', function () {
 	const DIR = tmp('mkdir_with_mode');
 
 	fs.mkdirp(DIR, 0700);
@@ -269,7 +269,7 @@ test('mkdir > with mode', function() {
 	expect.is(0700, fs.stat(DIR).mode & 0777);
 });
 
-test('mkdirp', function() {
+test('mkdirp', function () {
 	const BASEDIR = tmp('mkdirp');
 	const DIR = BASEDIR + '/and/more/dirs';
 
@@ -280,7 +280,7 @@ test('mkdirp', function() {
 	fs.rmdir(BASEDIR, true);
 });
 
-test('mkfifo', function() {
+test('mkfifo', function () {
 	const FIFO = tmp('mkfifo');
 
 	fs.mkfifo(FIFO);
@@ -288,7 +288,7 @@ test('mkfifo', function() {
 	expect.is(true, fs.is_fifo(FIFO));
 });
 
-test('normalize_path', function() {
+test('normalize_path', function () {
 	const CWD = fs.realpath('.');
 
 	expect.is(CWD, fs.normalize_path('.'));
@@ -296,7 +296,7 @@ test('normalize_path', function() {
 	expect.is('/tmp', fs.normalize_path('/dev/block/../../tmp/./../tmp'));
 });
 
-test('read_file', function() {
+test('read_file', function () {
 	const FILE = tmp('read_file');
 
 	fs.write_file(FILE, 'holi');
@@ -304,7 +304,7 @@ test('read_file', function() {
 	expect.is('holi', fs.read_file(FILE));
 });
 
-test('read_link', function() {
+test('read_link', function () {
 	const LINK = tmp('read_link');
 
 	fs.symlink('/tmp', LINK);
@@ -312,7 +312,7 @@ test('read_link', function() {
 	expect.is('/tmp', fs.read_link(LINK));
 });
 
-test('read_link > with relative path', function() {
+test('read_link > with relative path', function () {
 	const LINK = tmp('read_link_with_relative_path');
 
 	fs.symlink('../dev', LINK);
@@ -320,14 +320,14 @@ test('read_link > with relative path', function() {
 	expect.is(fs.dirname(LINK) + '/../dev', fs.read_link(LINK));
 });
 
-test('realpath', function() {
+test('realpath', function () {
 	expect.is('/etc/passwd', fs.realpath('/tmp/../etc/./passwd'));
-	expect.throws(function() {
+	expect.throws(function () {
 		fs.realpath('/dev/null/nonexistent');
 	});
 });
 
-test('rename', function() {
+test('rename', function () {
 	const FILE = tmp('rename');
 	const TARGET = tmp('rename_target');
 
@@ -336,10 +336,9 @@ test('rename', function() {
 
 	expect.is(false, fs.exists(FILE));
 	expect.is('holi', fs.read_file(TARGET));
-
 });
 
-test('rmdir', function() {
+test('rmdir', function () {
 	const DIR = tmp('rmdir');
 
 	fs.mkdir(DIR);
@@ -351,7 +350,7 @@ test('rmdir', function() {
 	expect.is(false, fs.exists(DIR));
 });
 
-test('stat', function() {
+test('stat', function () {
 	const FILE = tmp('stat');
 	const NOW = Math.floor(new Date().getTime() / 1000);
 
@@ -360,8 +359,8 @@ test('stat', function() {
 	const st = fs.stat(FILE);
 
 	expect.is(proc.getgid(), st.gid);
-	expect.is(fs.S_IFREG, (st.mode & fs.S_IFMT));
-	expect.is(0200, (st.mode & 0777));
+	expect.is(fs.S_IFREG, st.mode & fs.S_IFMT);
+	expect.is(0200, st.mode & 0777);
 	expect.is(4, st.size);
 	expect.is(proc.getuid(), st.uid);
 
@@ -372,7 +371,7 @@ test('stat', function() {
 	expect.is(true, t.modification >= NOW);
 });
 
-test('symlink', function() {
+test('symlink', function () {
 	const LINK = tmp('symlink');
 
 	fs.symlink('/etc/passwd', LINK);
@@ -382,7 +381,7 @@ test('symlink', function() {
 	expect.is(contents, fs.read_file(LINK));
 });
 
-test('unlink', function() {
+test('unlink', function () {
 	const FILE = tmp('unlink');
 
 	fs.write_file(FILE, '');
@@ -391,7 +390,7 @@ test('unlink', function() {
 
 	expect.is(false, fs.exists(FILE));
 
-	expect.throws(function() {
+	expect.throws(function () {
 		fs.unlink(FILE);
 	});
 
@@ -399,7 +398,7 @@ test('unlink', function() {
 	fs.unlink(FILE, false);
 });
 
-test('write_file', function() {
+test('write_file', function () {
 	const FILE = tmp('write_file');
 
 	fs.write_file(FILE, 'holi');

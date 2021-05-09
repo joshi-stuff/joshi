@@ -7,7 +7,7 @@ const log = require('./test.js').log;
 const test = require('./test.js').run;
 const tmp = require('./test.js').tmp;
 
-test('append', function() {
+test('append', function () {
 	const FILE = tmp('append');
 
 	io.close(io.truncate(FILE));
@@ -25,7 +25,7 @@ test('append', function() {
 	expect.is('line 1line 2', str);
 });
 
-test('close', function() {
+test('close', function () {
 	const FILE = tmp('close');
 
 	const fd = io.truncate(FILE);
@@ -33,13 +33,12 @@ test('close', function() {
 
 	try {
 		io.read_string(fd);
-	}
-	catch(err) {
+	} catch (err) {
 		expect.is(9, err.errno);
 	}
 });
 
-test('close > with fail_if_closed=false', function() {
+test('close > with fail_if_closed=false', function () {
 	const FILE = tmp('close_with_fail_if_closed_false');
 
 	const fd = io.truncate(FILE);
@@ -47,13 +46,13 @@ test('close > with fail_if_closed=false', function() {
 	io.close(fd, false);
 });
 
-test('create', function() {
+test('create', function () {
 	const FILE = tmp('create');
 
 	for (var i = 0; ; i++) {
 		try {
-			io.close(io.open(FILE+i));
-		} catch(err) {
+			io.close(io.open(FILE + i));
+		} catch (err) {
 			FILE = FILE + i;
 			break;
 		}
@@ -65,20 +64,17 @@ test('create', function() {
 
 	try {
 		io.close(io.open(FILE));
-	}
-	catch(err) {
+	} catch (err) {
 		fail('could not reopen file after creation');
 	}
 
 	// Cleanup
 	try {
 		fs.unlink(FILE);
-	} 
-	catch(err) {
-	}
+	} catch (err) {}
 });
 
-test('dup', function() {
+test('dup', function () {
 	const FILE = tmp('dup');
 
 	const fd = io.truncate(FILE);
@@ -94,7 +90,7 @@ test('dup', function() {
 	expect.is('holi', str);
 });
 
-test('dup2', function() {
+test('dup2', function () {
 	const FILE = tmp('dup2');
 
 	const fd = io.truncate(FILE);
@@ -110,7 +106,7 @@ test('dup2', function() {
 	expect.is('holi', str);
 });
 
-test('open', function() {
+test('open', function () {
 	const FILE = tmp('open');
 
 	io.close(io.truncate(FILE));
@@ -118,18 +114,18 @@ test('open', function() {
 	const fd = io.open(FILE);
 	io.close(fd);
 
-	expect.throws(function() {
+	expect.throws(function () {
 		io.open('/tmp/non_existent_file_gdgsahfgsagfs');
 	});
 });
 
-test('open > for read and write', function() {
+test('open > for read and write', function () {
 	const FILE = tmp('open_for_read_and_write');
 
 	io.close(io.truncate(FILE));
 
 	const fd = io.open(FILE, 'rw');
-	
+
 	io.write_string(fd, 'holi');
 
 	io.seek(fd, 0);
@@ -139,14 +135,14 @@ test('open > for read and write', function() {
 	io.close(fd);
 });
 
-test('open > for read only', function() {
+test('open > for read only', function () {
 	const FILE = tmp('open_for_read_only');
 
 	io.close(io.truncate(FILE));
 
 	const fd = io.open(FILE, 'r');
-	
-	expect.throws(function() {
+
+	expect.throws(function () {
 		io.write_string(fd, 'holi');
 	});
 
@@ -155,14 +151,14 @@ test('open > for read only', function() {
 	io.close(fd);
 });
 
-test('open > for write only', function() {
+test('open > for write only', function () {
 	const FILE = tmp('open_for_write_only');
 
 	io.close(io.truncate(FILE));
 
 	const fd = io.open(FILE, 'w');
-	
-	expect.throws(function() {
+
+	expect.throws(function () {
 		io.read_string(fd);
 	});
 
@@ -171,11 +167,11 @@ test('open > for write only', function() {
 	io.close(fd);
 });
 
-test('pipe', function() {
+test('pipe', function () {
 	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37, 38, 38, 40, 41, 42]);
 
 	const fd = io.pipe();
-	
+
 	io.write(fd[1], DATA);
 	const buf = new Uint8Array(DATA.length);
 	io.read(fd[0], buf);
@@ -186,16 +182,18 @@ test('pipe', function() {
 	expect.array_equals(DATA, buf);
 });
 
-test('poll', function() {
+test('poll', function () {
 	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37, 38, 38, 40, 41, 42]);
 
 	const fd = io.pipe();
-	
-	const fds = [{
-		fd: fd[0],
-		events: io.POLLIN,
-		revents: 0
-	}];
+
+	const fds = [
+		{
+			fd: fd[0],
+			events: io.POLLIN,
+			revents: 0,
+		},
+	];
 
 	io.write(fd[1], DATA);
 
@@ -208,7 +206,7 @@ test('poll', function() {
 	expect.is(io.POLLIN, fds[0].revents);
 });
 
-test('read', function() {
+test('read', function () {
 	const FILE = tmp('read');
 	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37, 38, 38, 40, 41, 42]);
 
@@ -225,7 +223,7 @@ test('read', function() {
 	expect.array_equals(DATA, buf);
 });
 
-test('read > with given count', function() {
+test('read > with given count', function () {
 	const FILE = tmp('read_with_given_count');
 	const DATA = new Uint8Array([32]);
 
@@ -243,10 +241,10 @@ test('read > with given count', function() {
 	expect.is(32, buf[0]);
 });
 
-test('read_fully', function() {
+test('read_fully', function () {
 	const FILE = tmp('read_fully');
 
-	const data = new Uint8Array(4096*4+512);
+	const data = new Uint8Array(4096 * 4 + 512);
 
 	for (var i = 0; i < data.length; i++) {
 		data[i] = 255 * Math.random();
@@ -265,11 +263,9 @@ test('read_fully', function() {
 	expect.array_equals(data, buf);
 });
 
-test('read_string', function() {
+test('read_string', function () {
 	const FILE = tmp('read_string');
-	const DATA = new Uint8Array([
-		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
-	]);
+	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -282,11 +278,9 @@ test('read_string', function() {
 	expect.is('holi🔊', str);
 });
 
-test('seek', function() {
+test('seek', function () {
 	const FILE = tmp('seek');
-	const DATA = new Uint8Array([
-		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
-	]);
+	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -299,11 +293,9 @@ test('seek', function() {
 	expect.array_equals(DATA, buf);
 });
 
-test('tell', function() {
+test('tell', function () {
 	const FILE = tmp('tell');
-	const DATA = new Uint8Array([
-		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
-	]);
+	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -318,11 +310,9 @@ test('tell', function() {
 	expect.is(DATA.length - 3, p2);
 });
 
-test('truncate', function() {
+test('truncate', function () {
 	const FILE = tmp('truncate');
-	const DATA = new Uint8Array([
-		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
-	]);
+	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -338,7 +328,7 @@ test('truncate', function() {
 	expect.is(0, p);
 });
 
-test('write > with given count', function() {
+test('write > with given count', function () {
 	const FILE = tmp('write_with_given_count');
 	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37]);
 
@@ -354,11 +344,9 @@ test('write > with given count', function() {
 	expect.array_equals([32, 33, 34], buf);
 });
 
-test('write_string', function() {
+test('write_string', function () {
 	const FILE = tmp('write_string');
-	const DATA = new Uint8Array([
-		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a
-	]);
+	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
 
 	var fd = io.truncate(FILE);
 	io.write_string(fd, 'holi🔊');

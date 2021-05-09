@@ -9,12 +9,12 @@ const log = require('./test.js').log;
 const test = require('./test.js').run;
 const tmp = require('./test.js').tmp;
 
-test('printk', function() {
+test('printk', function () {
 	const FILE = tmp('printk');
 
 	const fd = io.truncate(FILE);
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.dup2(fd, 2);
 		kern.printk('holi');
 	});
@@ -24,7 +24,7 @@ test('printk', function() {
 	expect.is('holi', fs.read_file(FILE));
 });
 
-test('search_path', function() {
+test('search_path', function () {
 	try {
 		const mydir = fs.dirname(require.owner_path);
 
@@ -38,7 +38,7 @@ test('search_path', function() {
 	}
 });
 
-test('version', function() {
+test('version', function () {
 	const v = kern.version.split('.');
 
 	expect.is(false, isNaN(Number(v[0])));

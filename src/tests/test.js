@@ -14,56 +14,57 @@ var active_things = [];
 var failures;
 
 test.expect = {
-	array_equals: function(expected, actual) {
+	array_equals: function (expected, actual) {
 		if (expected.length !== actual.length) {
 			test.fail('lengths differ:', actual.length, '!==', expected.length);
 		}
 
-		for (var i=0; i < expected.length; i++) {
+		for (var i = 0; i < expected.length; i++) {
 			if (expected[i] != actual[i]) {
 				test.fail(
-					'arrays differ at ['+i+']:', actual[i], '!=', expected[i]
+					'arrays differ at [' + i + ']:',
+					actual[i],
+					'!=',
+					expected[i]
 				);
 			}
 		}
 	},
 
-	equals: function(expected, actual) {
+	equals: function (expected, actual) {
 		if (expected != actual) {
 			test.fail(actual, '!=', expected);
 		}
 	},
 
-	includes: function(expected, actual) {
+	includes: function (expected, actual) {
 		if (!actual.includes(expected)) {
 			test.fail(actual, 'does not include', expected);
 		}
 	},
 
-	is: function(expected, actual) {
+	is: function (expected, actual) {
 		if (expected !== actual) {
 			test.fail(actual, '!==', expected);
 		}
 	},
 
-	not_throws: function(cb) {
+	not_throws: function (cb) {
 		cb();
 	},
 
-	throws: function(cb) {
+	throws: function (cb) {
 		try {
 			cb();
 			test.fail('code did not throw error');
-		}
-		catch(err) {
-		}
+		} catch (err) {}
 	},
-}
+};
 
-test.fail = function() {
+test.fail = function () {
 	const msg = '';
 
-	for (var i=0; i<arguments.length; i++) {
+	for (var i = 0; i < arguments.length; i++) {
 		if (i > 0) {
 			msg += ' ';
 		}
@@ -71,9 +72,9 @@ test.fail = function() {
 	}
 
 	throw new Error(msg);
-}
+};
 
-test.finish = function() {
+test.finish = function () {
 	if (!failures.length) {
 		proc.exit(0);
 	}
@@ -84,7 +85,7 @@ test.finish = function() {
 	println2('===============================================================');
 	println2('');
 
-	failures.forEach(function(failure) {
+	failures.forEach(function (failure) {
 		const err = failure.err;
 		const test = failure.test;
 		const things = failure.things;
@@ -94,8 +95,7 @@ test.finish = function() {
 			things.unshift(test);
 			things.unshift('🔴');
 			println2.apply(null, things);
-		}
-		else {
+		} else {
 			println2('🔴', test + ':', err.toString().replace(/^Error: /, ''));
 		}
 
@@ -104,26 +104,26 @@ test.finish = function() {
 	});
 
 	proc.exit(1);
-}
+};
 
-test.log = function() {
-	const things = [active_test+':'];
+test.log = function () {
+	const things = [active_test + ':'];
 
-	for (var i=0; i<arguments.length; i++) {
+	for (var i = 0; i < arguments.length; i++) {
 		things.push(arguments[i]);
 	}
 
 	active_things.push(things);
-}
+};
 
-test.run = function(name, fn) {
+test.run = function (name, fn) {
 	active_test = name;
 	active_things.length = 0;
 	try {
-		print2(active_test+': ');
+		print2(active_test + ': ');
 		fn();
 		println2('✅');
-	} catch(err) {
+	} catch (err) {
 		failures.push({
 			err: err,
 			test: active_test,
@@ -132,37 +132,36 @@ test.run = function(name, fn) {
 	}
 
 	term.fg(128, 128, 128);
-	active_things.forEach(function(things) {
+	active_things.forEach(function (things) {
 		println2.apply(println2, things);
 	});
 	term.reset();
 
 	active_test = '?';
-}
+};
 
-test.start = function() {
+test.start = function () {
 	term.clear();
-	
+
 	zap(TMP);
 	fs.mkdirp(TMP);
 
 	failures = [];
-}
+};
 
-test.tmp = function(path) {
+test.tmp = function (path) {
 	const tmp_path = fs.join(TMP, path);
-	
+
 	zap(tmp_path);
 
 	return tmp_path;
-}
+};
 
 function zap(path) {
 	if (fs.exists(path)) {
 		if (fs.is_directory(path)) {
 			fs.rmdir(path, true);
-		}
-		else {
+		} else {
 			fs.unlink(path);
 		}
 	}

@@ -8,7 +8,7 @@ const log = require('./test.js').log;
 const test = require('./test.js').run;
 const tmp = require('./test.js').tmp;
 
-test('read_line', function() {
+test('read_line', function () {
 	const FILE = tmp('read_line');
 
 	const fd = io.truncate(FILE);
@@ -24,8 +24,7 @@ test('read_line', function() {
 	io.close(fd);
 });
 
-
-test('read_until', function() {
+test('read_until', function () {
 	const FILE = tmp('read_until');
 
 	const fd = io.truncate(FILE);

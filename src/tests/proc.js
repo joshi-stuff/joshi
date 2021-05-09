@@ -10,23 +10,23 @@ const log = require('./test.js').log;
 const test = require('./test.js').run;
 const tmp = require('./test.js').tmp;
 
-test('alarm', function() {
+test('alarm', function () {
 	const fds = io.pipe();
 
-	proc.signal(proc.SIGALRM, function() {
+	proc.signal(proc.SIGALRM, function () {
 		io.close(fds[1]);
 		io.close(fds[0]);
 	});
 
 	const sd = stream.create(fds[0]);
 	proc.alarm(1);
-	expect.throws(function() {
+	expect.throws(function () {
 		stream.read_line(sd);
 	});
 
 	expect.is(
-		7, 
-		proc.fork(true, function() {
+		7,
+		proc.fork(true, function () {
 			proc.signal(proc.SIGALRM, null);
 			proc.alarm(1);
 			proc.sleep(2);
@@ -35,11 +35,11 @@ test('alarm', function() {
 	);
 });
 
-test('atexit', function() {
+test('atexit', function () {
 	const FILE = tmp('atexit');
 
-	const rc = proc.fork(true, function() {
-		proc.atexit(function() {
+	const rc = proc.fork(true, function () {
+		proc.atexit(function () {
 			fs.write_file(FILE, 'holi');
 		});
 
@@ -50,17 +50,17 @@ test('atexit', function() {
 	expect.is('holi', fs.read_file(FILE));
 });
 
-test('atexit > inherited handlers', function() {
+test('atexit > inherited handlers', function () {
 	const FILE = tmp('atexit_inherited_handlers');
 
-	const rc = proc.fork(true, function() {
-		proc.atexit(true, function() {
+	const rc = proc.fork(true, function () {
+		proc.atexit(true, function () {
 			const fd = io.append(FILE);
-			io.write_string(fd, 'holi');	
+			io.write_string(fd, 'holi');
 			io.close(fd);
 		});
-	
-		proc.fork(true, function() {});
+
+		proc.fork(true, function () {});
 
 		proc.exit(13);
 	});
@@ -69,17 +69,17 @@ test('atexit > inherited handlers', function() {
 	expect.is('holiholi', fs.read_file(FILE));
 });
 
-test('atexit > not inherited handlers', function() {
+test('atexit > not inherited handlers', function () {
 	const FILE = tmp('atexit_not_inherited_handlers');
 
-	const rc = proc.fork(true, function() {
-		proc.atexit(function() {
+	const rc = proc.fork(true, function () {
+		proc.atexit(function () {
 			const fd = io.append(FILE);
-			io.write_string(fd, 'holi');	
+			io.write_string(fd, 'holi');
 			io.close(fd);
 		});
-	
-		proc.fork(true, function() {});
+
+		proc.fork(true, function () {});
 
 		proc.exit(13);
 	});
@@ -88,7 +88,7 @@ test('atexit > not inherited handlers', function() {
 	expect.is('holi', fs.read_file(FILE));
 });
 
-test('chdir', function() {
+test('chdir', function () {
 	const cwd = fs.realpath('.');
 	proc.chdir('/tmp');
 	expect.is('/tmp', fs.realpath('.'));
@@ -96,12 +96,12 @@ test('chdir', function() {
 	expect.is(cwd, fs.realpath('.'));
 });
 
-test('exec > with path search', function() {
+test('exec > with path search', function () {
 	const FILE = tmp('exec_with_path_search');
 
 	const fd = io.truncate(FILE);
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.dup2(fd, 1);
 		proc.exec('echo', ['-n', 'holi']);
 	});
@@ -111,33 +111,33 @@ test('exec > with path search', function() {
 	expect.is('holi', fs.read_file(FILE));
 });
 
-test('exec > without path search', function() {
+test('exec > without path search', function () {
 	const FILE = tmp('exec_without_path_search');
 
 	const fd = io.truncate(FILE);
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.dup2(fd, 1);
-		proc.exec('/usr/bin/echo', ['-n', 'holi'], {search_path: false});
+		proc.exec('/usr/bin/echo', ['-n', 'holi'], { search_path: false });
 	});
 
 	io.close(fd);
 
 	expect.is('holi', fs.read_file(FILE));
 
-	expect.throws(function() {
+	expect.throws(function () {
 		proc.exec('dummy');
 	});
 });
 
-test('exec > with dir', function() {
+test('exec > with dir', function () {
 	const FILE = tmp('exec_with_dir');
 
 	const fd = io.truncate(FILE);
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.dup2(fd, 1);
-		proc.exec('pwd', {dir: '/tmp'});
+		proc.exec('pwd', { dir: '/tmp' });
 	});
 
 	io.close(fd);
@@ -145,27 +145,23 @@ test('exec > with dir', function() {
 	expect.is('/tmp\n', fs.read_file(FILE));
 });
 
-test('exec > with env', function() {
+test('exec > with env', function () {
 	const FILE = tmp('exec_with_env');
 
 	const fd = io.truncate(FILE);
 
-	proc.fork(true, function() {
+	proc.fork(true, function () {
 		io.dup2(fd, 1);
-		proc.exec('env', {env: {HOLI: 'holi'}});
+		proc.exec('env', { env: { HOLI: 'holi' } });
 	});
 
 	io.close(fd);
 
-	expect.is(
-		true, 
-		fs.read_file(FILE)
-			.includes('HOLI=holi\n')
-	);
+	expect.is(true, fs.read_file(FILE).includes('HOLI=holi\n'));
 });
 
-test('exit', function() {
-	const result = proc.fork(true, function() {
+test('exit', function () {
+	const result = proc.fork(true, function () {
 		proc.exit(13);
 	});
 
@@ -176,10 +172,10 @@ test('exit', function() {
 // 	No need to test it, since it is used in almost every test
 //});
 
-test('fork2', function() {
+test('fork2', function () {
 	const FILE = tmp('fork2');
 
-	proc.fork2(function() {
+	proc.fork2(function () {
 		fs.write_file(FILE, 'holi');
 	});
 
@@ -188,10 +184,10 @@ test('fork2', function() {
 	expect.is('holi', fs.read_file(FILE));
 });
 
-test('fork2 > with getpid', function() {
+test('fork2 > with getpid', function () {
 	const FILE = tmp('fork2_with_getpid');
 
-	const pid = proc.fork2(true, function() {
+	const pid = proc.fork2(true, function () {
 		fs.write_file(FILE, proc.getpid());
 	});
 
@@ -203,12 +199,12 @@ test('fork2 > with getpid', function() {
 
 		proc.sleep(1);
 		countdown--;
-	} 
+	}
 
 	expect.equals(pid, fs.read_file(FILE));
 });
 
-test('getegid, getgid', function() {
+test('getegid, getgid', function () {
 	const gid = proc.getgid();
 
 	log('gid=', gid);
@@ -216,11 +212,11 @@ test('getegid, getgid', function() {
 	expect.is(gid, proc.getegid());
 });
 
-test('getenv', function() {
+test('getenv', function () {
 	expect.is(fs.realpath('.'), proc.getenv('PWD'));
 });
 
-test('geteuid, getuid', function() {
+test('geteuid, getuid', function () {
 	const uid = proc.getuid();
 
 	log('uid=', uid);
@@ -228,10 +224,10 @@ test('geteuid, getuid', function() {
 	expect.is(uid, proc.geteuid());
 });
 
-test('getpid', function() {
+test('getpid', function () {
 	const FILE = tmp('getpid');
 
-	const pid = proc.fork(function() {
+	const pid = proc.fork(function () {
 		fs.write_file(FILE, proc.getpid());
 	});
 
@@ -240,10 +236,10 @@ test('getpid', function() {
 	expect.equals(pid, fs.read_file(FILE));
 });
 
-test('getppid', function() {
+test('getppid', function () {
 	const ppid = proc.getpid();
 
-	const result = proc.fork(true, function() {
+	const result = proc.fork(true, function () {
 		proc.exit(proc.getppid() === ppid ? 7 : 3);
 	});
 
@@ -252,10 +248,10 @@ test('getppid', function() {
 	expect.equals(7, result.exit_status);
 });
 
-test('kill, signal', function() {
+test('kill, signal', function () {
 	var called = false;
 
-	proc.signal(proc.SIGUSR1, function() {
+	proc.signal(proc.SIGUSR1, function () {
 		called = true;
 	});
 
@@ -272,7 +268,7 @@ test('kill, signal', function() {
 	expect.is(false, called);
 });
 
-test('setenv', function() {
+test('setenv', function () {
 	proc.setenv('perico', 'holi', true);
 	expect.is('holi', proc.getenv('perico'));
 
@@ -287,16 +283,16 @@ test('setenv', function() {
 // 	No way to test it
 //});
 
-test('sleep', function() {
-	const before = new Date().getTime()
+test('sleep', function () {
+	const before = new Date().getTime();
 	proc.sleep(1);
 	const diff = new Date().getTime() - before;
 
 	log('diff =', diff);
-	expect.is(true, diff>800 && diff<1200);
+	expect.is(true, diff > 800 && diff < 1200);
 });
 
-test('unsetenv', function() {
+test('unsetenv', function () {
 	proc.setenv('perico', 'holi');
 	expect.is('holi', proc.getenv('perico'));
 
@@ -304,8 +300,8 @@ test('unsetenv', function() {
 	expect.is(null, proc.getenv('perico'));
 });
 
-test('waitpid', function() {
-	const pid = proc.fork(function() {
+test('waitpid', function () {
+	const pid = proc.fork(function () {
 		proc.exit(13);
 	});
 
@@ -321,8 +317,8 @@ test('waitpid', function() {
 	expect.is(false, result.continued);
 });
 
-test('waitpid > killed', function() {
-	const pid = proc.fork(function() {
+test('waitpid > killed', function () {
+	const pid = proc.fork(function () {
 		proc.wait(100);
 	});
 
