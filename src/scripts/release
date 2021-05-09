@@ -35,9 +35,9 @@ then
 	exit 1
 fi
 
-echo ==== Patching src/joshi.c version number...
-sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION\"/" src/joshi.c
-git add src/joshi.c
+echo ==== Patching src/joshi/joshi.c version number...
+sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION\"/" src/joshi/joshi.c
+git add src/joshi/joshi.c
 
 echo ==== Creating version commit...
 git commit -m "chore: prepare version $VERSION"
@@ -68,8 +68,8 @@ then
 	sudo DESTDIR=/usr/local make install
 fi
 
-echo ==== Patching src/src/joshi.c after release...
-sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION-next\"/" src/src/joshi.c
-git add src/src/joshi.c
+echo ==== Patching src/joshi/joshi.c after release...
+sed -i "s/^#define VERSION .*$/#define VERSION \"$VERSION-next\"/" src/joshi/joshi.c
+git add src/joshi/joshi.c
 git commit -m "chore: update joshi.c with snapshot version"
 git push
