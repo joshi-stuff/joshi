@@ -27,5 +27,6 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: make ci
-        uses: izaera/joshi/.github/actions/ci@master
-        #run: cd src && make ci
+        # Uncomment the next line to run CI in an Arch Linux virtual machine 
+        # uses: izaera/joshi/.github/actions/ci@master
+        run: cd src && make ci
