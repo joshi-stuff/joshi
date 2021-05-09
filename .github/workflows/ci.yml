@@ -27,13 +27,13 @@ jobs:
 
       # Runs CI steps
       - name: make lint
-        run: cd src && make lint
+        run: make lint
 
       - name: make compile
-        run: cd src && make compile
+        run: make compile
 
       - name: make test
-        run: cd src && make test
+        run: make test
 
       # Uncomment the next task to run CI in an Arch Linux virtual machine 
       # - name: make ci
