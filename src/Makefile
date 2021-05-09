@@ -41,7 +41,7 @@ test:
 
 docs: $(DOCS)
 
-ci: compile test
+ci: clean compile test
 
 clean: 
 	@rm -rf build
