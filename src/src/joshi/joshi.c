@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,8 +9,7 @@
 // This is patched by release script, don't touch
 #define VERSION "1.5.0-next"
 
-// TODO: get LIB_DIR from executable path (argv[0])
-const char* LIB_DIR = "/usr/lib/joshi";
+char LIB_DIR[1024];
 
 duk_context* _joshi_duk_context;
 
@@ -28,7 +28,13 @@ void main(int argc, const char *argv[]) {
 	const char* joshi_lib_dir = getenv("JOSHI_LIB_DIR");
 
 	if (joshi_lib_dir != NULL) {
-		LIB_DIR = joshi_lib_dir;
+		strcpy(LIB_DIR, joshi_lib_dir);
+	}
+	else {
+		realpath(argv[0], LIB_DIR);
+		dirname(LIB_DIR);
+		dirname(LIB_DIR);
+		strcat(LIB_DIR, "/lib/joshi");
 	}
 
 	// Init context
