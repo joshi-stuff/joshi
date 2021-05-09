@@ -50,6 +50,11 @@ install: compile docs
 	mkdir -p "$(PREFIX)/bin"
 	cp -a $(JOSHI) "$(PREFIX)/bin"
 
+	mkdir -p "$(PREFIX)/include/joshi"
+	cp -a src/duktape/duktape.h "$(PREFIX)/include/joshi"
+	cp -a src/duktape/duk_config.h "$(PREFIX)/include/joshi"
+	cp -a src/joshi/joshi.h "$(PREFIX)/include/joshi"
+
 	mkdir -p "$(PREFIX)/lib/joshi"
 	cp -aR src/library/* "$(PREFIX)/lib/joshi"
 	cp -a $(JOSHI_TUI) "$(PREFIX)/lib/joshi"
