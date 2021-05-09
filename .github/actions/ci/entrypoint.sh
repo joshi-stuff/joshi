@@ -8,7 +8,6 @@ sudo pacman -S nodejs npm --noconfirm
 echo ===========================================================================
 echo = Setup machine environment for tests
 echo ===========================================================================
-sudo mkdir -p /dev/block
 sudo mknod -m 0660 /dev/loop0 b 7 8
 sudo chown -R build:build /github/home
 sudo chown -R build:build *
