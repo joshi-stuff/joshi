@@ -120,8 +120,8 @@ fix-spec:
 	git checkout src/joshi/joshi_tui.c
 
 spec: 
-	$(JOSHPEC) ./specs/core
-	$(JOSHPEC) ./specs/tui
+	JOSHI_LIB_DIR="$(realpath src/library)" $(JOSHPEC) ./specs/core
+	JOSHI_LIB_DIR="$(realpath src/library)" $(JOSHPEC) ./specs/tui
 
 
 #
