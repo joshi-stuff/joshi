@@ -52,7 +52,7 @@ ci: clean lint compile test
 clean: 
 	@rm -rf build
 
-install: compile docs
+install: 
 	mkdir -p "$(PREFIX)/bin"
 	cp -a $(JOSHI) "$(PREFIX)/bin"
 
