@@ -1,5 +1,5 @@
 # Target dir for make install
-PREFIX ?= /usr
+PREFIX ?= /usr/local
 
 # Dependency versions
 DOCDASH_VERSION = 1.2.0
