@@ -2,6 +2,7 @@
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "joshi.h"
 #include "joshi_core.h"
@@ -31,7 +32,7 @@ void main(int argc, const char *argv[]) {
 		strcpy(LIB_DIR, joshi_lib_dir);
 	}
 	else {
-		realpath(argv[0], LIB_DIR);
+		readlink("/proc/self/exe", LIB_DIR, sizeof(LIB_DIR));
 		dirname(LIB_DIR);
 		dirname(LIB_DIR);
 		strcat(LIB_DIR, "/lib/joshi");
