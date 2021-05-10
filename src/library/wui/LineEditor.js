@@ -138,7 +138,7 @@ Widget.declare(LineEditor, {
 			return true;
 		}
 
-		if (key <= 32 || key > 255) {
+		if (key < 32 || key > 255) {
 			return false;
 		}
 
