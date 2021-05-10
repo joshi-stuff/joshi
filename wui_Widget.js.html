@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>term/index.js - Documentation</title>
+    <title>wui/Widget.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,7 +34,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">term/index.js</h1>
+    <h1 class="page-title">wui/Widget.js</h1>
     
 
     
@@ -44,255 +44,228 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const io = require('io');
-const stream = require('stream');
-
-/** 
- * @enum {number}
- * @exports term 
- * @readonly
- */
-const term = {
-	/** Canonical terminal mode */
-	CANONICAL: 0,
-	/** Password (canonical without echo) terminal mode */
-	PASSWORD: 1,
-	/** Raw terminal mode */
-	RAW: 2
-};
-
-// See https://en.wikipedia.org/wiki/ANSI_escape_code
-const CSI = String.fromCharCode(0x1B) + '['; 
-const stdin = stream.create(0);
+            <pre class="prettyprint source linenums"><code>const term = require('term');
+const tui = require('tui');
 
 /**
- * Set text background color to RGB value
- *
- * @param {number} r Red value
- * @param {number} g Green value
- * @param {number} b Blue value
- * @returns {void}
- * @throws {SysError}
+ * @callback WidgetListener
+ * @param {Widget} widget
+ * @param {string} event
+ * @param {object&lt;string,*>} props
  */
-term.bg = function(r, g, b) {
-	term.print(CSI + '48;2;' + r + ';' + g + ';' + b + 'm');
-}
 
 /**
- * Clear terminal screen and move cursor to (1, 1)
+ * Widget class
  *
- * @returns {void}
- * @throws {SysError}
+ * @class
+ * @param {object&lt;string,*>} [defaultProps={}]
+ * @param {object&lt;string,*>} [props={}]
  */
-term.clear = function() {
-	term.print(CSI + '2J');
-	term.move_to(1, 1);
-}
+function Widget(defaultProps, props) {
+	defaultProps = defaultProps || {};
+	props = props || {};
 
-/**
- * Set text foreground color to RGB value
- *
- * @param {number} r Red value
- * @param {number} g Green value
- * @param {number} b Blue value
- * @returns {void}
- * @throws {SysError}
- */
-term.fg = function(r, g, b) {
-	term.print(CSI + '38;2;' + r + ';' + g + ';' + b + 'm');
-}
+	this._win = undefined;
+	this._win_size = undefined;
+	this._invalid = true;
+	this._keymap = {};
+	this._listeners = {};
 
-/**
- * Hide cursor
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.hide_cursor = function() {
-	term.print(CSI + '?25l');
-}
+	this.class = Object.getPrototypeOf(this).constructor;
 
-/**
- * Move cursor to coordinate
- *
- * @param {number} row Row (starting at 1)
- * @param {number} column Column (starting at 1)
- * @returns {void}
- * @throws {SysError}
- */
-term.move_to = function(row, column) {
-	term.print(CSI + row + ';' + column + 'H');
-}
+	const self = this;
 
-/**
- * Print one or more items to stderr
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.print2 = function() {
-	_print(2, arguments, false);
-}
+	this.super = Object.entries(this.class.superclass.prototype)
+		.reduce(function(sup, entry) {
+			const fn = entry[1];
 
-/**
- * Print one or more items to stdout
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.print = function() {
-	_print(1, arguments, false);
-}
-
-/**
- * Print one or more items to stdout, then append a line feed
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.println = function() {
-	_print(1, arguments, true);
-}
-
-/**
- * Print one or more items to stderr, then append a line feed
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.println2 = function() {
-	_print(2, arguments, true);
-}
-
-/**
- * Read a line of text from stdin.
- *
- * Note that this method uses an underlying stream to make readings more 
- * efficient.
- *
- * @returns {string} A line or null on EOF
- * @throws {SysError}
- */
-term.read_line = function() {
-	return stream.read_line(stdin);
-}
-
-/**
- * Reset terminal to default values (foreground and background color, etc.)
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.reset = function() {
-	term.print(CSI + 'm');
-}
-
-/**
- * Set terminal mode to canonnical, password or raw.
- *
- * @param {number} mode
- * One of {link module:term.CANONICAL}, {link module:term.PASSWORD} and 
- * {link module:term.RAW} constants.
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.set_mode = function(mode) {
-	j.set_term_mode(mode);
-}
-
-/**
- * Make cursor visible
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.show_cursor = function() {
-	term.print(CSI + '?25h');
-}
-
-/**
- * Return a string representation of an item
- *
- * @param {*} thing The item
- * @returns {string} The string representation of the item
- * @throws {SysError}
- */
-term.to_string = function(thing) {
-	const str = '';
-
-	if (thing === null) {
-		str += '(null)';
-	} else if (thing === undefined) {
-		str += '(undefined)';
-	} else if (Array.isArray(thing)) {
-		str += '[';
-
-		for (var i = 0; i &lt; thing.length; i++) {
-			if (i > 0) {
-				str += ', ';
+			if (typeof fn !== 'function') {
+				return sup;
 			}
 
-			str += term.to_string(thing[i]);
+			const name = entry[0];
+
+			sup[name] = fn.bind(self);
+
+			return sup;
+		}, {});
+
+	const merged_props = Object.assign({}, defaultProps, props);
+
+	Object.entries(merged_props).forEach(function(entry) {
+		self['set_' + entry[0]](entry[1]);
+	});
+}
+
+Widget.prototype = {
+
+	/**
+	 * Draw the widget in the associated window 
+	 *
+	 * @see {Widget#set_win}
+	 */
+	draw: function() {
+	},
+
+	/**
+	 * Return underlying window size
+	 *
+	 * @returns {WindowSize}
+	 */
+	get_size: function() {
+		return this._win_size;
+	},
+
+	/**
+	 * Get associated window 
+	 *
+	 * @returns {Window}
+	 */
+	get_win: function() {
+		return this._win;
+	},
+
+	/**
+	 * Invalidate window contents, i.e.: mark widget as modified so that next
+	 * drawing cycle refreshes screen contents.
+	 */
+	invalidate: function() {
+		this._invalid = true;
+	},
+
+	/**
+	 * Merge some key mappings with current active keymap
+	 *
+	 * @example
+	 *
+	 * widget.merge_keymap([
+	 *   tui.KEY_UP, 'go_up',
+	 *   tui.KEY_DOWN, 'go_down',
+	 * ]);
+	 *
+	 * @param {Array} map 
+	 * An array of alternating key number, function name elements.
+	 *
+	 * @see {Widget#set_keymap}
+	 */
+	merge_keymap: function(map) {
+		const keymap = this._keymap;
+
+		for (var i = 0; i &lt; map.length; i += 2) {
+			keymap[map[i]] = map[i+1];
+		}
+	},
+
+	/**
+	 * Send a key to the widget so that it is processed according to the active
+	 * keymap.
+	 *
+	 * @param {number} key Key code
+	 * @returns {boolean} Returns true if the key was processed
+	 * @see {Widget#set_keymap}
+	 */
+	send_key: function(key) {
+		const keymap = this._keymap;
+
+		if (keymap[key]) {
+			return this[keymap[key]](key) !== false;
 		}
 
-		str += ']';
-	} else if (thing.toString() === '[object Object]') {
-		str += '{';
-
-		const keys = Object.keys(thing);
-		for (var i = 0; i &lt; keys.length; i++) {
-			const key = keys[i];
-
-			if (i > 0) {
-				str += ', ';
-			}
-
-			str += key + ': ';
-			str += term.to_string(thing[key]);
+		if (keymap['*']) {
+			return this[keymap['*']](key) !== false;
 		}
 
-		str += '}';
-	} else {
-		str += thing.toString();
+		return false;
+	},
+
+	/**
+	 * Overwrite current active keymap with new key mappings
+	 *
+	 * @example
+	 *
+	 * widget.set_keymap([
+	 *   tui.KEY_UP, 'go_up',
+	 *   tui.KEY_DOWN, 'go_down',
+	 * ]);
+	 *
+	 * @param {Array} map 
+	 * An array of alternating key number, function name elements.
+	 *
+	 * @see {Widget#merge_keymap}
+	 */
+	set_keymap: function(map) {
+		this._keymap = {};
+		this.merge_keymap(map);
+	},
+
+	/**
+	 * Overwrite current listeners map with a new map
+	 *
+	 * @param {object&lt;string,WidgetListener>} listeners 
+	 */
+	set_listeners: function(listeners) {
+		this._listeners = listeners;
+	},
+
+	/**
+	 * Set associated window object. Note that this function invalidates the 
+	 * window contents so that it is cleared on next redraw.
+	 *
+	 * @param {Window} win
+	 */
+	set_win: function(win) {
+		this._win = win;
+		this._win_size = tui.get_size(win);
+		this.invalidate();
+	},
+
+	/**
+	 * Fire a named event (invoke its listener if any)
+	 *
+	 * @param {string} event
+	 * @param {object&lt;string,*>} [props={}]
+	 * @returns {boolean} A flag indicating if a listener was invoked
+	 * @private
+	 */
+	_fire: function(event, props) {
+		const listener = this._listeners[event];
+
+		if (!listener) {
+			return false;
+		}
+
+		listener(this, event, props || {});
+
+		return true;
 	}
-
-	return str;
 }
 
 /**
- * Internal print logic
+ * Define a Widget derived class
  *
- * @param {number} fd File descriptor to print to
- * @param {Arguments|Array} things Items to print
- * @param {boolean} [lf=false] Whether to print a trailing line feed
- * @returns {void}
- * @throws {SysError}
- * @private
+ * @param {class} Class The class to define
+ * @param {class} [BaseClass=Widget] The base class
+ * @param {object} proto The class' prototype object
+ * @returns {class} The Class parameter
  */
-function _print(fd, things, lf) {
-	var str = '';
-
-	for (var i = 0; i &lt; things.length; i++) {
-		if (i > 0) {
-			str += ' ';
-		}
-
-		str += term.to_string(things[i]);
+Widget.declare = function(Class, BaseClass, proto) {
+	if (proto === undefined) {
+		proto = BaseClass;
+		BaseClass = Widget;
 	}
 
-	if (lf) {
-		str += '\n';
-	}
+	Class.prototype = Object.assign(
+		Object.create(BaseClass.prototype),
+		{constructor: Class}, 
+		proto
+	);
 
-	io.write_string(fd, str);
+	Class.superclass = BaseClass;
+
+	return Class;
 }
 
-return term;
+return Widget;
 </code></pre>
         </article>
     </section>

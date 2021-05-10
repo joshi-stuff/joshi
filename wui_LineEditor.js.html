@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>term/index.js - Documentation</title>
+    <title>wui/LineEditor.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,7 +34,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">term/index.js</h1>
+    <h1 class="page-title">wui/LineEditor.js</h1>
     
 
     
@@ -44,255 +44,212 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const io = require('io');
-const stream = require('stream');
+            <pre class="prettyprint source linenums"><code>const tui = require('tui');
 
-/** 
- * @enum {number}
- * @exports term 
- * @readonly
- */
-const term = {
-	/** Canonical terminal mode */
-	CANONICAL: 0,
-	/** Password (canonical without echo) terminal mode */
-	PASSWORD: 1,
-	/** Raw terminal mode */
-	RAW: 2
-};
+const Widget = require('./Widget.js');
+const util = require('./internal/util.js');
 
-// See https://en.wikipedia.org/wiki/ANSI_escape_code
-const CSI = String.fromCharCode(0x1B) + '['; 
-const stdin = stream.create(0);
+// TODO: implement overflow + scroll in LineEditor
 
 /**
- * Set text background color to RGB value
- *
- * @param {number} r Red value
- * @param {number} g Green value
- * @param {number} b Blue value
- * @returns {void}
- * @throws {SysError}
+ * @event LineEditor#input_changed
  */
-term.bg = function(r, g, b) {
-	term.print(CSI + '48;2;' + r + ';' + g + ';' + b + 'm');
+
+/**
+ * @class
+ * @extends Widget
+ * @param {object&lt;string,*>} [props={}] 
+ */
+function LineEditor(props) {
+	LineEditor.superclass.call(this, {
+		icon: '🯄 ',
+		placeholder: '',
+		input: '',
+		cursor_pos: 0,
+		draw_mode: tui.get_draw_mode(tui.stdscr),
+		placeholder_draw_mode: tui.get_draw_mode(tui.stdscr),
+		keymap: [
+			tui.KEY_LEFT, 'go_left',
+			tui.KEY_RIGHT, 'go_right',
+			tui.KEY_HOME, 'go_home',
+			tui.KEY_END, 'go_end',
+			tui.KEY_BACKSPACE, 'do_backspace',
+			tui.KEY_DEL, 'do_del',
+		]
+	}, props);
 }
 
-/**
- * Clear terminal screen and move cursor to (1, 1)
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.clear = function() {
-	term.print(CSI + '2J');
-	term.move_to(1, 1);
-}
+Widget.declare(LineEditor, {
 
-/**
- * Set text foreground color to RGB value
- *
- * @param {number} r Red value
- * @param {number} g Green value
- * @param {number} b Blue value
- * @returns {void}
- * @throws {SysError}
- */
-term.fg = function(r, g, b) {
-	term.print(CSI + '38;2;' + r + ';' + g + ';' + b + 'm');
-}
+	do_backspace: function() {
+		const input = this.get_input();
+		const cpos = this.get_cursor_pos();
 
-/**
- * Hide cursor
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.hide_cursor = function() {
-	term.print(CSI + '?25l');
-}
+		if (input.length) {
+			this.set_input(input.substring(0, input.length - 1));
+			this.set_cursor_pos(cpos-1);
+		}
+	},
 
-/**
- * Move cursor to coordinate
- *
- * @param {number} row Row (starting at 1)
- * @param {number} column Column (starting at 1)
- * @returns {void}
- * @throws {SysError}
- */
-term.move_to = function(row, column) {
-	term.print(CSI + row + ';' + column + 'H');
-}
+	do_del: function() {
+		const input = this.get_input();
+		const cpos = this.get_cursor_pos();
 
-/**
- * Print one or more items to stderr
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.print2 = function() {
-	_print(2, arguments, false);
-}
+		this.set_input(input.substring(0, cpos) + input.substring(cpos + 1));
+	},
 
-/**
- * Print one or more items to stdout
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.print = function() {
-	_print(1, arguments, false);
-}
+	draw: function() {
+		const win = this.get_win();
+		const cpos = this.get_cursor_pos();
+		const input = this.get_input();
+		const icon = this.get_icon();
 
-/**
- * Print one or more items to stdout, then append a line feed
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.println = function() {
-	_print(1, arguments, true);
-}
+		this.super.draw();
 
-/**
- * Print one or more items to stderr, then append a line feed
- *
- * @param {...*} items Items to print
- * @returns {void}
- * @throws {SysError}
- */
-term.println2 = function() {
-	_print(2, arguments, true);
-}
+		if (input.length) {
+			tui.set_draw_mode(win, this.get_draw_mode());
+			tui.print(win, 1, 1, icon + ' ' + input);
 
-/**
- * Read a line of text from stdin.
- *
- * Note that this method uses an underlying stream to make readings more 
- * efficient.
- *
- * @returns {string} A line or null on EOF
- * @throws {SysError}
- */
-term.read_line = function() {
-	return stream.read_line(stdin);
-}
-
-/**
- * Reset terminal to default values (foreground and background color, etc.)
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.reset = function() {
-	term.print(CSI + 'm');
-}
-
-/**
- * Set terminal mode to canonnical, password or raw.
- *
- * @param {number} mode
- * One of {link module:term.CANONICAL}, {link module:term.PASSWORD} and 
- * {link module:term.RAW} constants.
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.set_mode = function(mode) {
-	j.set_term_mode(mode);
-}
-
-/**
- * Make cursor visible
- *
- * @returns {void}
- * @throws {SysError}
- */
-term.show_cursor = function() {
-	term.print(CSI + '?25h');
-}
-
-/**
- * Return a string representation of an item
- *
- * @param {*} thing The item
- * @returns {string} The string representation of the item
- * @throws {SysError}
- */
-term.to_string = function(thing) {
-	const str = '';
-
-	if (thing === null) {
-		str += '(null)';
-	} else if (thing === undefined) {
-		str += '(undefined)';
-	} else if (Array.isArray(thing)) {
-		str += '[';
-
-		for (var i = 0; i &lt; thing.length; i++) {
-			if (i > 0) {
-				str += ', ';
+			// TODO: draw icon + spaces instead of counting 4
+			tui.set_draw_mode(win, this.get_cursor_draw_mode());
+			if (cpos &lt; input.length) {
+				tui.print(win, 1, 4 + cpos, input[cpos]);
 			}
-
-			str += term.to_string(thing[i]);
-		}
-
-		str += ']';
-	} else if (thing.toString() === '[object Object]') {
-		str += '{';
-
-		const keys = Object.keys(thing);
-		for (var i = 0; i &lt; keys.length; i++) {
-			const key = keys[i];
-
-			if (i > 0) {
-				str += ', ';
+			else {
+				tui.print(win, 1, 4 + cpos, ' ');
 			}
+		} 
+		else {
+			tui.set_draw_mode(win, this.get_placeholder_draw_mode());
+			tui.print(win, 1, 1, icon + ' ' + this.get_placeholder());
 
-			str += key + ': ';
-			str += term.to_string(thing[key]);
+			tui.set_draw_mode(win, this.get_draw_mode());
+			tui.print(win, 1, 1, icon);
+		}
+	},
+
+	get_cursor_draw_mode: function() {
+		return this._cursor_draw_mode;
+	},
+
+	get_cursor_pos: function() {
+		return this._cursor_pos;
+	},
+
+	get_draw_mode: function() {
+		return this._draw_mode;
+	},
+
+	get_icon: function() {
+		return this._icon;
+	},
+
+	get_input: function() {
+		return this._input;
+	},
+
+	get_placeholder: function() {
+		return this._placeholder;
+	},
+
+	get_placeholder_draw_mode: function() {
+		return this._placeholder_draw_mode;
+	},
+
+	go_end: function() {
+		const input = this.get_input();
+
+		this.set_cursor_pos(input.length);
+	},
+
+	go_home: function() {
+		this.set_cursor_pos(0);
+	},
+
+	go_left: function() {
+		const cpos = this.get_cursor_pos();
+
+		this.set_cursor_pos(Math.max(cpos - 1, 0));
+	},
+
+	go_right: function() {
+		const input = this.get_input();
+		const cpos = this.get_cursor_pos();
+
+		this.set_cursor_pos(Math.min(cpos + 1, input.length));
+	},
+
+	send_key: function(key) {
+		if (this.super.send_key(key)) {
+			return true;
 		}
 
-		str += '}';
-	} else {
-		str += thing.toString();
-	}
-
-	return str;
-}
-
-/**
- * Internal print logic
- *
- * @param {number} fd File descriptor to print to
- * @param {Arguments|Array} things Items to print
- * @param {boolean} [lf=false] Whether to print a trailing line feed
- * @returns {void}
- * @throws {SysError}
- * @private
- */
-function _print(fd, things, lf) {
-	var str = '';
-
-	for (var i = 0; i &lt; things.length; i++) {
-		if (i > 0) {
-			str += ' ';
+		if (key &lt; 32 || key > 255) {
+			return false;
 		}
 
-		str += term.to_string(things[i]);
-	}
+		const char = String.fromCharCode(key);
+		const input = this.get_input();
+		const cpos = this.get_cursor_pos();
 
-	if (lf) {
-		str += '\n';
-	}
+		if (cpos >= input.length) {
+			this.set_input(input + char);
+		}
+		else {
+			this.set_input( 
+				input.substring(0, cpos) + char + input.substring(cpos)
+			);
+		}
+		this.set_cursor_pos(cpos + 1);
 
-	io.write_string(fd, str);
-}
+		return true;
+	},
 
-return term;
+	set_cursor_pos: function(cursor_pos) {
+		const input = this.get_input();
+
+		if (cursor_pos &lt; 0 || cursor_pos > input.length) {
+			throw new Error('Cursor out of bounds: ' + cursor_pos);
+		}
+
+		this._cursor_pos = cursor_pos;
+		this.invalidate();
+	},
+
+	set_draw_mode: function(draw_mode) {
+		this._draw_mode = draw_mode;
+		this._cursor_draw_mode = util.reverse_draw_mode(draw_mode);
+		this.invalidate();
+	},
+
+	set_icon: function(icon) {
+		this._icon = icon;
+		this.invalidate();
+	},
+
+	set_input: function(input) {
+		this._input = input;
+		this._cursor_pos = Math.min(this._cursor_pos, input.length);
+		this.invalidate();
+
+		this._fire('input_changed');
+	},
+
+	set_placeholder: function(placeholder) {
+		this._placeholder = placeholder;
+		this.invalidate();
+	},
+
+	set_placeholder_draw_mode: function(draw_mode) {
+		this._placeholder_draw_mode = draw_mode;
+		this.invalidate();
+	},
+
+});
+
+
+return LineEditor;
+
 </code></pre>
         </article>
     </section>

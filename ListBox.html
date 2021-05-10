@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Proc - Documentation</title>
+    <title>ListBox - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,7 +34,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Proc</h1>
+    <h1 class="page-title">ListBox</h1>
     
 
     
@@ -47,7 +47,7 @@
 <header>
     
         <h2>
-        Proc
+        ListBox
         </h2>
         
     
@@ -59,12 +59,21 @@
         
             
 
+    
+
+    <h4 class="name" id="ListBox"><span class="type-signature"></span>new ListBox<span class="signature">(props<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="shell_Proc.js.html">shell/Proc.js</a>, <a href="shell_Proc.js.html#line42">line 42</a>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -102,540 +111,6 @@
 
 
 
-            
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="dir"><span class="type-signature"></span>dir<span class="signature">(dir)</span><span class="type-signature"> &rarr; {<a href="shell.Proc.html">shell.Proc</a>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="shell_Proc.js.html">shell/Proc.js</a>, <a href="shell_Proc.js.html#line66">line 66</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    <p>Set working directory for process</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dir</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Path to a directory</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The same object where it is being invoked (for chaining)</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="shell.Proc.html">shell.Proc</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="do"><span class="type-signature"></span>do<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#ProcResult">ProcResult</a>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="shell_Proc.js.html">shell/Proc.js</a>, <a href="shell_Proc.js.html#line94">line 94</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>{<a href="module-proc.html#.waitpid">module:proc.waitpid</a>}</li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    <p>Run a complete execution graph and wait for it to finish.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-    <div class="param-desc usertext">
-    
-        
-<span class="param-type"><a href="global.html#SysError">SysError</a></span>
-
-
-    
-    </div>
-
-
-    
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The result of waiting for the last (deepest) child</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="global.html#ProcResult">ProcResult</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="env"><span class="type-signature"></span>env<span class="signature">(vars)</span><span class="type-signature"> &rarr; {<a href="shell.Proc.html">shell.Proc</a>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="shell_Proc.js.html">shell/Proc.js</a>, <a href="shell_Proc.js.html#line82">line 82</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    <p>Set environment variables for process</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>vars</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A hash of key value pairs.</p>
-<p>Note that a null value unsets the variable.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The same object where it is being invoked (for chaining)</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="shell.Proc.html">shell.Proc</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="pipe"><span class="type-signature"></span>pipe<span class="signature">(fds<span class="signature-attributes">opt</span>, where)</span><span class="type-signature"> &rarr; {<a href="shell.Proc.html">shell.Proc</a>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="shell_Proc.js.html">shell/Proc.js</a>, <a href="shell_Proc.js.html#line223">line 223</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    <p>Redirect a process file descriptor to a capture
-<a href="module-shell.html#.capture">module:shell.capture</a>, file <a href="module-shell.html#.file">module:shell.file</a>, here
-string <a href="module-shell.html#.here">module:shell.here</a>, or another process
-<a href="module-shell.html#.$">module:shell.$</a>.</p>
-</div>
 
 
 
@@ -676,16 +151,13 @@ string <a href="module-shell.html#.here">module:shell.here</a>, or another proce
 
         <tr>
             
-                <td class="name"><code>fds</code></td>
+                <td class="name"><code>props</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
-|
-
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">object.&lt;string, *></span>
 
 
             
@@ -706,86 +178,12 @@ string <a href="module-shell.html#.here">module:shell.here</a>, or another proce
             
                 <td class="default">
                 
-                    <code>[1]</code>
+                    <code>{}</code>
                 
                 </td>
             
 
-            <td class="description last"><p>Process' file descriptors to pipe to the capture, file, here string or
-process.</p>
-<p>Note that, in the case of capture or processes, only output file
-descriptors make sense.</p>
-<p>In the case of here string, only input file descriptors make sense.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>where</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-|
-
-<span class="param-type">Proc</span>
-|
-
-<span class="param-type">number</span>
-|
-
-<span class="param-type">string</span>
-|
-
-<span class="param-type">Array.&lt;string></span>
-|
-
-<span class="param-type">null</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>Polymorphic parameter to express where to pipe to. Depending on the type
-it can be:</p>
-<p>-Proc: redirects output of this process to the other process. Valid
-source <code>fds</code> are 1 (stdout) and 2 (stderr).</p>
-<p>-Opaque return from <a href="module-shell.html#.capture">module:shell.capture</a>: redirects output of
-this process to an object variable. Valid fds are 1 and 2 which store to
-properties <code>out</code> and <code>error</code>.</p>
-<p>-Opaque return from <a href="module-shell.html#.file">module:shell.file</a>: redirects input/output
-from/to a file. All fds are valid.</p>
-<p>-Opaque return from <a href="module-shell.html#.here">module:shell.here</a>: redirects input from a
-string variable. Only fd 0 (stdin) is valid.</p>
-<p>-number: the source fds are redirected to the given fd</p>
-<p>-{}: if an empty object is given it is wrapped with
-<a href="module-shell.html#.capture">module:shell.capture</a></p>
-<p>-string: the string is wrapped with <a href="module-shell.html#.file">module:shell.file</a> with
-default open mode. If a custom open mode is desired, the file can be
-prefixed with the mode plus a colon (for example: '+:/tmp/my-file'
-appends to '/tmp/my-file', '0:out.log' truncates, and so on).</p>
-<p>-string[]: the one and only string inside the array is wrapped with
-module:shell.here()</p>
-<p>-null: same as <code>$.file('/dev/null')</code></p></td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -805,30 +203,229 @@ module:shell.here()</p>
 
 
 
-<h5>Throws:</h5>
+
+
+
+
+
+        
+        </div>
+    
+
+    
+        <h3 class="subsection-title">Extends</h3>
 
         
 
-    <div class="param-desc usertext">
+
+    <ul>
+        <li><a href="Widget.html">Widget</a></li>
+    </ul>
+
+
     
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
         
-<span class="param-type"><a href="global.html#SysError">SysError</a></span>
-
-
-    
-    </div>
-
+            
 
     
+
+    <h4 class="name" id="draw"><span class="type-signature"></span>draw<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line61">line 61</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#draw">Widget#draw</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>{<a href="Widget.html#set_win">Widget#set_win</a>}</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Draw the widget in the associated window</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_header"><span class="type-signature"></span>get_header<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line76">line 76</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get header text</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    <p>The same object where it is being invoked (for chaining)</p>
-</div>
-
 
 
 <dl class="param-type">
@@ -837,7 +434,7 @@ module:shell.here()</p>
     </dt>
     <dd>
         
-<span class="param-type"><a href="shell.Proc.html">shell.Proc</a></span>
+<span class="param-type">string</span>
 
 
     </dd>
@@ -848,10 +445,3154 @@ module:shell.here()</p>
 
 
         
+            
+
+    
+
+    <h4 class="name" id="get_header_draw_mode"><span class="type-signature"></span>get_header_draw_mode<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#DrawMode">DrawMode</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line86">line 86</a>
+    </li></ul></dd>
     
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get header draw mode</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#DrawMode">DrawMode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_items"><span class="type-signature"></span>get_items<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;string>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line96">line 96</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get items</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;string></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_items_draw_mode"><span class="type-signature"></span>get_items_draw_mode<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#DrawMode">DrawMode</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line106">line 106</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get items draw mode</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#DrawMode">DrawMode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_page_size"><span class="type-signature"></span>get_page_size<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line116">line 116</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get number of visible items that fit in the list</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_selected_draw_mode"><span class="type-signature"></span>get_selected_draw_mode<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#DrawMode">DrawMode</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line153">line 153</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get selected item draw mode. Note that selected draw mode is computed as
+the reverse of the items draw mode, thus it cannot be set.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#DrawMode">DrawMode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_selected_index"><span class="type-signature"></span>get_selected_index<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line132">line 132</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get the index of the selected item (starting at 0)</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_selected_item"><span class="type-signature"></span>get_selected_item<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line142">line 142</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get the value of the selected item</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_size"><span class="type-signature"></span>get_size<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#WindowSize">WindowSize</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line69">line 69</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#get_size">Widget#get_size</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Return underlying window size</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#WindowSize">WindowSize</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get_win"><span class="type-signature"></span>get_win<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#Window">Window</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line78">line 78</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#get_win">Widget#get_win</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Get associated window</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Window">Window</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="go_end"><span class="type-signature"></span>go_end<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line193">line 193</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Select last item</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="go_home"><span class="type-signature"></span>go_home<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line183">line 183</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Select first item</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="go_next"><span class="type-signature"></span>go_next<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line173">line 173</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Select next item</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="go_next_page"><span class="type-signature"></span>go_next_page<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line213">line 213</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Select item one page down</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="go_prev"><span class="type-signature"></span>go_prev<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line163">line 163</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Select previous item</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="go_prev_page"><span class="type-signature"></span>go_prev_page<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line203">line 203</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Select item one page up</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="invalidate"><span class="type-signature"></span>invalidate<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line86">line 86</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#invalidate">Widget#invalidate</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Invalidate window contents, i.e.: mark widget as modified so that next
+drawing cycle refreshes screen contents.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="merge_keymap"><span class="type-signature"></span>merge_keymap<span class="signature">(map)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line105">line 105</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#merge_keymap">Widget#merge_keymap</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>{<a href="Widget.html#set_keymap">Widget#set_keymap</a>}</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Merge some key mappings with current active keymap</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>widget.merge_keymap([
+  tui.KEY_UP, 'go_up',
+  tui.KEY_DOWN, 'go_down',
+]);</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>map</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An array of alternating key number, function name elements.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="send_key"><span class="type-signature"></span>send_key<span class="signature">(key)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line121">line 121</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#send_key">Widget#send_key</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>{<a href="Widget.html#set_keymap">Widget#set_keymap</a>}</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Send a key to the widget so that it is processed according to the active
+keymap.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Key code</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns true if the key was processed</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_header"><span class="type-signature"></span>set_header<span class="signature">(header)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line223">line 223</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Set header text</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>header</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_header_draw_mode"><span class="type-signature"></span>set_header_draw_mode<span class="signature">(header_draw_mode)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line234">line 234</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Set header draw mode</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>header_draw_mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#DrawMode">DrawMode</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_items"><span class="type-signature"></span>set_items<span class="signature">(items)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line246">line 246</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Set items</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>items</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_items_draw_mode"><span class="type-signature"></span>set_items_draw_mode<span class="signature">(items_draw_mode)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line258">line 258</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Set items draw mode</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>items_draw_mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#DrawMode">DrawMode</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_keymap"><span class="type-signature"></span>set_keymap<span class="signature">(map)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line150">line 150</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#set_keymap">Widget#set_keymap</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>{<a href="Widget.html#merge_keymap">Widget#merge_keymap</a>}</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Overwrite current active keymap with new key mappings</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>widget.set_keymap([
+  tui.KEY_UP, 'go_up',
+  tui.KEY_DOWN, 'go_down',
+]);</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>map</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An array of alternating key number, function name elements.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_listeners"><span class="type-signature"></span>set_listeners<span class="signature">(listeners)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line160">line 160</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#set_listeners">Widget#set_listeners</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Overwrite current listeners map with a new map</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>listeners</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object.&lt;string, <a href="global.html#WidgetListener">WidgetListener</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_selected_index"><span class="type-signature"></span>set_selected_index<span class="signature">(index)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line272">line 272</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Set selected item by index (starting at 0)</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="ListBox.html#event:selected_item_changed">ListBox#event:selected_item_changed</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set_win"><span class="type-signature"></span>set_win<span class="signature">(win)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_Widget.js.html">wui/Widget.js</a>, <a href="wui_Widget.js.html#line170">line 170</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Widget.html#set_win">Widget#set_win</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Set associated window object. Note that this function invalidates the
+window contents so that it is cleared on next redraw.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>win</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Window">Window</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Events</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:selected_item_changed">selected_item_changed</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wui_ListBox.js.html">wui/ListBox.js</a>, <a href="wui_ListBox.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 </article>
 
@@ -867,7 +3608,7 @@ module:shell.here()</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Mon May 10 2021 17:42:23 GMT+0200 (GMT+02:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Mon May 10 2021 17:42:22 GMT+0200 (GMT+02:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
