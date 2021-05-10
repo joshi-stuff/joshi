@@ -71,6 +71,13 @@ install: compile docs
 	mkdir -p "$(PREFIX)/share/doc/joshi"
 	cp -aR $(DOCS)/* "$(PREFIX)/share/doc/joshi"
 
+uninstall:
+	rm "$(PREFIX)/bin/joshi"
+	rm -rf "$(PREFIX)/include/joshi"
+	rm -rf "$(PREFIX)/lib/joshi"
+	rm -rf "$(PREFIX)/lib/joshpec"
+	rm -rf "$(PREFIX)/share/doc/joshi"
+
 release:
 	./scripts/release
 
