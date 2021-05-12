@@ -65,7 +65,7 @@ read CONFIRM
 
 if [ "$CONFIRM" == "y" ]
 then 
-	sudo DESTDIR=/usr/local make install
+	sudo PREFIX=/usr/local make install
 fi
 
 echo ==== Patching src/joshi/joshi.c after release...
