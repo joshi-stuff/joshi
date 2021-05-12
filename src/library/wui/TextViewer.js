@@ -154,7 +154,10 @@ Widget.declare(TextViewer, {
 	go_end: function () {
 		const line_count = this._lines.length;
 
-		this._first_line_index = line_count - this.get_page_size() + 1;
+		this._first_line_index = Math.max(
+			0,
+			line_count - this.get_page_size() + 1
+		);
 		this.invalidate();
 	},
 
