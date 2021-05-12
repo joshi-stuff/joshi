@@ -10,10 +10,10 @@ const encoder = new TextEncoder();
  *
  * @property {number} fd File descriptor to check
  *
- * @property {number} events 
+ * @property {number} events
  * Events to check (the "See" section list possible values)
  *
- * @property {number} revents 
+ * @property {number} revents
  * Returned events (the "See" section list possible values)
  *
  * @see {@link module:io.POLLIN}
@@ -33,9 +33,8 @@ const encoder = new TextEncoder();
 
 const LF_CODE = '\n'.charCodeAt(0);
 
-
-/** 
- * @exports io 
+/**
+ * @exports io
  * @readonly
  * @enum {number}
  */
@@ -73,13 +72,13 @@ const O_TRUNC = 01000;
 const O_WRONLY = 1;
 
 const ACCESS_FLAG = {
-	'r': O_RDONLY,
-	'w': O_WRONLY,
-	'rw': O_RDWR
-}
+	r: O_RDONLY,
+	w: O_WRONLY,
+	rw: O_RDWR,
+};
 
 /**
- * Open a file for appending. If the file does not exist it is created. If it 
+ * Open a file for appending. If the file does not exist it is created. If it
  * exists its contents remain untouched.
  *
  * Note that the file pointer will always be set to EOF before any write
@@ -98,11 +97,11 @@ const ACCESS_FLAG = {
  * @see {module:io.open}
  * @see {module:io.truncate}
  */
-io.append = function(pathname, mode) {
+io.append = function (pathname, mode) {
 	mode = Number(mode || 0644);
 
-	return j.open(pathname, O_CREAT|O_APPEND|O_WRONLY, mode);
-}
+	return j.open(pathname, O_CREAT | O_APPEND | O_WRONLY, mode);
+};
 
 /**
  * Close an open file
@@ -112,18 +111,17 @@ io.append = function(pathname, mode) {
  * @returns {0}
  * @throws {SysError}
  */
-io.close = function(fd, fail_if_closed) {
+io.close = function (fd, fail_if_closed) {
 	try {
 		return j.close(Number(fd));
-	} 
-	catch(err) {
-		if (fail_if_closed || (err.errno !== errno.EBADF)) {
+	} catch (err) {
+		if (fail_if_closed || err.errno !== errno.EBADF) {
 			throw err;
 		}
 
 		return 0;
 	}
-}
+};
 
 /**
  * Open a file. If the file does not exist it is created. If it exists its
@@ -143,24 +141,22 @@ io.close = function(fd, fail_if_closed) {
  * @see {module:io.open}
  * @see {module:io.truncate}
  */
-io.create = function(pathname, mode, access) {
+io.create = function (pathname, mode, access) {
 	if (mode === undefined && access === undefined) {
 		mode = 0644;
 		access = 'rw';
-	} 
-	else if (access === undefined && typeof mode === 'string') {
+	} else if (access === undefined && typeof mode === 'string') {
 		access = mode;
 		mode = 0644;
-	}
-	else if (access === undefined) {
-		access = 'rw'
+	} else if (access === undefined) {
+		access = 'rw';
 	}
 
 	mode = Number(mode);
 	access = access.toString();
 
-	return j.open(pathname, O_CREAT|ACCESS_FLAG[access], mode);
-}
+	return j.open(pathname, O_CREAT | ACCESS_FLAG[access], mode);
+};
 
 /**
  * Duplicate an open file descriptor
@@ -169,9 +165,9 @@ io.create = function(pathname, mode, access) {
  * @returns {number} The new file descriptor
  * @throws {SysError}
  */
-io.dup = function(fd) {
+io.dup = function (fd) {
 	return j.dup(Number(fd));
-}
+};
 
 /**
  * Duplicate an open file descriptor assigning it to another custom fd
@@ -181,9 +177,9 @@ io.dup = function(fd) {
  * @returns {number} The changed file descriptor
  * @throws {SysError}
  */
-io.dup2 = function(openFd, changedFd) {
+io.dup2 = function (openFd, changedFd) {
 	return j.dup2(Number(openFd), Number(changedFd));
-}
+};
 
 /**
  * Open an existing file.
@@ -197,43 +193,42 @@ io.dup2 = function(openFd, changedFd) {
  * @see {module:io.create}
  * @see {module:io.truncate}
  */
-io.open = function(pathname, access) {
+io.open = function (pathname, access) {
 	if (access === undefined) {
 		access = 'rw';
 	}
 
 	try {
 		return j.open(pathname, ACCESS_FLAG[access], 0);
-	}
-	catch(err) {
+	} catch (err) {
 		err.message += ' (' + pathname + ')';
 		throw err;
 	}
-}
+};
 
 /**
  * Create a pipe
  *
- * @returns {number[]} 
+ * @returns {number[]}
  * An array with two file descriptors where `[0]` item is the read end of the
  * pipe and `[1]` is the write end.
  *
  * @throws {SysError}
  */
-io.pipe = function() {
+io.pipe = function () {
 	const fildes = [-1, -1];
 
-	return j.pipe(fildes).fildes;	
-}
+	return j.pipe(fildes).fildes;
+};
 
 /**
- * The poll() function provides applications with a mechanism for multiplexing 
+ * The poll() function provides applications with a mechanism for multiplexing
  * input/output over a set of file descriptors.
  *
- * For each member of the array pointed to by `fds`, poll() shall examine the 
+ * For each member of the array pointed to by `fds`, poll() shall examine the
  * given file descriptor for the event(s) specified in events.
  *
- * The poll() function shall identify those file descriptors on which an 
+ * The poll() function shall identify those file descriptors on which an
  * application can read or write data, or on which certain events have occurred.
  *
  * @param {Pollfd} fds File descriptors and events to check
@@ -241,7 +236,7 @@ io.pipe = function() {
  * @returns {number} Count of fds with events or 0 on timeout
  * @throws {SysError}
  */
-io.poll = function(fds, timeout) {
+io.poll = function (fds, timeout) {
 	if (timeout === undefined) {
 		timeout = -1;
 	}
@@ -251,12 +246,12 @@ io.poll = function(fds, timeout) {
 	const result = j.poll(fds, fds.length, timeout);
 
 	fds.length = 0;
-	for (var i=0; i<result.fds.length; i++) {
+	for (var i = 0; i < result.fds.length; i++) {
 		fds.push(result.fds[i]);
 	}
 
 	return result.value;
-}
+};
 
 /**
  * Read bytes from an open file
@@ -264,13 +259,13 @@ io.poll = function(fds, timeout) {
  * @param {number} fd An open file desriptor
  * @param {Uint8Array} buf Buffer to fill with read bytes
  *
- * @param {number} [count=-1] 
+ * @param {number} [count=-1]
  * Maximum number of bytes to read, or `-1` to read until buffer is full or EOF.
  *
  * Note that it is not the same `-1` as `buf.length`, because `buf.length` does
  * not guarantee that the whole buffer is read.
  *
- * @returns {number} 
+ * @returns {number}
  * The number of bytes read (with 0 meaning end of file).
  *
  * In the case where `count = -1`, a return less than buffer length means that
@@ -278,7 +273,7 @@ io.poll = function(fds, timeout) {
  *
  * @throws {SysError}
  */
-io.read = function(fd, buf, count) {
+io.read = function (fd, buf, count) {
 	if (count === undefined) {
 		count = -1;
 	}
@@ -290,7 +285,7 @@ io.read = function(fd, buf, count) {
 		count = buf.length;
 
 		const bleft = buf.length;
-		var chunk_buf = buf; 
+		var chunk_buf = buf;
 
 		while (true) {
 			const bread = j.read(fd, chunk_buf, bleft);
@@ -315,11 +310,10 @@ io.read = function(fd, buf, count) {
 		}
 
 		return count - bleft;
-	} 
-	else {
+	} else {
 		return j.read(fd, buf, count);
 	}
-}
+};
 
 /**
  * Read contents of a fd until it is exhausted and return them as an Uint8Array.
@@ -328,7 +322,7 @@ io.read = function(fd, buf, count) {
  * @returns {Uint8Array} The bytes contained by the file
  * @throws {SysError}
  */
-io.read_fully = function(fd) {
+io.read_fully = function (fd) {
 	const buf = new Uint8Array(4096);
 
 	var bytes = new Uint8Array(buf.length);
@@ -337,9 +331,9 @@ io.read_fully = function(fd) {
 	while (true) {
 		const bread = io.read(fd, buf);
 
-		if (bytes.length < (count + bread)) {
+		if (bytes.length < count + bread) {
 			const new_bytes =
-				(count > 0x100000) 
+				count > 0x100000
 					? new Uint8Array(count + 0x100000)
 					: new Uint8Array(count * 2);
 
@@ -366,10 +360,10 @@ io.read_fully = function(fd) {
 	}
 
 	return bytes;
-}
+};
 
 /**
- * Read contents of a fd until it is exhausted and return them as a string. 
+ * Read contents of a fd until it is exhausted and return them as a string.
  *
  * The bytes are interpreted as UTF-8.
  *
@@ -377,9 +371,9 @@ io.read_fully = function(fd) {
  * @returns {string} The contents of the file interpreted as an UTF-8 string
  * @throws {SysError}
  */
-io.read_string = function(fd) {
+io.read_string = function (fd) {
 	return decoder.decode(io.read_fully(fd));
-}
+};
 
 /**
  * Set the pointer of a file descriptor to a given value
@@ -388,15 +382,15 @@ io.read_string = function(fd) {
  * @param {number} offset Relative offset for file pointer
  *
  * @param {number} whence
- * Base of offset. One of the values: {@link module:io.SEEK_SET}, 
+ * Base of offset. One of the values: {@link module:io.SEEK_SET},
  * {@link module:io.SEEK_CUR}, or {@link module:io.SEEK_END}.
  *
  * @returns {number} The resulting offset measured from start of file
  * @throws {SysError}
  */
-io.seek = function(fd, offset, whence) {
+io.seek = function (fd, offset, whence) {
 	return j.lseek(fd, offset, whence);
-}
+};
 
 /**
  * Retrieve the current offset of the file pointer from the start of the file.
@@ -405,9 +399,9 @@ io.seek = function(fd, offset, whence) {
  * @returns {number} The offset of the file pointer
  * @throws {SysError}
  */
-io.tell = function(fd) {
+io.tell = function (fd) {
 	return io.seek(fd, 0, io.SEEK_CUR);
-}
+};
 
 /**
  * Open a file and empty it. If the file does not exist it is created.
@@ -426,24 +420,22 @@ io.tell = function(fd) {
  * @see {module:io.create}
  * @see {module:io.open}
  */
-io.truncate = function(pathname, mode, access) {
+io.truncate = function (pathname, mode, access) {
 	if (mode === undefined && access === undefined) {
 		mode = 0644;
 		access = 'rw';
-	} 
-	else if (access === undefined && typeof mode === 'string') {
+	} else if (access === undefined && typeof mode === 'string') {
 		access = mode;
 		mode = 0644;
-	}
-	else if (access === undefined) {
-		access = 'rw'
+	} else if (access === undefined) {
+		access = 'rw';
 	}
 
 	mode = Number(mode);
 	access = access.toString();
 
-	return j.open(pathname, O_CREAT|O_TRUNC|ACCESS_FLAG[access], mode);
-}
+	return j.open(pathname, O_CREAT | O_TRUNC | ACCESS_FLAG[access], mode);
+};
 
 /**
  * Write bytes to an open file
@@ -451,9 +443,9 @@ io.truncate = function(pathname, mode, access) {
  * @param {number} fd An open file desriptor
  * @param {Uint8Array} buf Buffer containing bytes to write
  *
- * @param {number} [count=-1] 
- * Maximum number of bytes to write or -1 to keep writing until all buffer has 
- * been written. 
+ * @param {number} [count=-1]
+ * Maximum number of bytes to write or -1 to keep writing until all buffer has
+ * been written.
  *
  * Note that it is not the same `-1` as `buf.length`, because `buf.length` does
  * not guarantee that the whole buffer is written.
@@ -461,12 +453,12 @@ io.truncate = function(pathname, mode, access) {
  * @returns {number} The number of bytes written
  * @throws {SysError}
  */
-io.write = function(fd, buf, count) {
+io.write = function (fd, buf, count) {
 	if (count === undefined) {
 		count = -1;
 	}
 
-	fd = Number(fd)
+	fd = Number(fd);
 	count = Number(count);
 
 	if (count === -1) {
@@ -487,11 +479,10 @@ io.write = function(fd, buf, count) {
 		}
 
 		return count;
-	} 
-	else {
+	} else {
 		return j.write(fd, buf, count);
 	}
-}
+};
 
 /**
  * Write a string as UTF-8 bytes to an open file
@@ -501,11 +492,11 @@ io.write = function(fd, buf, count) {
  * @returns {number} The number of bytes written
  * @throws {SysError}
  */
-io.write_string = function(fd, str) {
+io.write_string = function (fd, str) {
 	fd = Number(fd);
 	str = str.toString();
 
 	return io.write(fd, encoder.encode(str.toString()));
-}
+};
 
 return io;

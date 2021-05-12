@@ -265,7 +265,9 @@ test('read_fully', function () {
 
 test('read_string', function () {
 	const FILE = tmp('read_string');
-	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
+	const DATA = new Uint8Array([
+		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a,
+	]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -280,7 +282,9 @@ test('read_string', function () {
 
 test('seek', function () {
 	const FILE = tmp('seek');
-	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
+	const DATA = new Uint8Array([
+		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a,
+	]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -295,7 +299,9 @@ test('seek', function () {
 
 test('tell', function () {
 	const FILE = tmp('tell');
-	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
+	const DATA = new Uint8Array([
+		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a,
+	]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -312,7 +318,9 @@ test('tell', function () {
 
 test('truncate', function () {
 	const FILE = tmp('truncate');
-	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
+	const DATA = new Uint8Array([
+		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a,
+	]);
 
 	var fd = io.truncate(FILE);
 	io.write(fd, DATA);
@@ -346,7 +354,9 @@ test('write > with given count', function () {
 
 test('write_string', function () {
 	const FILE = tmp('write_string');
-	const DATA = new Uint8Array([0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a]);
+	const DATA = new Uint8Array([
+		0x68, 0x6f, 0x6c, 0x69, 0xf0, 0x9f, 0x94, 0x8a,
+	]);
 
 	var fd = io.truncate(FILE);
 	io.write_string(fd, 'holi🔊');

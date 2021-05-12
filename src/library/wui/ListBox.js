@@ -10,28 +10,37 @@ const util = require('./internal/util.js');
 /**
  * @class
  * @extends Widget
- * @param {object<string,*>} [props={}] 
+ * @param {object<string,*>} [props={}]
  */
 function ListBox(props) {
-	ListBox.superclass.call(this, {
-		header: undefined,
-		items: [],
-		header_draw_mode: tui.get_draw_mode(tui.stdscr),
-		items_draw_mode: tui.get_draw_mode(tui.stdscr),
-		keymap: [
-			tui.KEY_UP, 'go_prev',
-			tui.KEY_DOWN, 'go_next',
-			tui.KEY_HOME, 'go_home',
-			tui.KEY_END, 'go_end',
-			tui.KEY_PPAGE, 'go_prev_page',
-			tui.KEY_NPAGE, 'go_next_page',
-		]
-	}, props);
+	ListBox.superclass.call(
+		this,
+		{
+			header: undefined,
+			items: [],
+			header_draw_mode: tui.get_draw_mode(tui.stdscr),
+			items_draw_mode: tui.get_draw_mode(tui.stdscr),
+			keymap: [
+				tui.KEY_UP,
+				'go_prev',
+				tui.KEY_DOWN,
+				'go_next',
+				tui.KEY_HOME,
+				'go_home',
+				tui.KEY_END,
+				'go_end',
+				tui.KEY_PPAGE,
+				'go_prev_page',
+				tui.KEY_NPAGE,
+				'go_next_page',
+			],
+		},
+		props
+	);
 }
 
 Widget.declare(ListBox, {
-
-	draw: function() {
+	draw: function () {
 		const win = this.get_win();
 		const header = this.get_header();
 		const items = this.get_items();
@@ -51,8 +60,9 @@ Widget.declare(ListBox, {
 
 		tui.set_draw_mode(win, this.get_items_draw_mode());
 
-		for (var row = initial_row, i = first_item_index; 
-			row <= size.rows && i < items.length; 
+		for (
+			var row = initial_row, i = first_item_index;
+			row <= size.rows && i < items.length;
 			row++, i++
 		) {
 			if (i === this._selected_index) {
@@ -70,50 +80,50 @@ Widget.declare(ListBox, {
 	/**
 	 * Get header text
 	 *
-	 * @returns {string} 
+	 * @returns {string}
 	 * @memberof ListBox#
 	 */
-	get_header: function() {
+	get_header: function () {
 		return this._header;
 	},
 
 	/**
 	 * Get header draw mode
 	 *
-	 * @returns {DrawMode} 
+	 * @returns {DrawMode}
 	 * @memberof ListBox#
 	 */
-	get_header_draw_mode: function() {
+	get_header_draw_mode: function () {
 		return this._header_draw_mode;
 	},
 
 	/**
 	 * Get items
 	 *
-	 * @returns {string[]} 
+	 * @returns {string[]}
 	 * @memberof ListBox#
 	 */
-	get_items: function() {
+	get_items: function () {
 		return this._items;
 	},
 
 	/**
 	 * Get items draw mode
 	 *
-	 * @returns {DrawMode} 
+	 * @returns {DrawMode}
 	 * @memberof ListBox#
 	 */
-	get_items_draw_mode: function() {
+	get_items_draw_mode: function () {
 		return this._items_draw_mode;
 	},
 
 	/**
 	 * Get number of visible items that fit in the list
 	 *
-	 * @returns {number} 
+	 * @returns {number}
 	 * @memberof ListBox#
 	 */
-	get_page_size: function() {
+	get_page_size: function () {
 		var page_size = this.get_size().rows;
 
 		if (this.get_header()) {
@@ -126,20 +136,20 @@ Widget.declare(ListBox, {
 	/**
 	 * Get the index of the selected item (starting at 0)
 	 *
-	 * @returns {number} 
+	 * @returns {number}
 	 * @memberof ListBox#
 	 */
-	get_selected_index: function() {
+	get_selected_index: function () {
 		return this._selected_index;
 	},
 
 	/**
-	 * Get the value of the selected item 
+	 * Get the value of the selected item
 	 *
-	 * @returns {string} 
+	 * @returns {string}
 	 * @memberof ListBox#
 	 */
-	get_selected_item: function() {
+	get_selected_item: function () {
 		return this._items[this._selected_index];
 	},
 
@@ -147,10 +157,10 @@ Widget.declare(ListBox, {
 	 * Get selected item draw mode. Note that selected draw mode is computed as
 	 * the reverse of the items draw mode, thus it cannot be set.
 	 *
-	 * @returns {DrawMode} 
+	 * @returns {DrawMode}
 	 * @memberof ListBox#
 	 */
-	get_selected_draw_mode: function() {
+	get_selected_draw_mode: function () {
 		return this._selected_draw_mode;
 	},
 
@@ -160,7 +170,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	go_prev: function() {
+	go_prev: function () {
 		this._move_selection(-1);
 	},
 
@@ -170,7 +180,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	go_next: function() {
+	go_next: function () {
 		this._move_selection(1);
 	},
 
@@ -180,7 +190,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	go_home: function() {
+	go_home: function () {
 		this._move_selection(-this._selected_index);
 	},
 
@@ -190,7 +200,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	go_end: function() {
+	go_end: function () {
 		this._move_selection(this._items.length - this._selected_index - 1);
 	},
 
@@ -200,7 +210,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	go_prev_page: function() {
+	go_prev_page: function () {
 		this._move_selection(-this.get_page_size());
 	},
 
@@ -210,7 +220,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	go_next_page: function() {
+	go_next_page: function () {
 		this._move_selection(this.get_page_size());
 	},
 
@@ -220,7 +230,7 @@ Widget.declare(ListBox, {
 	 * @param {string} header
 	 * @memberof ListBox#
 	 */
-	set_header: function(header) {
+	set_header: function (header) {
 		this._header = header;
 		this.invalidate();
 	},
@@ -231,7 +241,7 @@ Widget.declare(ListBox, {
 	 * @param {DrawMode} header_draw_mode
 	 * @memberof ListBox#
 	 */
-	set_header_draw_mode: function(header_draw_mode) {
+	set_header_draw_mode: function (header_draw_mode) {
 		this._header_draw_mode = header_draw_mode;
 		this.invalidate();
 	},
@@ -243,7 +253,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	set_items: function(items) {
+	set_items: function (items) {
 		this._items = items;
 		this.set_selected_index(0);
 		this.invalidate();
@@ -255,9 +265,11 @@ Widget.declare(ListBox, {
 	 * @param {DrawMode} items_draw_mode
 	 * @memberof ListBox#
 	 */
-	set_items_draw_mode: function(items_draw_mode) {
+	set_items_draw_mode: function (items_draw_mode) {
 		this._items_draw_mode = items_draw_mode;
-		this._selected_draw_mode = util.reverse_draw_mode(this._items_draw_mode);
+		this._selected_draw_mode = util.reverse_draw_mode(
+			this._items_draw_mode
+		);
 
 		this.invalidate();
 	},
@@ -269,7 +281,7 @@ Widget.declare(ListBox, {
 	 * @fires ListBox#selected_item_changed
 	 * @memberof ListBox#
 	 */
-	set_selected_index: function(index) {
+	set_selected_index: function (index) {
 		if (index < 0 || (this._items.length && index >= this._items.length)) {
 			throw new Error('Invalid index: ' + index);
 		}
@@ -281,8 +293,8 @@ Widget.declare(ListBox, {
 	},
 
 	/**
-	 * Move selection an amount of items (positive to move downwards, negative 
-	 * to go back). Note that if bounds are surpassed, the method does not fail 
+	 * Move selection an amount of items (positive to move downwards, negative
+	 * to go back). Note that if bounds are surpassed, the method does not fail
 	 * but corrects the amount automatically.
 	 *
 	 * @param {number} amount Number of items to move
@@ -290,18 +302,18 @@ Widget.declare(ListBox, {
 	 * @memberof ListBox#
 	 * @private
 	 */
-	_move_selection: function(amount) {
+	_move_selection: function (amount) {
 		this._selected_index += amount;
 		this._selected_index = Math.max(0, this._selected_index);
 		this._selected_index = Math.min(
-			this._items.length - 1, this._selected_index
+			this._items.length - 1,
+			this._selected_index
 		);
 
 		this.invalidate();
 
 		this._fire('selected_item_changed');
 	},
-
 });
 
 function get_first_item_index(lb) {

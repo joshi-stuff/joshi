@@ -1,4 +1,1 @@
-return [
-	'#include <locale.h>',
-	'#include <ncurses.h>',
-];
+return ['#include <locale.h>', '#include <ncurses.h>'];

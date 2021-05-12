@@ -5,28 +5,37 @@ const Widget = require('./Widget.js');
 /**
  * @class
  * @extends Widget
- * @param {object<string,*>} [props={}] 
+ * @param {object<string,*>} [props={}]
  */
 function TextViewer(props) {
-	TextViewer.superclass.call(this, {
-		header: undefined,
-		lines: [],
-		header_draw_mode: tui.get_draw_mode(tui.stdscr),
-		lines_draw_mode: tui.get_draw_mode(tui.stdscr),
-		keymap: [
-			tui.KEY_UP, 'go_prev',
-			tui.KEY_DOWN, 'go_next',
-			tui.KEY_HOME, 'go_home',
-			tui.KEY_END, 'go_end',
-			tui.KEY_PPAGE, 'go_prev_page',
-			tui.KEY_NPAGE, 'go_next_page',
-		]
-	}, props);
+	TextViewer.superclass.call(
+		this,
+		{
+			header: undefined,
+			lines: [],
+			header_draw_mode: tui.get_draw_mode(tui.stdscr),
+			lines_draw_mode: tui.get_draw_mode(tui.stdscr),
+			keymap: [
+				tui.KEY_UP,
+				'go_prev',
+				tui.KEY_DOWN,
+				'go_next',
+				tui.KEY_HOME,
+				'go_home',
+				tui.KEY_END,
+				'go_end',
+				tui.KEY_PPAGE,
+				'go_prev_page',
+				tui.KEY_NPAGE,
+				'go_next_page',
+			],
+		},
+		props
+	);
 }
 
 Widget.declare(TextViewer, {
-
-	draw: function() {
+	draw: function () {
 		const win = this.get_win();
 		const header = this.get_header();
 		const lines = this.get_lines();
@@ -44,8 +53,9 @@ Widget.declare(TextViewer, {
 
 		tui.set_draw_mode(win, this.get_lines_draw_mode());
 
-		for (var row = initial_row, i = this._first_line_index; 
-			row <= size.rows && i < lines.length; 
+		for (
+			var row = initial_row, i = this._first_line_index;
+			row <= size.rows && i < lines.length;
 			row++, i++
 		) {
 			tui.print(this.get_win(), row, 1, lines[i]);
@@ -55,50 +65,50 @@ Widget.declare(TextViewer, {
 	/**
 	 * Get header text
 	 *
-	 * @returns {string} 
+	 * @returns {string}
 	 * @memberof TextViewer#
 	 */
-	get_header: function() {
+	get_header: function () {
 		return this._header;
 	},
 
 	/**
 	 * Get header draw mode
 	 *
-	 * @returns {DrawMode} 
+	 * @returns {DrawMode}
 	 * @memberof TextViewer#
 	 */
-	get_header_draw_mode: function() {
+	get_header_draw_mode: function () {
 		return this._header_draw_mode;
 	},
 
 	/**
 	 * Get text lines
 	 *
-	 * @returns {string[]} 
+	 * @returns {string[]}
 	 * @memberof TextViewer#
 	 */
-	get_lines: function() {
+	get_lines: function () {
 		return this._lines;
 	},
 
 	/**
 	 * Get lines draw mode
 	 *
-	 * @returns {DrawMode} 
+	 * @returns {DrawMode}
 	 * @memberof TextViewer#
 	 */
-	get_lines_draw_mode: function() {
+	get_lines_draw_mode: function () {
 		return this._lines_draw_mode;
 	},
 
 	/**
 	 * Get number of visible items that fit in the list
 	 *
-	 * @returns {number} 
+	 * @returns {number}
 	 * @memberof TextViewer#
 	 */
-	get_page_size: function() {
+	get_page_size: function () {
 		var page_size = this.get_size().rows;
 
 		if (this.get_header()) {
@@ -113,7 +123,7 @@ Widget.declare(TextViewer, {
 	 *
 	 * @memberof TextViewer#
 	 */
-	go_prev: function() {
+	go_prev: function () {
 		this._scroll(-1);
 	},
 
@@ -122,7 +132,7 @@ Widget.declare(TextViewer, {
 	 *
 	 * @memberof TextViewer#
 	 */
-	go_next: function() {
+	go_next: function () {
 		this._scroll(1);
 	},
 
@@ -131,7 +141,7 @@ Widget.declare(TextViewer, {
 	 *
 	 * @memberof TextViewer#
 	 */
-	go_home: function() {
+	go_home: function () {
 		this._first_line_index = 0;
 		this.invalidate();
 	},
@@ -141,7 +151,7 @@ Widget.declare(TextViewer, {
 	 *
 	 * @memberof TextViewer#
 	 */
-	go_end: function() {
+	go_end: function () {
 		const line_count = this._lines.length;
 
 		this._first_line_index = line_count - this.get_page_size() + 1;
@@ -153,16 +163,16 @@ Widget.declare(TextViewer, {
 	 *
 	 * @memberof TextViewer#
 	 */
-	go_prev_page: function() {
+	go_prev_page: function () {
 		this._scroll(-this.get_page_size());
 	},
-	
+
 	/**
 	 * Scroll one page down
 	 *
 	 * @memberof TextViewer#
 	 */
-	go_next_page: function() {
+	go_next_page: function () {
 		this._scroll(this.get_page_size());
 	},
 
@@ -172,7 +182,7 @@ Widget.declare(TextViewer, {
 	 * @param {string} header
 	 * @memberof TextViewer#
 	 */
-	set_header: function(header) {
+	set_header: function (header) {
 		this._header = header;
 		this.invalidate();
 	},
@@ -183,7 +193,7 @@ Widget.declare(TextViewer, {
 	 * @param {DrawMode} header_draw_mode
 	 * @memberof TextViewer#
 	 */
-	set_header_draw_mode: function(header_draw_mode) {
+	set_header_draw_mode: function (header_draw_mode) {
 		this._header_draw_mode = header_draw_mode;
 		this.invalidate();
 	},
@@ -194,7 +204,7 @@ Widget.declare(TextViewer, {
 	 * @param {string[]} lines
 	 * @memberof TextViewer#
 	 */
-	set_lines: function(lines) {
+	set_lines: function (lines) {
 		this._lines = lines;
 		this._first_line_index = 0;
 		this.invalidate();
@@ -206,7 +216,7 @@ Widget.declare(TextViewer, {
 	 * @param {DrawMode} lines_draw_mode
 	 * @memberof TextViewer#
 	 */
-	set_lines_draw_mode: function(lines_draw_mode) {
+	set_lines_draw_mode: function (lines_draw_mode) {
 		this._lines_draw_mode = lines_draw_mode;
 		this.invalidate();
 	},
@@ -218,14 +228,14 @@ Widget.declare(TextViewer, {
 	 *
 	 * @param {number} amount Number of lines to move
 	 *
-	 * @returns {number} 
+	 * @returns {number}
 	 * The resulting line number (possibly corrected by bounds). Index is 0
 	 * based.
 	 *
 	 * @memberof TextViewer#
 	 * @private
 	 */
-	_scroll: function(amount) {
+	_scroll: function (amount) {
 		const line_count = this._lines.length;
 		const page_size = this.get_size().rows;
 
@@ -242,7 +252,6 @@ Widget.declare(TextViewer, {
 
 		return this._first_line_index;
 	},
-
 });
 
 return TextViewer;

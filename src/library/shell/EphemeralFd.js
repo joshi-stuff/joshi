@@ -37,14 +37,13 @@ function EphemeralFd($, openFn) {
 }
 
 EphemeralFd.prototype = {
-
 	/**
 	 * Close underlying ephemeral file descriptor
 	 *
 	 * @returns {void}
 	 * @throws {SysError}
 	 */
-	close: function() {
+	close: function () {
 		if (this._fd) {
 			io.close(this._fd);
 			this._fd = undefined;
@@ -58,7 +57,7 @@ EphemeralFd.prototype = {
 	 * @returns {void}
 	 * @throws {SysError}
 	 */
-	open: function(sourceFd) {
+	open: function (sourceFd) {
 		// TODO: EphemeralFd fails with more than one fd (check if it can be
 		// fixed and made better: for example open several fds)
 		if (this._fd) {
@@ -69,7 +68,6 @@ EphemeralFd.prototype = {
 
 		return this._fd;
 	},
-
-}
+};
 
 return EphemeralFd;

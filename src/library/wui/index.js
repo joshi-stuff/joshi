@@ -36,7 +36,7 @@ const entries = {};
  * @param {WinLayoutCallback} layout
  * @throws {Error} If window with given id exists
  */
-wui.add_win = function(id, layout) {
+wui.add_win = function (id, layout) {
 	if (entries[id]) {
 		throw new Error('Window exists: ' + id);
 	}
@@ -49,7 +49,7 @@ wui.add_win = function(id, layout) {
 		win: layout(tui.get_size(tui.stdscr)),
 		widget: undefined,
 	};
-}
+};
 
 /**
  * Connects a widget to a window. If the window has a connected widget, it is
@@ -60,7 +60,7 @@ wui.add_win = function(id, layout) {
  * @return {Widget} The given widget
  * @throws {Error} If window with given id doesn't exist
  */
-wui.connect = function(id, widget, props) {
+wui.connect = function (id, widget, props) {
 	props = props || {};
 
 	const entry = entries[id];
@@ -81,14 +81,14 @@ wui.connect = function(id, widget, props) {
 	widget.invalidate();
 
 	return widget;
-}
+};
 
 /**
  *
  * @param {string} id
  * @throws {Error} If window with given id does not exist
  */
-wui.del_win = function(id) {
+wui.del_win = function (id) {
 	const entry = entries[id];
 
 	if (!entry) {
@@ -105,7 +105,7 @@ wui.del_win = function(id) {
 	debug('wui', 'del_win', id);
 
 	delete entries[id];
-}
+};
 
 /**
  * Disconnect a widget from its window and return the widget
@@ -113,7 +113,7 @@ wui.del_win = function(id) {
  * @param {string} id
  * @returns {Widget|undefined}
  */
-wui.disconnect = function(id) {
+wui.disconnect = function (id) {
 	const entry = entries[id];
 
 	if (!entry) {
@@ -133,7 +133,7 @@ wui.disconnect = function(id) {
 	tui.clear(entry.win);
 
 	return widget;
-}
+};
 
 /**
  * Get the widget connected to a given window
@@ -141,7 +141,7 @@ wui.disconnect = function(id) {
  * @param {string} id
  * @returns {Widget|undefined}
  */
-wui.get_widget = function(id) {
+wui.get_widget = function (id) {
 	const entry = entries[id];
 
 	if (!entry) {
@@ -149,7 +149,7 @@ wui.get_widget = function(id) {
 	}
 
 	return entry.widget;
-}
+};
 
 /**
  * Get a window by id
@@ -157,7 +157,7 @@ wui.get_widget = function(id) {
  * @param {string} id
  * @returns {Widget|undefined}
  */
-wui.get_win = function(id) {
+wui.get_win = function (id) {
 	const entry = entries[id];
 
 	if (!entry) {
@@ -165,24 +165,24 @@ wui.get_win = function(id) {
 	}
 
 	return entry.win;
-}
+};
 
 /**
  *
  */
-wui.init = function() {
+wui.init = function () {
 	tui.init();
 	tui.curs_set(false);
 	tui.clear();
 
 	proc.atexit(tui.end);
-}
+};
 
 /**
  *
  * @param {WuiRunCallback} cb
  */
-wui.run = function(cb) {
+wui.run = function (cb) {
 	while (true) {
 		draw();
 		refresh();
@@ -201,20 +201,20 @@ wui.run = function(cb) {
 			break;
 		}
 	}
-}
+};
 
 /**
  * @param {number} key
  * @returns {boolean}
  */
-wui.send_key = function(key) {
+wui.send_key = function (key) {
 	var result = false;
 
 	debug('wui', 'send_key', key);
 
-	Object.values(entries).forEach(function(entry) {
+	Object.values(entries).forEach(function (entry) {
 		const widget = entry.widget;
-		
+
 		if (!widget) {
 			return;
 		}
@@ -231,18 +231,17 @@ wui.send_key = function(key) {
 	});
 
 	return result;
-}
+};
 
 /**
  * @private
  */
 function debug(caller) {
-	const args = Array.prototype.slice.call(arguments).slice(1);	
+	const args = Array.prototype.slice.call(arguments).slice(1);
 
 	if (caller.class) {
 		args.unshift(caller.class.name + ':');
-	}
-	else {
+	} else {
 		args.unshift(caller + ':');
 	}
 
@@ -255,9 +254,9 @@ function debug(caller) {
 function draw() {
 	debug('wui', 'draw');
 
-	Object.values(entries).forEach(function(entry) {
+	Object.values(entries).forEach(function (entry) {
 		const widget = entry.widget;
-		
+
 		if (!widget) {
 			return;
 		}
@@ -269,7 +268,7 @@ function draw() {
 		if (widget._invalid) {
 			debug('wui', 'clear', entry.id);
 			tui.clear(entry.win);
-			
+
 			debug(widget.class.name + '.' + entry.id, 'draw');
 			widget.draw();
 
@@ -286,7 +285,7 @@ function refresh() {
 
 	tui.refresh(tui.stdscr);
 
-	Object.values(entries).forEach(function(entry) {
+	Object.values(entries).forEach(function (entry) {
 		tui.refresh(entry.win);
 	});
 }
@@ -299,7 +298,7 @@ function relayout() {
 
 	debug('wui', 'relayout', size);
 
-	Object.values(entries).forEach(function(entry) {
+	Object.values(entries).forEach(function (entry) {
 		entry.win = entry.layout(size);
 
 		if (entry.widget) {

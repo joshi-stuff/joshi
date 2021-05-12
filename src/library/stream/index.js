@@ -2,15 +2,15 @@ const io = require('io');
 
 const decoder = new TextDecoder();
 
-/** 
- * @exports stream 
+/**
+ * @exports stream
  */
 const stream = {};
 
 /**
  * Create an stream from a file descriptor.
  *
- * Streams are an efficient way to scan file descriptors for certain types of 
+ * Streams are an efficient way to scan file descriptors for certain types of
  * formats (f.e.: a line of text), without needing to read one byte at a time.
  *
  * Note that you should NOT create more than one stream for the same file
@@ -19,31 +19,31 @@ const stream = {};
  * @param {number} fd A valid file descriptor
  * @returns {object} An opaque stream descriptor
  */
-stream.create = function(fd) {
+stream.create = function (fd) {
 	return {
 		_buffer: new Uint8Array(256),
 		_fd: fd,
-		_pushback: []
+		_pushback: [],
 	};
-}
+};
 
 /**
  * Read a whole line (all available characters until '\n' or EOF).
  *
  * @param {object} sd An opaque stream descriptor
  *
- * @returns {null|string} 
+ * @returns {null|string}
  * A line of text (without the ending `\n`) or null if EOF was found before
  * the delimiter.
  */
-stream.read_line = function(sd) {
+stream.read_line = function (sd) {
 	return stream.read_until(sd, '\n');
-}
+};
 
 /**
  * Read available characters until a delimiter is found.
- * 
- * Note that, for now, only character (as opposed to string) delimiters are 
+ *
+ * Note that, for now, only character (as opposed to string) delimiters are
  * supported.
  *
  * @param {object} sd An opaque stream descriptor
@@ -52,7 +52,7 @@ stream.read_line = function(sd) {
  * @returns {string}
  * A string without the delimiter or null if EOF was found before the delimiter.
  */
-stream.read_until = function(sd, delim) {
+stream.read_until = function (sd, delim) {
 	// TODO: support string delimiters
 	if (delim.length !== 1) {
 		throw new Error('Only one-char delimiters are supported');
@@ -77,7 +77,7 @@ stream.read_until = function(sd, delim) {
 			return null;
 		}
 	}
-}
+};
 
 /**
  * Feed a stream's buffer with more bytes

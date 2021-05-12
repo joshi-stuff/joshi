@@ -1,9 +1,9 @@
 const io = require('io');
 const stream = require('stream');
 
-/** 
+/**
  * @enum {number}
- * @exports term 
+ * @exports term
  * @readonly
  */
 const term = {
@@ -12,11 +12,11 @@ const term = {
 	/** Password (canonical without echo) terminal mode */
 	PASSWORD: 1,
 	/** Raw terminal mode */
-	RAW: 2
+	RAW: 2,
 };
 
 // See https://en.wikipedia.org/wiki/ANSI_escape_code
-const CSI = String.fromCharCode(0x1B) + '['; 
+const CSI = String.fromCharCode(0x1b) + '[';
 const stdin = stream.create(0);
 
 /**
@@ -28,9 +28,9 @@ const stdin = stream.create(0);
  * @returns {void}
  * @throws {SysError}
  */
-term.bg = function(r, g, b) {
+term.bg = function (r, g, b) {
 	term.print(CSI + '48;2;' + r + ';' + g + ';' + b + 'm');
-}
+};
 
 /**
  * Clear terminal screen and move cursor to (1, 1)
@@ -38,10 +38,10 @@ term.bg = function(r, g, b) {
  * @returns {void}
  * @throws {SysError}
  */
-term.clear = function() {
+term.clear = function () {
 	term.print(CSI + '2J');
 	term.move_to(1, 1);
-}
+};
 
 /**
  * Set text foreground color to RGB value
@@ -52,9 +52,9 @@ term.clear = function() {
  * @returns {void}
  * @throws {SysError}
  */
-term.fg = function(r, g, b) {
+term.fg = function (r, g, b) {
 	term.print(CSI + '38;2;' + r + ';' + g + ';' + b + 'm');
-}
+};
 
 /**
  * Hide cursor
@@ -62,9 +62,9 @@ term.fg = function(r, g, b) {
  * @returns {void}
  * @throws {SysError}
  */
-term.hide_cursor = function() {
+term.hide_cursor = function () {
 	term.print(CSI + '?25l');
-}
+};
 
 /**
  * Move cursor to coordinate
@@ -74,9 +74,9 @@ term.hide_cursor = function() {
  * @returns {void}
  * @throws {SysError}
  */
-term.move_to = function(row, column) {
+term.move_to = function (row, column) {
 	term.print(CSI + row + ';' + column + 'H');
-}
+};
 
 /**
  * Print one or more items to stderr
@@ -85,9 +85,9 @@ term.move_to = function(row, column) {
  * @returns {void}
  * @throws {SysError}
  */
-term.print2 = function() {
+term.print2 = function () {
 	_print(2, arguments, false);
-}
+};
 
 /**
  * Print one or more items to stdout
@@ -96,9 +96,9 @@ term.print2 = function() {
  * @returns {void}
  * @throws {SysError}
  */
-term.print = function() {
+term.print = function () {
 	_print(1, arguments, false);
-}
+};
 
 /**
  * Print one or more items to stdout, then append a line feed
@@ -107,9 +107,9 @@ term.print = function() {
  * @returns {void}
  * @throws {SysError}
  */
-term.println = function() {
+term.println = function () {
 	_print(1, arguments, true);
-}
+};
 
 /**
  * Print one or more items to stderr, then append a line feed
@@ -118,22 +118,22 @@ term.println = function() {
  * @returns {void}
  * @throws {SysError}
  */
-term.println2 = function() {
+term.println2 = function () {
 	_print(2, arguments, true);
-}
+};
 
 /**
  * Read a line of text from stdin.
  *
- * Note that this method uses an underlying stream to make readings more 
+ * Note that this method uses an underlying stream to make readings more
  * efficient.
  *
  * @returns {string} A line or null on EOF
  * @throws {SysError}
  */
-term.read_line = function() {
+term.read_line = function () {
 	return stream.read_line(stdin);
-}
+};
 
 /**
  * Reset terminal to default values (foreground and background color, etc.)
@@ -141,23 +141,23 @@ term.read_line = function() {
  * @returns {void}
  * @throws {SysError}
  */
-term.reset = function() {
+term.reset = function () {
 	term.print(CSI + 'm');
-}
+};
 
 /**
  * Set terminal mode to canonnical, password or raw.
  *
  * @param {number} mode
- * One of {link module:term.CANONICAL}, {link module:term.PASSWORD} and 
+ * One of {link module:term.CANONICAL}, {link module:term.PASSWORD} and
  * {link module:term.RAW} constants.
  *
  * @returns {void}
  * @throws {SysError}
  */
-term.set_mode = function(mode) {
+term.set_mode = function (mode) {
 	j.set_term_mode(mode);
-}
+};
 
 /**
  * Make cursor visible
@@ -165,9 +165,9 @@ term.set_mode = function(mode) {
  * @returns {void}
  * @throws {SysError}
  */
-term.show_cursor = function() {
+term.show_cursor = function () {
 	term.print(CSI + '?25h');
-}
+};
 
 /**
  * Return a string representation of an item
@@ -176,7 +176,7 @@ term.show_cursor = function() {
  * @returns {string} The string representation of the item
  * @throws {SysError}
  */
-term.to_string = function(thing) {
+term.to_string = function (thing) {
 	const str = '';
 
 	if (thing === null) {
@@ -216,7 +216,7 @@ term.to_string = function(thing) {
 	}
 
 	return str;
-}
+};
 
 /**
  * Internal print logic

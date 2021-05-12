@@ -10,8 +10,8 @@ const term = require('term');
 /**
  * @typedef {object} Window
  * @property {string} is_a Always contains 'Window'
- * @property {Uint8Array} handle Opaque handle to window 
- * @property {WindowBorder} [border] Optional border definition 
+ * @property {Uint8Array} handle Opaque handle to window
+ * @property {WindowBorder} [border] Optional border definition
  * @property {WindowSize} [size] Cached window size (can be missing)
  * @property {DrawMode} draw_mode Window draw mode
  */
@@ -64,7 +64,7 @@ var default_draw_mode;
  * @private
  */
 const cursor = {
-	row: 1, 
+	row: 1,
 	col: 1,
 };
 
@@ -81,55 +81,55 @@ var next_color = 8;
  */
 var next_pair = 1;
 
-/** 
+/**
  * @enum {number}
- * @exports tui 
+ * @exports tui
  * @readonly
  */
 const tui = {
 	/** Bitmask to extract attributes */
-	A_ATTRIBUTES: 0xFFFFFF00,
+	A_ATTRIBUTES: 0xffffff00,
 	/** Bitmask to extract a character */
-	A_CHARTEXT:   0x000000FF,
+	A_CHARTEXT: 0x000000ff,
 	/** Bitmask to extract a color (?) */
-	A_COLOR:      0x0000FF00,
+	A_COLOR: 0x0000ff00,
 
 	/** Normal display */
-	A_NORMAL:     0x00000000,
+	A_NORMAL: 0x00000000,
 	/** Best hightlighting mode of terminal */
-	A_STANDOUT:   0x00010000,
+	A_STANDOUT: 0x00010000,
 	/** Underlining */
-	A_UNDERLINE:  0x00020000,
+	A_UNDERLINE: 0x00020000,
 	/** Reverse video */
-	A_REVERSE:    0x00040000,
+	A_REVERSE: 0x00040000,
 	/** Blinking */
-	A_BLINK:      0x00080000,
+	A_BLINK: 0x00080000,
 	/** Half bright */
-	A_DIM:        0x00100000,
+	A_DIM: 0x00100000,
 	/** Extra bright or bold */
-	A_BOLD:       0x00200000,
+	A_BOLD: 0x00200000,
 	/** Alternate character set */
 	A_ALTCHARSET: 0x00400000,
 	/** Invisible or blank mode */
-	A_INVIS:      0x00800000,
+	A_INVIS: 0x00800000,
 	/** Protected mode */
-	A_PROTECT:    0x01000000,
+	A_PROTECT: 0x01000000,
 
 	A_HORIZONTAL: 0x02000000,
-	A_LEFT:       0x04000000,
-	A_LOW:        0x08000000,
-	A_RIGHT:      0x10000000,
-	A_TOP:        0x20000000,
-	A_VERTICAL:   0x40000000,
+	A_LEFT: 0x04000000,
+	A_LOW: 0x08000000,
+	A_RIGHT: 0x10000000,
+	A_TOP: 0x20000000,
+	A_VERTICAL: 0x40000000,
 
-	COLOR_BLACK:   0,
-	COLOR_RED:     1,
-	COLOR_GREEN:   2,
-	COLOR_YELLOW:  3,
-	COLOR_BLUE:    4,
+	COLOR_BLACK: 0,
+	COLOR_RED: 1,
+	COLOR_GREEN: 2,
+	COLOR_YELLOW: 3,
+	COLOR_BLUE: 4,
 	COLOR_MAGENTA: 5,
-	COLOR_CYAN:    6,
-	COLOR_WHITE:   7,
+	COLOR_CYAN: 6,
+	COLOR_WHITE: 7,
 
 	/**
 	 * @type {object}
@@ -204,14 +204,14 @@ const tui = {
  * @param {object} definitions
  * An object containing properties where keys represent names and values are
  * strings containing hex values for red, green and blue (as in CSS).
- * 
+ *
  * @returns {object}
  * An object with the same keys as the {definitions} param but values are
  * replaced by color ids.
  *
  * @see {@link module:tui.add_draw_modes}
  */
-tui.add_colors = function(definitions) {
+tui.add_colors = function (definitions) {
 	if (!tui.has_colors) {
 		throw new Error('Terminal does not support colors');
 	}
@@ -220,7 +220,7 @@ tui.add_colors = function(definitions) {
 		throw new Error('Terminal does not support colors redefinition');
 	}
 
-	return Object.entries(definitions).reduce(function(map, entry) {
+	return Object.entries(definitions).reduce(function (map, entry) {
 		const name = entry[0];
 		const rgb = entry[1];
 
@@ -232,9 +232,9 @@ tui.add_colors = function(definitions) {
 			throw new Error('Invalid color: ' + name);
 		}
 
-		const r = 1000 * parseInt(rgb.substring(0,2), 16) / 255;
-		const g = 1000 * parseInt(rgb.substring(2,4), 16) / 255;
-		const b = 1000 * parseInt(rgb.substring(4,6), 16) / 255;
+		const r = (1000 * parseInt(rgb.substring(0, 2), 16)) / 255;
+		const g = (1000 * parseInt(rgb.substring(2, 4), 16)) / 255;
+		const b = (1000 * parseInt(rgb.substring(4, 6), 16)) / 255;
 
 		if (isNaN(r) || isNaN(g) || isNaN(b)) {
 			throw new Error('Invalid color: ' + name);
@@ -250,7 +250,7 @@ tui.add_colors = function(definitions) {
 	}, {});
 
 	return color;
-}
+};
 
 /**
  * Define multiple draw modes
@@ -264,13 +264,13 @@ tui.add_colors = function(definitions) {
  * @param {object} definitions
  * An object containing properties where keys represent names and values are
  * tuples (arrays) of [attrs, fg, bg].
- * 
+ *
  * @returns {object}
  * An object with the same keys as the {definitions} param but values are
  * replaced by draw mode ids
  */
-tui.add_draw_modes = function(definitions) {
-	return Object.entries(definitions).reduce(function(map, entry) {
+tui.add_draw_modes = function (definitions) {
+	return Object.entries(definitions).reduce(function (map, entry) {
 		const name = entry[0];
 		const attrs = entry[1][0];
 		const fg = entry[1][1];
@@ -291,21 +291,21 @@ tui.add_draw_modes = function(definitions) {
 
 		return map;
 	}, {});
-}
+};
 
 /**
  * @param {number} row Row coordinate (starts at 1)
  * @param {number} col Column coordinate (starts at 1)
  * @returns {void}
  */
-tui.curs_move = function(row, col) {
+tui.curs_move = function (row, col) {
 	const win = tui.stdscr;
 
 	jt.wmove(win.handle, row - 1, col - 1);
 
 	cursor.row = row;
 	cursor.col = col;
-}
+};
 
 /**
  * Erase whole window
@@ -314,7 +314,7 @@ tui.curs_move = function(row, col) {
  * @see {@link module:tui.clear}
  * @returns {void}
  */
-tui.clear = function(win) {
+tui.clear = function (win) {
 	win = win || tui.stdscr;
 
 	const wsize = tui.get_size(win);
@@ -326,57 +326,57 @@ tui.clear = function(win) {
 
 	const saved_draw_mode = tui.get_draw_mode(win);
 	tui.set_draw_mode(win, default_draw_mode);
-	
+
 	for (var row = 1; row <= wsize.rows; row++) {
 		tui.print(win, row, 1, line);
 	}
 
 	draw_border(win);
-}
+};
 
 /**
  * Get cursor position
  *
  * @returns {WindowPos}
  */
-tui.curs_pos = function() {
+tui.curs_pos = function () {
 	return cursor;
-}
+};
 
 /**
- * @param {boolean} visible 
+ * @param {boolean} visible
  * @returns {void}
  */
-tui.curs_set = function(visible) {
+tui.curs_set = function (visible) {
 	// we don't support "very visible" cursor (value 2) for the moment
 	jt.curs_set(visible ? 1 : 0);
-}
+};
 
 /**
  *
  * @returns {void}
  */
-tui.end = function() {
+tui.end = function () {
 	jt.endwin();
 	tui.stdscr = undefined;
-}
+};
 
 /**
  * @returns {DrawMode}
  */
-tui.get_draw_mode = function(win) {
+tui.get_draw_mode = function (win) {
 	win = win || tui.stdscr;
 
 	return win.draw_mode;
-}
+};
 
 /**
  * Get the size of a window, i.e., number or row and columns.
- * 
+ *
  * @param {Window} [win={@link module:tui.stdscr}]
  * @returns {WindowSize} The window size
  */
-tui.get_size = function(win) {
+tui.get_size = function (win) {
 	win = win || tui.stdscr;
 
 	if (win.size) {
@@ -392,21 +392,21 @@ tui.get_size = function(win) {
 
 	return {
 		rows: ret.y,
-		cols: ret.x
+		cols: ret.x,
 	};
-}
+};
 
 /**
  * @returns {int} A key code
  */
-tui.getch = function() {
+tui.getch = function () {
 	return jt.wgetch();
-}
+};
 
 /**
- * @returns {void} 
+ * @returns {void}
  */
-tui.init = function() {
+tui.init = function () {
 	if (tui.stdscr) {
 		throw new Error('Screen has been already initialized');
 	}
@@ -429,7 +429,7 @@ tui.init = function() {
 	tui.max_colors = info.max_colors;
 
 	tui.set_default_draw_mode(tui.stdscr.draw_mode);
-}
+};
 
 /**
  * @param {Window} [win={@link module:tui.stdscr}]
@@ -438,7 +438,7 @@ tui.init = function() {
  * @param {...*} items Items to print
  * @returns {void}
  */
-tui.print = function() {
+tui.print = function () {
 	var win = arguments[0];
 	var row = arguments[1];
 	var col = arguments[2];
@@ -463,7 +463,8 @@ tui.print = function() {
 			str += ' ';
 		}
 
-		str += term.to_string(arguments[i])
+		str += term
+			.to_string(arguments[i])
 			.replace('\t', '    ')
 			.replace('\n', '↩');
 
@@ -480,28 +481,27 @@ tui.print = function() {
 	const y = win.border ? row : row - 1;
 	const x = win.border ? col : col - 1;
 
-	if (!win.border && row === wsize.rows && (col + str.length > wsize.cols)) {
+	if (!win.border && row === wsize.rows && col + str.length > wsize.cols) {
 		jt.wmove(win.handle, y, x);
 		jt.waddstr(win.handle, str.substring(0, str.length - 1));
-		jt.winsstr(win.handle, str.substring(str.length-1));
-	}
-	else {
+		jt.winsstr(win.handle, str.substring(str.length - 1));
+	} else {
 		jt.wmove(win.handle, y, x);
 		jt.waddstr(win.handle, str);
 	}
 
 	restore_cursor();
-}
+};
 
 /**
  * @param {Window} [win={@link module:tui.stdscr}]
  * @returns {void}
  */
-tui.refresh = function(win) {
+tui.refresh = function (win) {
 	win = win || tui.stdscr;
 
 	jt.wrefresh(win.handle);
-}
+};
 
 /**
  * Set the colors used to clear the screen and draw borders
@@ -509,15 +509,15 @@ tui.refresh = function(win) {
  * @param {DrawMode} draw_mode
  * @see {@link module:tui.clear}
  */
-tui.set_default_draw_mode = function(draw_mode) {
-	default_draw_mode = draw_mode;	
-}
+tui.set_default_draw_mode = function (draw_mode) {
+	default_draw_mode = draw_mode;
+};
 
 /**
  * @param {DrawMode} mode
  * @returns {void}
  */
-tui.set_draw_mode = function(win, mode) {
+tui.set_draw_mode = function (win, mode) {
 	if (mode === undefined) {
 		mode = win;
 		win = tui.stdscr;
@@ -525,35 +525,35 @@ tui.set_draw_mode = function(win, mode) {
 
 	jt.wattr_set(win.handle, mode.attrs, mode.pair, null);
 	win.draw_mode = mode;
-}
+};
 
 /**
- * Delete an existing {Window} 
+ * Delete an existing {Window}
  *
  * @param {Window} win
  * @returns {void}
  */
-tui.win_del = function(win) {
+tui.win_del = function (win) {
 	if (win === tui.stdscr) {
 		throw new Error('Window stdscr cannot be deleted');
 	}
 
 	jt.delwin(win.handle);
-}
+};
 
 /**
- * Move an existing {Window} 
+ * Move an existing {Window}
  *
  * @param {Window} win
  * @returns {void}
  */
-tui.win_move = function(win, row, col) {
+tui.win_move = function (win, row, col) {
 	if (win === tui.stdscr) {
 		throw new Error('Window stdscr cannot be moved');
 	}
 
 	jt.mvwin(win.handle, row - 1, col - 1);
-}
+};
 
 /**
  * Create a new {Window} with given coordinates and size
@@ -564,12 +564,12 @@ tui.win_move = function(win, row, col) {
  * @param {number} cols
  *
  * @param {WindowBorder|boolean} [border=false]
- * An explicit {WindowBorder} object, or {true} to use 
+ * An explicit {WindowBorder} object, or {true} to use
  * {@link module:tui.DEFAULT_BORDER}
  *
  * @returns {Window}
  */
-tui.win_new = function(row, col, rows, cols, border) {
+tui.win_new = function (row, col, rows, cols, border) {
 	if (border === true) {
 		border = tui.DEFAULT_BORDER;
 	}
@@ -587,7 +587,7 @@ tui.win_new = function(row, col, rows, cols, border) {
 		},
 		size: {
 			rows: border ? rows - 2 : rows,
-			cols: border ? cols - 2 : cols, 
+			cols: border ? cols - 2 : cols,
 		},
 	};
 
@@ -595,15 +595,23 @@ tui.win_new = function(row, col, rows, cols, border) {
 	draw_border(win);
 
 	return win;
-}
+};
 
 function check_pos(win, row, col) {
 	const wsize = tui.get_size(win);
 
 	if (row < 1 || row > wsize.rows || col < 1 || col > wsize.cols) {
 		throw new Error(
-			'Invalid position (' + row + ',' + col + ') for window ' +
-			'of size [' + wsize.rows + 'x' + wsize.cols + ']'
+			'Invalid position (' +
+				row +
+				',' +
+				col +
+				') for window ' +
+				'of size [' +
+				wsize.rows +
+				'x' +
+				wsize.cols +
+				']'
 		);
 	}
 }
@@ -651,7 +659,7 @@ function draw_border(win) {
 		jt.waddstr(win.handle, border.b);
 	}
 
-	for (var y = 1; y <= maxy-1; y++) {
+	for (var y = 1; y <= maxy - 1; y++) {
 		jt.wmove(win.handle, y, 0);
 		jt.waddstr(win.handle, border.l);
 		jt.wmove(win.handle, y, maxx);

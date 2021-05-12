@@ -14,7 +14,7 @@ const Proc = require('./Proc.js');
  * Note that this module exports the {@link module:shell.$} function as a
  * property `shell.$` and as `shell` directly.
  *
- * That means that you can use more than one syntax when requiring it (see 
+ * That means that you can use more than one syntax when requiring it (see
  * examples).
  *
  * @example
@@ -32,17 +32,17 @@ const Proc = require('./Proc.js');
  *          OR
  *
  *
- * // Orthodox syntax... 
- * const shell = require('shell'); 
+ * // Orthodox syntax...
+ * const shell = require('shell');
  *
  * // ...then invoke it with prefix
  * shell.$(....)
  *
- * @exports shell 
+ * @exports shell
  */
 var shell = {};
 
-/** 
+/**
  * Declare a shell command to be wired and executed. This is the base function
  * to invoke commands in a shell fashion.
  *
@@ -107,32 +107,32 @@ var shell = {};
  *   .do();
  *
  * @example
- * // Execute 
- * // `cd src && LANG=en ls -l | grep -v node_modules >> files.list 2> /dev/null` 
+ * // Execute
+ * // `cd src && LANG=en ls -l | grep -v node_modules >> files.list 2> /dev/null`
  * // as bash would do it
  * $('ls', '-l')
  *   .dir('src')
  *   .env({LANG: 'en'})
  *   .pipe(
- *     1, 
+ *     1,
  *     $('grep', '-v', 'node_modules')
  *       .pipe(1, '+:files.list')
  *       .pipe(2, null)
  *   )
  *   .do();
  *
- * @param {...string|string[]} tokens 
+ * @param {...string|string[]} tokens
  * Program and arguments to execute as an array or a list of string arguments
  *
- * @returns {shell.Proc} 
+ * @returns {shell.Proc}
  * A Proc object that provides a fluent API to configure the process wiring
  *
  * @throws {SysError}
  */
-shell.$ = function() {
+shell.$ = function () {
 	const args = [];
 
-	if(arguments.length > 1) {
+	if (arguments.length > 1) {
 		for (var i = 0; i < arguments.length; i++) {
 			args.push(arguments[i]);
 		}
@@ -145,7 +145,7 @@ shell.$ = function() {
 	}
 
 	return new Proc(shell, args);
-}
+};
 
 /* Point `$` to `shell` directly */
 shell = shell.$;
@@ -164,25 +164,25 @@ shell = shell.$;
  *   .pipe(1, $.capture(x))
  *   .do();
  *
- * @param {object} container 
+ * @param {object} container
  * An empty object where the output of the piped file descriptor will be stored
  * as a property.
  *
  * The names of the properties are `out` and `error` for file descriptors 1 and
  * 2, and the file descriptor number for the other.
  *
- * @return {object} 
+ * @return {object}
  * An opaque object to be fed to {@link Proc.pipe}
  *
  * @throws {SysError}
  * @see {@link Proc.pipe}
  */
-shell.capture = function(container) {
+shell.capture = function (container) {
 	return new Capture(shell, container);
-}
+};
 
 /**
- * Create a redirection to pipe a process to/from a file. 
+ * Create a redirection to pipe a process to/from a file.
  *
  * Note that there's also an alternative human friendly syntax that can be used
  * instead of `$.capture(...)` (see {@link Proc.pipe}).
@@ -200,7 +200,7 @@ shell.capture = function(container) {
  *   .do();
  *
  * @param {string} filepath The path to the file
- * 
+ *
  * @param {''|'0'|'+'} [mode='0' for stdout/err, '' for the rest]
  * The open mode for the file.
  *
@@ -214,15 +214,14 @@ shell.capture = function(container) {
  * @throws {SysError}
  * @see {@link Proc.pipe}
  */
-shell.file = function(filepath, mode) {
-	return new EphemeralFd(shell, function(sourceFd) {
+shell.file = function (filepath, mode) {
+	return new EphemeralFd(shell, function (sourceFd) {
 		sourceFd = Number(sourceFd);
 
 		if (!mode) {
 			if (sourceFd === 1 || sourceFd === 2) {
 				mode = '0';
-			}
-			else {
+			} else {
 				mode = '';
 			}
 		}
@@ -231,12 +230,11 @@ shell.file = function(filepath, mode) {
 
 		if (sourceFd === 0) {
 			access = 'r';
-		}
-		else if (sourceFd === 1 || sourceFd === 2) {
+		} else if (sourceFd === 1 || sourceFd === 2) {
 			access = 'w';
 		}
 
-		switch(mode) {
+		switch (mode) {
 			case '':
 				return io.open(filepath, access);
 
@@ -249,7 +247,7 @@ shell.file = function(filepath, mode) {
 
 		throw new Error('Unknown mode: ' + mode);
 	});
-}
+};
 
 /**
  * Create a redirection to get a process' input from a here string.
@@ -268,14 +266,14 @@ shell.file = function(filepath, mode) {
  * @throws {SysError}
  * @see {@link Proc.pipe}
  */
-shell.here = function(here_string) {
-	return new EphemeralFd(shell, function(sourceFd) {
+shell.here = function (here_string) {
+	return new EphemeralFd(shell, function (sourceFd) {
 		const filepath = fs.create_temp_file(here_string, 0400);
 		const fd = io.open(filepath, 'r');
 		fs.unlink(filepath);
 		return fd;
 	});
-}
+};
 
 /**
  * Search PATH environment variable for a certain executable (command)
@@ -284,7 +282,7 @@ shell.here = function(here_string) {
  * @returns {string|null} The absolute path to the command or null if not found
  * @throws {SysError}
  */
-shell.search_path = function(command) {
+shell.search_path = function (command) {
 	if (command.includes('/')) {
 		return fs.is_executable(command) ? command : null;
 	}
@@ -314,6 +312,6 @@ shell.search_path = function(command) {
 	}
 
 	return null;
-}
+};
 
 return shell;

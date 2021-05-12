@@ -12,7 +12,7 @@ const tui = require('tui');
 
 while (true) {
 	term.print('> ');
-	
+
 	var last_cmd;
 	var current_cmd = term.read_line();
 
@@ -25,8 +25,7 @@ while (true) {
 
 	try {
 		last_cmd_value = eval(current_cmd);
-	}
-	catch(err) {
+	} catch (err) {
 		term.println2(err.message);
 	}
 

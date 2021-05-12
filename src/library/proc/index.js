@@ -6,10 +6,10 @@ const io = require('io');
  *
  * @typedef {object} AtexitHandler
  *
- * @property {number} [pid] 
+ * @property {number} [pid]
  * Process from which handler must be invoked. Or all processes if missing.
  *
- * @property {function} handler 
+ * @property {function} handler
  * The handler function to invoke
  *
  * @private
@@ -23,9 +23,9 @@ const io = require('io');
  * @property {string} dir New working directory for new process
  *
  * @property {object} env
- * Environment variables to add/override for new process. Setting a variable to 
+ * Environment variables to add/override for new process. Setting a variable to
  * `null` removes it.
- * 
+ *
  * @property {boolean} search_path
  * Whether to search executable in PATH (default is `true`)
  */
@@ -53,8 +53,8 @@ const io = require('io');
  * @property {boolean} continued
  */
 
-/** 
- * @exports proc 
+/**
+ * @exports proc
  * @readonly
  * @enum {number}
  */
@@ -98,7 +98,7 @@ const proc = {
 	WNOHANG: 1,
 	/** Also return if a child has stopped (but not traced via ptrace(2)) */
 	WUNTRACED: 2,
-	/** 
+	/**
 	 * Also return if a stopped child has been resumed by delivery of SIGCONT
 	 * (since Linux 2.6.10)
 	 */
@@ -114,7 +114,7 @@ const proc = {
 const atexit_handlers = [];
 
 /* Register our own handler with libc runtime */
-j.atexit(function() {
+j.atexit(function () {
 	for (var i = atexit_handlers.length - 1; i >= 0; i--) {
 		const desc = atexit_handlers[i];
 
@@ -127,7 +127,7 @@ j.atexit(function() {
 });
 
 /**
- * The alarm() function shall cause the system to generate a SIGALRM signal for 
+ * The alarm() function shall cause the system to generate a SIGALRM signal for
  * the process after the number of realtime seconds specified by seconds have
  * elapsed.
  *
@@ -137,7 +137,7 @@ j.atexit(function() {
  * If seconds is 0, a pending alarm request, if any, is canceled.
  *
  * Alarm requests are not stacked; only one SIGALRM generation can be scheduled
- * in this manner. If the SIGALRM signal has not yet been generated, the call 
+ * in this manner. If the SIGALRM signal has not yet been generated, the call
  * shall result in rescheduling the time at which the SIGALRM signal is
  * generated.
  *
@@ -145,14 +145,14 @@ j.atexit(function() {
  *
  * @returns {number}
  * If there is a previous alarm() request with time remaining, alarm() shall
- * return a non-zero value that is the number of seconds until the previous 
+ * return a non-zero value that is the number of seconds until the previous
  * request would have generated a SIGALRM signal.
  *
  * Otherwise, alarm() shall return 0.
  */
-proc.alarm = function(seconds) {
+proc.alarm = function (seconds) {
 	return j.alarm(Number(seconds));
-}
+};
 
 /**
  * Register function handlers for the exit process event.
@@ -161,18 +161,18 @@ proc.alarm = function(seconds) {
  * which have been registered for the current process, and not its children.
  *
  * In libc's atexit(), all handlers are inherited when a fork() is done, leading
- * to children process to execute atexit() handlers too. In this framework, the 
+ * to children process to execute atexit() handlers too. In this framework, the
  * default is not to inherit unless requested with `inherit = true`.
  *
- * @param {boolean} [inherit=false] 
+ * @param {boolean} [inherit=false]
  * Whether to inherit the handler in forked children
  *
- * @param {function} fn 
+ * @param {function} fn
  * Handler function
  *
  * @returns {void}
  */
-proc.atexit = function(inherit, fn) {
+proc.atexit = function (inherit, fn) {
 	if (fn === undefined) {
 		fn = inherit;
 		inherit = false;
@@ -182,19 +182,19 @@ proc.atexit = function(inherit, fn) {
 
 	atexit_handlers.push({
 		handler: fn,
-		pid: pid 
+		pid: pid,
 	});
-}
+};
 
 /**
  * Change process working directory.
  *
  * @returns {number} 0
- * @throws {SysError} 
+ * @throws {SysError}
  */
-proc.chdir = function(dir) {
+proc.chdir = function (dir) {
 	return j.chdir(dir);
-}
+};
 
 /**
  * Replace the current process image with a new process image.
@@ -203,16 +203,16 @@ proc.chdir = function(dir) {
  * replaces the current process image.
  *
  * @param {string} executable Path or name of executable
- * 
+ *
  * @param {string[]} [args=[]]
  * Array of arguments to pass to program (not including argv[0]).
- * 
+ *
  * @param {ProcExecOptions} [opts={}]
  * Options for process execution.
  *
- * @throws {SysError} 
+ * @throws {SysError}
  */
-proc.exec = function(executable, args, opts) {
+proc.exec = function (executable, args, opts) {
 	if (!Array.isArray(args)) {
 		opts = args;
 		args = [];
@@ -221,7 +221,7 @@ proc.exec = function(executable, args, opts) {
 	args = args || [];
 	opts = opts || {};
 
-	const argv = [executable].concat(args).map(function(arg) {
+	const argv = [executable].concat(args).map(function (arg) {
 		return arg.toString();
 	});
 	argv.push(null);
@@ -231,7 +231,7 @@ proc.exec = function(executable, args, opts) {
 	}
 
 	if (opts.env) {
-		Object.entries(opts.env).forEach(function(entry) {
+		Object.entries(opts.env).forEach(function (entry) {
 			const name = entry[0];
 			const value = entry[1];
 
@@ -246,31 +246,29 @@ proc.exec = function(executable, args, opts) {
 	try {
 		if (opts.search_path !== false) {
 			j.execvp(executable, argv);
-		} 
-		else {
+		} else {
 			j.execv(executable, argv);
 		}
 
 		proc.exit(-1);
-	}
-	catch(err) {
+	} catch (err) {
 		err.message += ' (' + executable + ')';
 		throw err;
 	}
-}
+};
 
-/** 
+/**
  * End current process returning given status code.
  *
  * Note that this function doesn't return ever because it finishes the process.
- * 
+ *
  * @param {number} [status=0] Status code to return to kernel
- */ 
-proc.exit = function(status) {
+ */
+proc.exit = function (status) {
 	status = Number(status || 0);
 
 	j.exit(status);
-}
+};
 
 /**
  * This function creates a new process.
@@ -309,27 +307,26 @@ proc.exit = function(status) {
  *   ...
  * }
  *
- * @param {true} [wait] 
- * Pass `true` to wait for child to finish. Can only be given if `fn` is given 
+ * @param {true} [wait]
+ * Pass `true` to wait for child to finish. Can only be given if `fn` is given
  * since it doesn't make sense to wait for an empty child.
  *
  * @param {function} [fn]
- * The function that implements the child process. If not given, the method 
+ * The function that implements the child process. If not given, the method
  * returns and the return code must be inspected to decide whether to execute
  * parent or child code.
  *
  * @returns {number|ProcResult}
- * If `wait` is `true` returns the result of proc.waitpid(), otherwise, the 
+ * If `wait` is `true` returns the result of proc.waitpid(), otherwise, the
  * return value is 0 in the child and the pid of the child in the parent.
  *
- * @throws {SysError} 
+ * @throws {SysError}
  */
-proc.fork = function(wait, fn) {
+proc.fork = function (wait, fn) {
 	if (typeof wait === 'function') {
 		fn = wait;
 		wait = false;
-	} 
-	else {
+	} else {
 		wait = !!wait;
 	}
 
@@ -343,15 +340,13 @@ proc.fork = function(wait, fn) {
 		if (fn) {
 			try {
 				fn();
-			} 
-			catch(err) {
+			} catch (err) {
 				io.write_string(2, err.stack + '\n');
 				proc.exit(err.errno || 1);
 			}
 
 			proc.exit(0);
-		}
-		else {
+		} else {
 			return pid;
 		}
 	}
@@ -361,7 +356,7 @@ proc.fork = function(wait, fn) {
 	}
 
 	return pid;
-}
+};
 
 /**
  * Double fork idiom used to launch detached (daemonized) processes. Note that
@@ -387,14 +382,13 @@ proc.fork = function(wait, fn) {
  * @param {true} [getpid] Pass `true` to make the function return daemon's pid
  * @param {function} fn The function that implements daemon's code
  * @returns {void|number} pid of daemon if `getpid = true`
- * @throws {SysError} 
+ * @throws {SysError}
  */
-proc.fork2 = function(getpid, fn) {
+proc.fork2 = function (getpid, fn) {
 	if (typeof getpid === 'function') {
 		fn = getpid;
 		getpid = false;
-	}
-	else {
+	} else {
 		getpid = !!getpid;
 	}
 
@@ -422,17 +416,15 @@ proc.fork2 = function(getpid, fn) {
 						io.close(fds[1]);
 					}
 
-					fn();	
-				}
-				catch(err) {
+					fn();
+				} catch (err) {
 					io.write_string(2, err.stack);
 					proc.exit(err.errno === undefined ? -1 : err.errno);
 				}
 
 				proc.exit(0);
 			}
-		}
-		catch(err) {
+		} catch (err) {
 			io.write_string(2, err.stack);
 			proc.exit(err.errno === undefined ? -1 : err.errno);
 		}
@@ -449,7 +441,7 @@ proc.fork2 = function(getpid, fn) {
 	}
 
 	return child_pid;
-}
+};
 
 /**
  * Get the value of an environment variable
@@ -457,66 +449,66 @@ proc.fork2 = function(getpid, fn) {
  * @param {string} name The name of the environment variable
  * @returns {string|null} The value of the environment variable
  */
-proc.getenv = function(name) {
+proc.getenv = function (name) {
 	return j.getenv(name);
-}
+};
 
 /**
  * Get the effective group id of the running process.
  *
  * @returns {number} A group id
  */
-proc.getegid = function() {
+proc.getegid = function () {
 	return j.getegid();
-}
+};
 
 /**
  * Get the effective user id of the running process.
  *
  * @returns {number} A user id
  */
-proc.geteuid = function() {
+proc.geteuid = function () {
 	return j.geteuid();
-}
+};
 
 /**
  * Get the group id of the running process.
  *
  * @returns {number} A group id
  */
-proc.getgid = function() {
+proc.getgid = function () {
 	return j.getgid();
-}
+};
 
 /**
  * Get the pid of the running process.
  *
  * @returns {number} A process id
  */
-proc.getpid = function() {
+proc.getpid = function () {
 	return j.getpid();
-}
+};
 
 /**
  * Get the pid of the parent process.
  *
  * @returns {number} A process id
  */
-proc.getppid = function() {
+proc.getppid = function () {
 	return j.getppid();
-}
+};
 
 /**
  * Get the user id of the running process.
  *
  * @returns {number} A user id
  */
-proc.getuid = function() {
+proc.getuid = function () {
 	return j.getuid();
-}
+};
 
 /**
- * The kill() function can be used to send any signal to any process group or 
+ * The kill() function can be used to send any signal to any process group or
  * process.
  *
  * For a process to have permission to send a signal, it must either be
@@ -527,13 +519,13 @@ proc.getuid = function() {
  * belong to the same session.
  *
  * @param {number} pid
- * If `pid` is positive, then signal `sig` is sent to the process with the ID 
+ * If `pid` is positive, then signal `sig` is sent to the process with the ID
  * specified by `pid`.
  *
- * If `pid` equals `0`, then `sig` is sent to every process in the process group 
+ * If `pid` equals `0`, then `sig` is sent to every process in the process group
  * of the calling process.
  *
- * If `pid` equals `-1`, then `sig` is sent to every process for which the 
+ * If `pid` equals `-1`, then `sig` is sent to every process for which the
  * calling process has permission to send signals, except for process `1`
  * (init), but see below.
  *
@@ -542,19 +534,19 @@ proc.getuid = function() {
  *
  * @param {number} sig
  * If `sig` is `0`, then no signal is sent, but existence and permission checks
- * are still performed; this can be used to check for the existence of a process 
+ * are still performed; this can be used to check for the existence of a process
  * ID or process group ID that the caller is permitted to signal.
  *
  * @returns {0}
- * @throws {SysError} 
+ * @throws {SysError}
  */
-proc.kill = function(pid, sig) {
+proc.kill = function (pid, sig) {
 	if (sig === undefined) {
 		sig = proc.SIGKILL;
 	}
 
 	return j.kill(pid, sig);
-}
+};
 
 /**
  * Set an environment variable.
@@ -565,7 +557,7 @@ proc.kill = function(pid, sig) {
  * @returns {0}
  * @throws SysError
  */
-proc.setenv = function(name, value, overwrite) {
+proc.setenv = function (name, value, overwrite) {
 	name = name.toString();
 	overwrite = overwrite === undefined ? true : !!overwrite;
 
@@ -578,14 +570,14 @@ proc.setenv = function(name, value, overwrite) {
 	}
 
 	return j.setenv(name, value.toString(), overwrite ? 1 : 0);
-}
+};
 
 /**
  * Creates a new session if the calling process is not a process group leader.
  * The calling process is the leader of the new session (i.e., its session ID is
  * made the same as its process ID).
  *
- * The calling process also becomes the process group leader of a new process 
+ * The calling process also becomes the process group leader of a new process
  * group in the session (i.e., its process group ID is made the same as its
  * process ID).
  *
@@ -598,13 +590,13 @@ proc.setenv = function(name, value, overwrite) {
  * @returns {number} The (new) session ID of the calling process
  * @throws SysError
  */
-proc.setsid = function() {
+proc.setsid = function () {
 	return j.setsid();
-}
+};
 
 /**
  * The signal() function chooses one of three ways in which receipt of the
- * signal number `sig` is to be subsequently handled. 
+ * signal number `sig` is to be subsequently handled.
  *
  * @param {number} sig The signal number
  *
@@ -620,22 +612,22 @@ proc.setsid = function() {
  * @returns {void}
  * @throws SysError
  */
-proc.signal = function(sig, func) {
+proc.signal = function (sig, func) {
 	j.signal(sig, func);
-}
+};
 
 /**
  * Pause execution of the running process for a given number of seconds.
  *
  * @param {number} seconds Seconds to wait
- * @returns {0} 
+ * @returns {0}
  * @throws SysError
  */
-proc.sleep = function(seconds) {
+proc.sleep = function (seconds) {
 	while (seconds > 0) {
 		seconds = j.sleep(seconds);
 	}
-}
+};
 
 /**
  * Delete an environment variable.
@@ -644,9 +636,9 @@ proc.sleep = function(seconds) {
  * @returns {0}
  * @throws SysError
  */
-proc.unsetenv = function(name) {
+proc.unsetenv = function (name) {
 	return j.unsetenv(name);
-}
+};
 
 /**
  *
@@ -661,13 +653,13 @@ proc.unsetenv = function(name) {
  *
  * &gt; 0 meaning wait for the child whose process ID is equal to the value of pid.
  *
- * @param {number} options 
+ * @param {number} options
  * Zero or an OR of proc.WNOHANG, proc.WUNTRACED, or proc.WCONTINUED.
  *
  * @return {ProcResult}
  * @throws SysError
  */
-proc.waitpid = function(pid, options) {
+proc.waitpid = function (pid, options) {
 	if (options === undefined) {
 		options = 0;
 	}
@@ -676,17 +668,17 @@ proc.waitpid = function(pid, options) {
 
 	const wstatus = result.wstatus;
 
-	const exit_status = (wstatus & 0xFF00) >> 8;
-	const term_signal = wstatus & 0x7F;
+	const exit_status = (wstatus & 0xff00) >> 8;
+	const term_signal = wstatus & 0x7f;
 
 	return {
 		value: result.value,
 		exit_status: term_signal === 0 ? exit_status : undefined,
 		term_signal: term_signal === 0 ? undefined : term_signal,
-		stop_signal: (wstatus & 0xFF) == 0x7F ? exit_status : undefined,
+		stop_signal: (wstatus & 0xff) == 0x7f ? exit_status : undefined,
 		core_dump: (wstatus & 0x80) != 0,
-		continued: wstatus == 0xFFFF,
+		continued: wstatus == 0xffff,
 	};
-}
+};
 
 return proc;

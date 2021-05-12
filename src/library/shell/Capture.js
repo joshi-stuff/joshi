@@ -20,33 +20,31 @@ function Capture($, container) {
 }
 
 /**
- * Symbolic names for specific file descriptors. They are used in place of the 
+ * Symbolic names for specific file descriptors. They are used in place of the
  * file descriptor number to store data under keys in the capture's container
  * object.
  */
 Capture.NAMES = {
 	0: 'in',
 	1: 'out',
-	2: 'err'
+	2: 'err',
 };
 
 Capture.prototype = {
-
 	/**
 	 * Close a capture saving all data to the container object.
 	 *
 	 * @returns {void}
 	 * @throws {SysError}
 	 */
-	close: function() {
+	close: function () {
 		const container = this.container;
 
-		this.sources.forEach(function(source) {
+		this.sources.forEach(function (source) {
 			try {
 				io.seek(source.fd, 0, io.SEEK_SET);
 				container[source.name] = io.read_string(source.fd);
-			} 
-			finally {
+			} finally {
 				io.close(source.fd, false);
 			}
 		});
@@ -64,9 +62,9 @@ Capture.prototype = {
 	 * @returns {void}
 	 * @throws {SysError}
 	 */
-	open: function(sourceFd) {
+	open: function (sourceFd) {
 		const source = {
-			name: Capture.NAMES[sourceFd] || ('fd' + sourceFd),
+			name: Capture.NAMES[sourceFd] || 'fd' + sourceFd,
 		};
 
 		const filename = fs.create_temp_file('');
@@ -77,7 +75,6 @@ Capture.prototype = {
 
 		return source.fd;
 	},
-
-}
+};
 
 return Capture;

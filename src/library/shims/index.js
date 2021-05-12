@@ -1,10 +1,10 @@
-Array.prototype.find = function(predicate) {
+Array.prototype.find = function (predicate) {
 	const i = this.findIndex(predicate);
 
 	return i === -1 ? undefined : this[i];
-}
+};
 
-Array.prototype.findIndex = function(predicate) {
+Array.prototype.findIndex = function (predicate) {
 	for (var i = 0; i < this.length; i++) {
 		if (predicate(this[i])) {
 			return i;
@@ -12,23 +12,32 @@ Array.prototype.findIndex = function(predicate) {
 	}
 
 	return -1;
-}
+};
 
-Array.prototype.flat = function() {
+Array.prototype.flat = function () {
 	var depth = isNaN(arguments[0]) ? 1 : Number(arguments[0]);
 
-	return depth ? Array.prototype.reduce.call(this, function (acc, cur) {
-		if (Array.isArray(cur)) {
-			acc.push.apply(acc, Array.prototype.flat.call(cur, depth - 1));
-		} else {
-			acc.push(cur);
-		}
+	return depth
+		? Array.prototype.reduce.call(
+				this,
+				function (acc, cur) {
+					if (Array.isArray(cur)) {
+						acc.push.apply(
+							acc,
+							Array.prototype.flat.call(cur, depth - 1)
+						);
+					} else {
+						acc.push(cur);
+					}
 
-		return acc;
-	}, []) : Array.prototype.slice.call(this);
-}
+					return acc;
+				},
+				[]
+		  )
+		: Array.prototype.slice.call(this);
+};
 
-Array.prototype.includes = function(item) {
+Array.prototype.includes = function (item) {
 	for (var i = 0; i < this.length; i++) {
 		if (this[i] === item) {
 			return true;
@@ -36,9 +45,9 @@ Array.prototype.includes = function(item) {
 	}
 
 	return false;
-}
+};
 
-Array.prototype.reduce = function(callback, init_val) {
+Array.prototype.reduce = function (callback, init_val) {
 	var first_index = 0;
 
 	if (init_val === undefined) {
@@ -51,9 +60,9 @@ Array.prototype.reduce = function(callback, init_val) {
 	}
 
 	return init_val;
-}
+};
 
-Object.entries = function(obj) {
+Object.entries = function (obj) {
 	const entries = [];
 
 	const keys = Object.keys(obj);
@@ -65,9 +74,9 @@ Object.entries = function(obj) {
 	}
 
 	return entries;
-}
+};
 
-Object.values = function(obj) {
+Object.values = function (obj) {
 	const values = [];
 
 	const keys = Object.keys(obj);
@@ -79,9 +88,9 @@ Object.values = function(obj) {
 	}
 
 	return values;
-}
+};
 
-String.prototype.endsWith = function(suffix) {
+String.prototype.endsWith = function (suffix) {
 	const i = this.lastIndexOf(suffix);
 
 	if (i === -1) {
@@ -89,8 +98,8 @@ String.prototype.endsWith = function(suffix) {
 	}
 
 	return i === this.length - suffix.length;
-}
+};
 
-String.prototype.startsWith = function(prefix) {
+String.prototype.startsWith = function (prefix) {
 	return this.indexOf(prefix) === 0;
-}
+};

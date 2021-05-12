@@ -20,7 +20,7 @@ Redirection.prototype = {
 	 * @returns {number}
 	 * @throws {SysError}
 	 */
-	open: function(sourceFd) {
+	open: function (sourceFd) {
 		throw new Error('Not implemented!');
 	},
 
@@ -30,10 +30,10 @@ Redirection.prototype = {
 	 * @returns {void}
 	 * @throws {SysError}
 	 */
-	close: function() {
+	close: function () {
 		throw new Error('Not implemented!');
 	},
-}
+};
 
 /**
  * @interface
@@ -55,15 +55,14 @@ function Proc($, argv) {
 }
 
 Proc.prototype = {
-
 	/**
 	 * Set working directory for process
 	 *
 	 * @param {string} dir Path to a directory
-	 * @returns {shell.Proc} 
+	 * @returns {shell.Proc}
 	 * The same object where it is being invoked (for chaining)
 	 */
-	dir: function(dir) {
+	dir: function (dir) {
 		this._dir = dir;
 		return this;
 	},
@@ -72,14 +71,14 @@ Proc.prototype = {
 	 * Set environment variables for process
 	 *
 	 * @param {object} vars
-	 * A hash of key value pairs. 
+	 * A hash of key value pairs.
 	 *
 	 * Note that a null value unsets the variable.
 	 *
-	 * @returns {shell.Proc} 
+	 * @returns {shell.Proc}
 	 * The same object where it is being invoked (for chaining)
 	 */
-	env: function(vars) {
+	env: function (vars) {
 		this._env = vars;
 		return this;
 	},
@@ -91,7 +90,7 @@ Proc.prototype = {
 	 * @see {module:proc.waitpid}
 	 * @throws {SysError}
 	 */
-	do: function() {
+	do: function () {
 		// Get Procs
 		const childProcs = [this].concat(this._collectChildProcs());
 
@@ -117,7 +116,7 @@ Proc.prototype = {
 			for (var i = 0; i < childProcs.length; i++) {
 				const childProc = childProcs[i];
 
-				childProc._launch(function() {
+				childProc._launch(function () {
 					// Setup redirections storing used fds
 					const fds = Object.keys(childProc._redir);
 					const usedFds = {};
@@ -159,8 +158,7 @@ Proc.prototype = {
 			}
 
 			return result;
-		} 
-		finally {
+		} finally {
 			// Close open fds (in case anything goes wrong)
 			for (var i = 0; i < openFds.length; i++) {
 				io.close(openFds[i], false);
@@ -169,16 +167,16 @@ Proc.prototype = {
 	},
 
 	/**
-	 * Redirect a process file descriptor to a capture 
-	 * {@link module:shell.capture}, file {@link module:shell.file}, here 
+	 * Redirect a process file descriptor to a capture
+	 * {@link module:shell.capture}, file {@link module:shell.file}, here
 	 * string {@link module:shell.here}, or another process
 	 * {@link module:shell.$}.
 	 *
-	 * @param {number|number[]} [fds=[1]] 
-	 * Process' file descriptors to pipe to the capture, file, here string or 
+	 * @param {number|number[]} [fds=[1]]
+	 * Process' file descriptors to pipe to the capture, file, here string or
 	 * process.
 	 *
-	 * Note that, in the case of capture or processes, only output file 
+	 * Note that, in the case of capture or processes, only output file
 	 * descriptors make sense.
 	 *
 	 * In the case of here string, only input file descriptors make sense.
@@ -190,37 +188,37 @@ Proc.prototype = {
 	 * -Proc: redirects output of this process to the other process. Valid
 	 *  source `fds` are 1 (stdout) and 2 (stderr).
 	 *
-	 * -Opaque return from {@link module:shell.capture}: redirects output of 
-	 *  this process to an object variable. Valid fds are 1 and 2 which store to 
+	 * -Opaque return from {@link module:shell.capture}: redirects output of
+	 *  this process to an object variable. Valid fds are 1 and 2 which store to
 	 *  properties `out` and `error`.
 	 *
 	 * -Opaque return from {@link module:shell.file}: redirects input/output
 	 *  from/to a file. All fds are valid.
 	 *
-	 * -Opaque return from {@link module:shell.here}: redirects input from a 
+	 * -Opaque return from {@link module:shell.here}: redirects input from a
 	 *  string variable. Only fd 0 (stdin) is valid.
 	 *
 	 * -number: the source fds are redirected to the given fd
 	 *
-	 * -{}: if an empty object is given it is wrapped with 
+	 * -{}: if an empty object is given it is wrapped with
 	 *  {@link module:shell.capture}
 	 *
-	 * -string: the string is wrapped with {@link module:shell.file} with 
-	 *  default open mode. If a custom open mode is desired, the file can be 
-	 *  prefixed with the mode plus a colon (for example: '+:/tmp/my-file' 
+	 * -string: the string is wrapped with {@link module:shell.file} with
+	 *  default open mode. If a custom open mode is desired, the file can be
+	 *  prefixed with the mode plus a colon (for example: '+:/tmp/my-file'
 	 *  appends to '/tmp/my-file', '0:out.log' truncates, and so on).
 	 *
-	 * -string[]: the one and only string inside the array is wrapped with 
+	 * -string[]: the one and only string inside the array is wrapped with
 	 *  {@link module:shell.here()}
 	 *
 	 * -null: same as `$.file('/dev/null')`
 	 *
-	 * @returns {shell.Proc} 
+	 * @returns {shell.Proc}
 	 * The same object where it is being invoked (for chaining)
 	 *
 	 *  @throws {SysError}
 	 */
-	pipe: function(fds, where) {
+	pipe: function (fds, where) {
 		const $ = this.$;
 
 		// Normalize arguments
@@ -235,25 +233,21 @@ Proc.prototype = {
 		// Handle aliased behaviors (except null)
 		if (where === null) {
 			// do nothing
-		}
-		else if (typeof where === 'string') {
+		} else if (typeof where === 'string') {
 			if (where.startsWith('0:')) {
 				where = $.file(where.substring(2), '0');
-			}
-			else if (where.startsWith('+:')) {
+			} else if (where.startsWith('+:')) {
 				where = $.file(where.substring(2), '+');
-			}
-			else if (where.startsWith(':')) {
+			} else if (where.startsWith(':')) {
 				where = $.file(where.substring(1), '');
-			}
-			else {
+			} else {
 				where = $.file(where);
 			}
 		}
 
 		// TODO: this is a mess, generalize it for every openable case and single/multi fds
 		// /dev/null
-		if (where === null ) {
+		if (where === null) {
 			for (var i = 0; i < fds.length; i++) {
 				this._pipe[fds[i]] = $.file('/dev/null');
 			}
@@ -299,8 +293,7 @@ Proc.prototype = {
 			for (var i = 0; i < fds.length; i++) {
 				this._pipe[fds[i]] = where;
 			}
-		}
-		else {
+		} else {
 			throw new Error('Unsupported redirection target: ' + where);
 		}
 
@@ -313,23 +306,25 @@ Proc.prototype = {
 	 * @returns {string}
 	 * @ignore
 	 */
-	toString: function() {
-		return 'Proc{' + 
-			'"' + this.argv.join(' ') + '"' +
-			(this.pid 
-				? (', pid: ' + this.pid)
-				: '') +
-			'}';
+	toString: function () {
+		return (
+			'Proc{' +
+			'"' +
+			this.argv.join(' ') +
+			'"' +
+			(this.pid ? ', pid: ' + this.pid : '') +
+			'}'
+		);
 	},
 
 	/**
 	 * Wait for process to finish and get its exit status
 	 *
-	 * @return {ProcResult} The wait process result 
+	 * @return {ProcResult} The wait process result
 	 * @throws {SysError}
 	 * @private
 	 */
-	wait: function() {
+	wait: function () {
 		return proc.waitpid(this.pid);
 	},
 
@@ -339,7 +334,7 @@ Proc.prototype = {
 	 * @returns {shell.Proc[]}
 	 * @private
 	 */
-	_collectChildProcs: function() {
+	_collectChildProcs: function () {
 		const childProcs = [];
 
 		const fds = Object.keys(this._pipe);
@@ -358,13 +353,13 @@ Proc.prototype = {
 	},
 
 	/**
-	 * Recursively collect all redirection target objects (i.e. Capture, 
+	 * Recursively collect all redirection target objects (i.e. Capture,
 	 * EphemeralFd, ...)
 	 *
-	 * @returns {Redirection[]} 
+	 * @returns {Redirection[]}
 	 * @private
 	 */
-	_collectRedirections: function() {
+	_collectRedirections: function () {
 		const closeables = [];
 
 		const fds = Object.keys(this._pipe);
@@ -377,8 +372,7 @@ Proc.prototype = {
 				if (!closeables.includes(where)) {
 					closeables.push(where);
 				}
-			}
-			else if (where.is_a === 'Proc' ) {
+			} else if (where.is_a === 'Proc') {
 				// Recurse into child processes
 				closeables = closeables.concat(where._collectRedirections());
 			}
@@ -388,21 +382,21 @@ Proc.prototype = {
 	},
 
 	/**
-	 * Setup redirections collecting all fds and objects in this._pipe and 
+	 * Setup redirections collecting all fds and objects in this._pipe and
 	 * putting their associated fds in this._redir.
 	 *
-	 * Note that any object in this._pipe other than Proc that implements 
-	 * the {@link Redirection} interface (f.e. Capture and EphemeralFd) is handled 
-	 * generically. 
+	 * Note that any object in this._pipe other than Proc that implements
+	 * the {@link Redirection} interface (f.e. Capture and EphemeralFd) is handled
+	 * generically.
 	 *
-	 * @returns {number[]} 
-	 * An array containing all file descriptors that have been open as a 
+	 * @returns {number[]}
+	 * An array containing all file descriptors that have been open as a
 	 * consequence of redirections.
 	 *
 	 * @throws {SysError}
 	 * @private
 	 */
-	_setupRedirections: function() {
+	_setupRedirections: function () {
 		const openFds = [];
 
 		try {
@@ -415,8 +409,12 @@ Proc.prototype = {
 				if (where.is_a === 'Proc') {
 					if (where._pipe[0]) {
 						throw new Error(
-							'Proc ' + where + ' stdin is redirected to both ' +
-							where._pipe[0] + ' and ' + this
+							'Proc ' +
+								where +
+								' stdin is redirected to both ' +
+								where._pipe[0] +
+								' and ' +
+								this
 						);
 					}
 
@@ -434,13 +432,16 @@ Proc.prototype = {
 					this._redir[fd] = where;
 				} else {
 					throw new Error(
-						'Unsupported redirection for fd ' + fd + ' of ' + 
-						this + ': ' + where
-					); 
+						'Unsupported redirection for fd ' +
+							fd +
+							' of ' +
+							this +
+							': ' +
+							where
+					);
 				}
 			}
-		} 
-		catch(err) {
+		} catch (err) {
 			// Don't leak open fds
 			for (var i = 0; i < openFds.length; i++) {
 				io.close(openFds[i], false);
@@ -464,10 +465,10 @@ Proc.prototype = {
 	 * @throws {SysError}
 	 * @private
 	 */
-	_launch: function(setupCB) {
+	_launch: function (setupCB) {
 		const self = this;
 
-		const pid = proc.fork(function() {
+		const pid = proc.fork(function () {
 			if (setupCB) {
 				setupCB();
 			}
@@ -476,7 +477,7 @@ Proc.prototype = {
 				proc.chdir(self._dir);
 			}
 
-			proc.exec(self.argv[0], self.argv.slice(1), {env: self._env});
+			proc.exec(self.argv[0], self.argv.slice(1), { env: self._env });
 		});
 
 		// Store child pid in root process
@@ -484,6 +485,6 @@ Proc.prototype = {
 
 		return this;
 	},
-}
+};
 
 return Proc;

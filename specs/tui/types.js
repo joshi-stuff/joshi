@@ -5,13 +5,13 @@ const STRING_PT = require('types/STRING_PT.js');
 
 return {
 	// Atomic types
-	'attr_t': ATOMIC('int'),
+	attr_t: ATOMIC('int'),
 	'char*': STRING_PT(),
-	'int': ATOMIC('int'),
-	'short': ATOMIC('int'),
+	int: ATOMIC('int'),
+	short: ATOMIC('int'),
 
 	// Buffer types
-	'CONSTANT': CONSTANT(),
+	CONSTANT: CONSTANT(),
 
 	// Opaque types
 	'WINDOW*': OPAQUE(),
@@ -19,5 +19,4 @@ return {
 	// Array types
 
 	// Struct types
-
 };

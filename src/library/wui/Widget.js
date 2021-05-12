@@ -29,8 +29,8 @@ function Widget(defaultProps, props) {
 
 	const self = this;
 
-	this.super = Object.entries(this.class.superclass.prototype)
-		.reduce(function(sup, entry) {
+	this.super = Object.entries(this.class.superclass.prototype).reduce(
+		function (sup, entry) {
 			const fn = entry[1];
 
 			if (typeof fn !== 'function') {
@@ -42,40 +42,40 @@ function Widget(defaultProps, props) {
 			sup[name] = fn.bind(self);
 
 			return sup;
-		}, {});
+		},
+		{}
+	);
 
 	const merged_props = Object.assign({}, defaultProps, props);
 
-	Object.entries(merged_props).forEach(function(entry) {
+	Object.entries(merged_props).forEach(function (entry) {
 		self['set_' + entry[0]](entry[1]);
 	});
 }
 
 Widget.prototype = {
-
 	/**
-	 * Draw the widget in the associated window 
+	 * Draw the widget in the associated window
 	 *
 	 * @see {Widget#set_win}
 	 */
-	draw: function() {
-	},
+	draw: function () {},
 
 	/**
 	 * Return underlying window size
 	 *
 	 * @returns {WindowSize}
 	 */
-	get_size: function() {
+	get_size: function () {
 		return this._win_size;
 	},
 
 	/**
-	 * Get associated window 
+	 * Get associated window
 	 *
 	 * @returns {Window}
 	 */
-	get_win: function() {
+	get_win: function () {
 		return this._win;
 	},
 
@@ -83,7 +83,7 @@ Widget.prototype = {
 	 * Invalidate window contents, i.e.: mark widget as modified so that next
 	 * drawing cycle refreshes screen contents.
 	 */
-	invalidate: function() {
+	invalidate: function () {
 		this._invalid = true;
 	},
 
@@ -97,16 +97,16 @@ Widget.prototype = {
 	 *   tui.KEY_DOWN, 'go_down',
 	 * ]);
 	 *
-	 * @param {Array} map 
+	 * @param {Array} map
 	 * An array of alternating key number, function name elements.
 	 *
 	 * @see {Widget#set_keymap}
 	 */
-	merge_keymap: function(map) {
+	merge_keymap: function (map) {
 		const keymap = this._keymap;
 
 		for (var i = 0; i < map.length; i += 2) {
-			keymap[map[i]] = map[i+1];
+			keymap[map[i]] = map[i + 1];
 		}
 	},
 
@@ -118,7 +118,7 @@ Widget.prototype = {
 	 * @returns {boolean} Returns true if the key was processed
 	 * @see {Widget#set_keymap}
 	 */
-	send_key: function(key) {
+	send_key: function (key) {
 		const keymap = this._keymap;
 
 		if (keymap[key]) {
@@ -142,12 +142,12 @@ Widget.prototype = {
 	 *   tui.KEY_DOWN, 'go_down',
 	 * ]);
 	 *
-	 * @param {Array} map 
+	 * @param {Array} map
 	 * An array of alternating key number, function name elements.
 	 *
 	 * @see {Widget#merge_keymap}
 	 */
-	set_keymap: function(map) {
+	set_keymap: function (map) {
 		this._keymap = {};
 		this.merge_keymap(map);
 	},
@@ -155,19 +155,19 @@ Widget.prototype = {
 	/**
 	 * Overwrite current listeners map with a new map
 	 *
-	 * @param {object<string,WidgetListener>} listeners 
+	 * @param {object<string,WidgetListener>} listeners
 	 */
-	set_listeners: function(listeners) {
+	set_listeners: function (listeners) {
 		this._listeners = listeners;
 	},
 
 	/**
-	 * Set associated window object. Note that this function invalidates the 
+	 * Set associated window object. Note that this function invalidates the
 	 * window contents so that it is cleared on next redraw.
 	 *
 	 * @param {Window} win
 	 */
-	set_win: function(win) {
+	set_win: function (win) {
 		this._win = win;
 		this._win_size = tui.get_size(win);
 		this.invalidate();
@@ -181,7 +181,7 @@ Widget.prototype = {
 	 * @returns {boolean} A flag indicating if a listener was invoked
 	 * @private
 	 */
-	_fire: function(event, props) {
+	_fire: function (event, props) {
 		const listener = this._listeners[event];
 
 		if (!listener) {
@@ -191,8 +191,8 @@ Widget.prototype = {
 		listener(this, event, props || {});
 
 		return true;
-	}
-}
+	},
+};
 
 /**
  * Define a Widget derived class
@@ -202,7 +202,7 @@ Widget.prototype = {
  * @param {object} proto The class' prototype object
  * @returns {class} The Class parameter
  */
-Widget.declare = function(Class, BaseClass, proto) {
+Widget.declare = function (Class, BaseClass, proto) {
 	if (proto === undefined) {
 		proto = BaseClass;
 		BaseClass = Widget;
@@ -210,13 +210,13 @@ Widget.declare = function(Class, BaseClass, proto) {
 
 	Class.prototype = Object.assign(
 		Object.create(BaseClass.prototype),
-		{constructor: Class}, 
+		{ constructor: Class },
 		proto
 	);
 
 	Class.superclass = BaseClass;
 
 	return Class;
-}
+};
 
 return Widget;
