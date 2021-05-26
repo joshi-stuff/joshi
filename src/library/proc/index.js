@@ -664,7 +664,17 @@ proc.waitpid = function (pid, options) {
 		options = 0;
 	}
 
-	const result = j.waitpid(pid, options);
+	var result;
+
+	while (!result) {
+		try {
+			result = j.waitpid(pid, options);
+		} catch (err) {
+			if (err.errno !== errno.EINTR) {
+				throw err;
+			}
+		}
+	}
 
 	const wstatus = result.wstatus;
 
