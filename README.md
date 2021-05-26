@@ -84,7 +84,7 @@ section `makedepends`).
 Once everything is installed, go to the project folder and simply run `make`.
 
 That will invoke the `compile` target of
-[Makefile](https://github.com/izaera/joshi/blob/master/src/Makefile) which, in 
+[Makefile](./blob/master/Makefile) which, in 
 turn, will build the binaries and put them in the `build/joshi` subfolder of the
 project.
 
@@ -134,8 +134,7 @@ from `/usr/local/bin/joshi`, it will look for the library at
 ### Makefile targets
 
 Currently, the
-[Makefile](https://github.com/izaera/joshi/blob/master/src/Makefile) understands
-the following targets:
+[Makefile](./blob/master/Makefile) understands the following targets:
 
 1. `compile`: builds binaries (`joshi` and needed `.so` files)
 2. `test`: run the project's automated tests
@@ -163,9 +162,9 @@ In a nutshell: there's no support ¯\\\_(ツ)\_/¯
 I develop this project for my own needs and in my spare time, so don't expect me
 to fix any of your issues under any SLA.
 
-If you find a bug, feel free to use the 
-[Issues tab](https://github.com/izaera/joshi/issues) of the project so that I
-can hint you on how to fix it (or maybe even fix it if I have the time 😀).
+If you find a bug, feel free to use the [Issues tab](./issues) of the project so
+that I can hint you on how to fix it (or maybe even fix it if I have the time
+😀).
 
 If you fix the bug, feel free to send a pull request so that I can merge.
 
@@ -199,22 +198,21 @@ functions and, sometimes, data structures based on JavaScript objects.
 
 There are exceptions though: 
 
-1. The [wui](./tree/master/src/dist/usr/lib/joshi/wui) package is dedicated to
+1. The [wui](./tree/master/src/library/wui) package is dedicated to
    widget-oriented text user interfaces, so it declares widget classes. This is
    because object orientation is a quite convenient programming model for user
    interfaces.
-2. The [shell](./tree/master/src/dist/usr/lib/joshi/shell) and 
-   [perf](./tree/master/src/dist/usr/lib/joshi/perf) packages return some
-   objects that implement specific interfaces. That is, even if the API is
-   purely function-based, some of the return values of those functions are 
-   object oriented.
+2. The [shell](./tree/master/src/library/shell) and 
+   [perf](./tree/master/src/library/perf) packages return some objects that
+   implement specific interfaces. That is, even if the API is purely
+   function-based, some of the return values of those functions are object
+   oriented.
 
 ## Examples
 
 There are no examples available, but you can have a look at the
-[tests](./tree/master/src/tests) and the 
-[repl](./blob/master/src/dist/usr/lib/joshi/repl.js) module to see how the APIs
-can be used.
+[tests](./tree/master/tests) and the [repl](./blob/master/src/library/repl.js)
+module to see how the APIs can be used.
 
 If you implement anything using `joshi` that is worth making public, please file
 an issue so that I can add it here.
