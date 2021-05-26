@@ -160,9 +160,9 @@ In a nutshell: there's no support ¯\\\_(ツ)\_/¯
 I develop this project for my own needs and in my spare time, so don't expect me
 to fix any of your issues under any SLA.
 
-If you find a bug, feel free to use the [Issues tab](./issues) of the project so
-that I can hint you on how to fix it (or maybe even fix it if I have the time
-😀).
+If you find a bug, feel free to use the
+[Issues tab](https://github.com/izaera/joshi/issues) of the project so that I
+can hint you on how to fix it (or maybe even fix it if I have the time 😀).
 
 If you fix the bug, feel free to send a pull request so that I can merge.
 
