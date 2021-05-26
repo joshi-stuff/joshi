@@ -83,9 +83,8 @@ section `makedepends`).
 
 Once everything is installed, go to the project folder and simply run `make`.
 
-That will invoke the `compile` target of
-[Makefile](./blob/master/Makefile) which, in 
-turn, will build the binaries and put them in the `build/joshi` subfolder of the
+That will invoke the `compile` target of [Makefile](./Makefile) which, in turn,
+will build the binaries and put them in the `build/joshi` subfolder of the
 project.
 
 After that, you may test the recently built `joshi` binary by running
@@ -122,8 +121,7 @@ bug, or to develop a new feature).
 
 For those cases, you can export an environment variable with the name
 `JOSHI_LIB_DIR` pointing to the root folder of the JavaScript library
-(for example: the [src/library](./tree/master/src/library) folder of the
-project).
+(for example: the [src/library](./src/library) folder of the project).
 
 In absence of the `JOSHI_LIB_DIR` environment variable `joshi` looks for the
 library based on the location of the `joshi` executable. If `joshi` is run from
@@ -134,7 +132,7 @@ from `/usr/local/bin/joshi`, it will look for the library at
 ### Makefile targets
 
 Currently, the
-[Makefile](./blob/master/Makefile) understands the following targets:
+[Makefile](./Makefile) understands the following targets:
 
 1. `compile`: builds binaries (`joshi` and needed `.so` files)
 2. `test`: run the project's automated tests
@@ -187,8 +185,8 @@ The project uses [JSDoc](https://jsdoc.app/) to generate its documentation.
 
 The API is divided in packages, like `fs`, `io`, `proc`, etc. 
 
-> The whole list of packages is in the [src/library](./tree/master/src/library)
-> folder of the project.
+> The whole list of packages is in the [src/library](./src/library) folder of
+> the project.
 
 The scope of each package should -hopefully- be clear given its name, and the 
 functions inside it too. 
@@ -198,21 +196,19 @@ functions and, sometimes, data structures based on JavaScript objects.
 
 There are exceptions though: 
 
-1. The [wui](./tree/master/src/library/wui) package is dedicated to
-   widget-oriented text user interfaces, so it declares widget classes. This is
-   because object orientation is a quite convenient programming model for user
-   interfaces.
-2. The [shell](./tree/master/src/library/shell) and 
-   [perf](./tree/master/src/library/perf) packages return some objects that
-   implement specific interfaces. That is, even if the API is purely
-   function-based, some of the return values of those functions are object
-   oriented.
+1. The [wui](./src/library/wui) package is dedicated to widget-oriented text
+   user interfaces, so it declares widget classes. This is because object
+   orientation is a quite convenient programming model for user interfaces.
+2. The [shell](./src/library/shell) and [perf](./src/library/perf) packages
+   return some objects that implement specific interfaces. That is, even if the
+   API is purely function-based, some of the return values of those functions
+   are object oriented.
 
 ## Examples
 
 There are no examples available, but you can have a look at the
-[tests](./tree/master/tests) and the [repl](./blob/master/src/library/repl.js)
-module to see how the APIs can be used.
+[tests](./tests) and the [repl](./src/library/repl.js) module to see how the
+APIs can be used.
 
 If you implement anything using `joshi` that is worth making public, please file
 an issue so that I can add it here.
