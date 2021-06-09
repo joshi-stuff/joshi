@@ -182,6 +182,23 @@ wui.init = function () {
 
 /**
  *
+ */
+wui.relayout = function () {
+	const size = tui.get_size(tui.stdscr);
+
+	debug('wui', 'relayout', size);
+
+	Object.values(entries).forEach(function (entry) {
+		entry.win = entry.layout(size);
+
+		if (entry.widget) {
+			entry.widget.set_win(entry.win);
+		}
+	});
+};
+
+/**
+ *
  * @param {WuiRunCallback} cb
  */
 wui.run = function (cb) {
@@ -194,7 +211,7 @@ wui.run = function (cb) {
 		debug('wui', 'getch', key);
 
 		if (key === tui.KEY_RESIZE) {
-			relayout();
+			wui.relayout();
 			continue;
 		}
 
@@ -307,23 +324,6 @@ function refresh() {
 
 	Object.values(entries).forEach(function (entry) {
 		tui.refresh(entry.win);
-	});
-}
-
-/**
- * @private
- */
-function relayout() {
-	const size = tui.get_size(tui.stdscr);
-
-	debug('wui', 'relayout', size);
-
-	Object.values(entries).forEach(function (entry) {
-		entry.win = entry.layout(size);
-
-		if (entry.widget) {
-			entry.widget.set_win(entry.win);
-		}
 	});
 }
 
