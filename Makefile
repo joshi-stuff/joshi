@@ -7,6 +7,7 @@ DUKTAPE_VERSION = 2.6.0
 
 # Shorthand variables
 CC = gcc
+CP = cp -a --no-preserve=ownership 
 JOSHPEC = src/joshpec/joshpec
 JSDOC = .docdash/node_modules/.bin/jsdoc
 
@@ -54,22 +55,22 @@ clean:
 
 install: 
 	mkdir -p "$(PREFIX)/bin"
-	cp -a $(JOSHI) "$(PREFIX)/bin"
+	$(CP) $(JOSHI) "$(PREFIX)/bin"
 
 	mkdir -p "$(PREFIX)/include/joshi"
-	cp -a src/duktape/duktape.h "$(PREFIX)/include/joshi"
-	cp -a src/duktape/duk_config.h "$(PREFIX)/include/joshi"
-	cp -a src/joshi/joshi.h "$(PREFIX)/include/joshi"
+	$(CP) src/duktape/duktape.h "$(PREFIX)/include/joshi"
+	$(CP) src/duktape/duk_config.h "$(PREFIX)/include/joshi"
+	$(CP) src/joshi/joshi.h "$(PREFIX)/include/joshi"
 
 	mkdir -p "$(PREFIX)/lib/joshi"
-	cp -aR src/library/* "$(PREFIX)/lib/joshi"
-	cp -a $(JOSHI_TUI) "$(PREFIX)/lib/joshi"
+	$(CP) -R src/library/* "$(PREFIX)/lib/joshi"
+	$(CP) $(JOSHI_TUI) "$(PREFIX)/lib/joshi"
 
 	mkdir -p "$(PREFIX)/lib/joshpec"
-	cp -aR src/joshpec/* "$(PREFIX)/lib/joshpec"
+	$(CP) -R src/joshpec/* "$(PREFIX)/lib/joshpec"
 
 	mkdir -p "$(PREFIX)/share/doc/joshi"
-	cp -aR $(DOCS)/* "$(PREFIX)/share/doc/joshi"
+	$(CP) -R $(DOCS)/* "$(PREFIX)/share/doc/joshi"
 
 uninstall:
 	rm "$(PREFIX)/bin/joshi"
