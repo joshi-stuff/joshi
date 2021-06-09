@@ -145,15 +145,50 @@ const tui = {
 		l: '│',
 	},
 
-	KEY_ESC: 27,
+	KEY_CTRL_A: 1,
+	KEY_CTRL_B: 2,
+	KEY_CTRL_C: 3,
+	KEY_CTRL_D: 4,
+	KEY_CTRL_E: 5,
+	KEY_CTRL_F: 6,
+	KEY_CTRL_G: 7,
+	KEY_CTRL_H: 8,
+	KEY_CTRL_I: 9,
 	KEY_ENTER: 10,
+	KEY_CTRL_K: 11,
+	KEY_CTRL_L: 12,
+	KEY_CTRL_M: 13,
+	KEY_CTRL_N: 14,
+	KEY_CTRL_O: 15,
+	KEY_CTRL_P: 16,
+	KEY_CTRL_Q: 17,
+	KEY_CTRL_R: 18,
+	KEY_CTRL_S: 19,
+	KEY_CTRL_T: 20,
+	KEY_CTRL_U: 21,
+	KEY_CTRL_V: 22,
+	KEY_CTRL_W: 23,
+	KEY_CTRL_X: 24,
+	KEY_CTRL_Y: 25,
+	KEY_CTRL_Z: 26,
+
+	KEY_ESC: 27,
+
 	KEY_INSERT: 0513,
 	KEY_DEL: 0512,
 	KEY_BACKSPACE: 0407,
+
+	KEY_HOME: 0406,
+	KEY_END: 0550,
+	KEY_NEXT_PAGE: 0522,
+	KEY_PREV_PAGE: 0523,
+
+	KEY_RESIZE: 0632,
 	KEY_DOWN: 0402,
 	KEY_UP: 0403,
 	KEY_LEFT: 0404,
 	KEY_RIGHT: 0405,
+
 	KEY_F1: 0411,
 	KEY_F2: 0412,
 	KEY_F3: 0413,
@@ -166,11 +201,11 @@ const tui = {
 	KEY_F10: 0422,
 	KEY_F11: 0423,
 	KEY_F12: 0424,
-	KEY_HOME: 0406,
-	KEY_END: 0550,
+
+	/** @deprecated use {@link module:tui.KEY_NEXT_PAGE} instead */
 	KEY_NPAGE: 0522,
+	/** @deprecated use {@link module:tui.KEY_PREV_PAGE} instead */
 	KEY_PPAGE: 0523,
-	KEY_RESIZE: 0632,
 
 	/**
 	 * @type {boolean}
@@ -368,6 +403,47 @@ tui.get_draw_mode = function (win) {
 	win = win || tui.stdscr;
 
 	return win.draw_mode;
+};
+
+/**
+ * Get the human readable name of a key code
+ *
+ * @param {number} key
+ * @returns {string} Something like 'Ctrl-D', 'Space', or 'A'
+ */
+tui.get_key_name = function (key) {
+	key = Number(key);
+
+	if (isNaN(key)) {
+		throw new Error('Invalid key code: ' + key);
+	}
+
+	// Lookup table
+	const entry = Object.entries(tui).find(function (entry) {
+		return entry[0].startsWith('KEY_') && entry[1] === key;
+	});
+
+	if (entry) {
+		var name = entry[0].substring(4);
+
+		// Change case
+		name = name[0] + name.substring(1).toLocaleLowerCase();
+
+		// Uppercase each letter after underscore
+		for (var i = 1; i < name.length; i++) {
+			if (name[i] === '_') {
+				name =
+					name.substring(0, i) +
+					' ' +
+					name[i + 1].toLocaleUpperCase() +
+					name.substring(i + 2);
+			}
+		}
+
+		return name;
+	}
+
+	return '<' + key + '>';
 };
 
 /**
