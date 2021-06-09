@@ -23,6 +23,8 @@ const tui = require('tui');
  * @returns {boolean}
  */
 
+var debug_enabled = false;
+
 /**
  * @exports wui
  */
@@ -241,9 +243,20 @@ wui.send_key = function (key) {
 };
 
 /**
+ * @param {boolean} enabled
+ */
+wui.set_debug_enabled = function (enabled) {
+	debug_enabled = enabled;
+};
+
+/**
  * @private
  */
 function debug(caller) {
+	if (!debug_enabled) {
+		return;
+	}
+
 	const args = Array.prototype.slice.call(arguments).slice(1);
 
 	if (caller.class) {
