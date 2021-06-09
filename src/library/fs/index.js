@@ -322,20 +322,27 @@ fs.is_writable = function (pathname) {
 };
 
 /**
- * Join two paths and normalize the result
+ * Join several path parts and normalize the result
  *
- * @param {string} path1 Left part of the path
- * @param {string} path2 Right part of the path
+ * @param {...string} paths Path parts to join
  * @returns {string}
  * @throws {SysError}
  * @see {module:fs.normalize_path}
  */
-fs.join = function (path1, path2) {
-	if (path2[0] === '/') {
-		errno.fail(errno.EINVAL);
-	}
+fs.join = function () {
+	var path = arguments[0];
 
-	path = path1 === '/' ? path1 + path2 : path1 + '/' + path2;
+	for (var i = 1; i < arguments.length; i++) {
+		if (arguments[i][0] === '/') {
+			errno.fail(errno.EINVAL);
+		}
+
+		if (!path.endsWith('/')) {
+			path += '/';
+		}
+
+		path += arguments[i];
+	}
 
 	return fs.normalize_path(path);
 };
