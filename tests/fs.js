@@ -182,6 +182,7 @@ test('join', function () {
 	expect.is('/etc', fs.join('/', 'etc'));
 	expect.is('/etc/passwd', fs.join('/etc', 'passwd'));
 	expect.is('/etc/nginx/nginx.conf', fs.join('/etc', 'nginx/nginx.conf'));
+	expect.is('/etc/nginx/nginx.conf', fs.join('/etc', 'nginx', 'nginx.conf'));
 	expect.is(fs.normalize_path('tmp/file'), fs.join('tmp', 'file'));
 	expect.throws(function () {
 		fs.join('/etc', '/passwd');
