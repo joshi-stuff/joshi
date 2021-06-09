@@ -165,6 +165,13 @@ return {
 		throws: 'error',
 	},
 
+	wtimeout: {
+		args: [
+			{ type: 'WINDOW*', name: 'win' },
+			{ type: 'int', name: 'delay' },
+		],
+	},
+
 	// TODO: color_content
 	// TODO: pair_content
 };

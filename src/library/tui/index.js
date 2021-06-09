@@ -604,6 +604,24 @@ tui.set_draw_mode = function (win, mode) {
 };
 
 /**
+ * Set the timeout (in milliseconds) for the {@link module:tui.getch} function.
+ *
+ * @param {number|null} delay
+ * Number of milliseconds to wait for a key press before timeout. A delay of 0
+ * configures getch() for non-blocking mode, whereas a value of null makes
+ * getch() block until a key is pressed.
+ */
+tui.timeout = function (delay) {
+	const win = tui.stdscr;
+
+	if (delay !== null && (isNaN(delay) || Number(delay) < 0)) {
+		throw new Error('Invalid delay: ' + delay);
+	}
+
+	jt.wtimeout(win.handle, delay === null ? -1 : Number(delay));
+};
+
+/**
  * Delete an existing {Window}
  *
  * @param {Window} win

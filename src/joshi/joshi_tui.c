@@ -480,6 +480,23 @@ static duk_ret_t _js_wrefresh(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _js_wtimeout(duk_context* ctx) {
+	WINDOW* win;
+	int delay;
+
+	win = duk_get_WINDOW_pt(ctx, 0);
+	delay = duk_get_int(ctx, 1);
+
+	errno = 0;
+
+	wtimeout(win,delay);
+
+
+
+	joshi_mblock_free_all(ctx);
+	return 0;
+}
+
 /* BEGIN CUSTOM USER CODE */
 #define CHECK_RC(x) \
 	if ((x) == ERR) { \
@@ -548,6 +565,7 @@ JOSHI_FN_DECL joshi_fn_decls[] = {
 	{ name: "winsstr", func: _js_winsstr, argc: 2 },
 	{ name: "wmove", func: _js_wmove, argc: 3 },
 	{ name: "wrefresh", func: _js_wrefresh, argc: 1 },
+	{ name: "wtimeout", func: _js_wtimeout, argc: 2 },
 };
 
-size_t joshi_fn_decls_count = 19;
+size_t joshi_fn_decls_count = 20;
