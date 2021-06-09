@@ -3,6 +3,8 @@ const tui = require('tui');
 const Widget = require('./Widget.js');
 const util = require('./internal/util.js');
 
+// TODO: implement filtering
+
 /**
  * @event ListBox#selected_item_changed
  */

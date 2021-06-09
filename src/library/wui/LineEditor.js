@@ -4,6 +4,8 @@ const Widget = require('./Widget.js');
 const util = require('./internal/util.js');
 
 // TODO: implement overflow + scroll in LineEditor
+// TODO: fix backspace when cursor not in last column
+// TODO: display of chars with accents á, é, etc.
 
 /**
  * @event LineEditor#input_changed
