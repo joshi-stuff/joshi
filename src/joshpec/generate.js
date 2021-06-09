@@ -3,6 +3,10 @@ const generate = {
 };
 
 generate.check_return = function (fn, throws, types, cleanup_code) {
+	if (!fn.returns) {
+		return [];
+	}
+
 	const throw_name = fn.throws;
 	const chk_ret = throws[throw_name];
 
