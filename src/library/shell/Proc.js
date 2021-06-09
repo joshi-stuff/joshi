@@ -190,7 +190,7 @@ Proc.prototype = {
 	 *
 	 * -Opaque return from {@link module:shell.capture}: redirects output of
 	 *  this process to an object variable. Valid fds are 1 and 2 which store to
-	 *  properties `out` and `error`.
+	 *  properties `out` and `err`.
 	 *
 	 * -Opaque return from {@link module:shell.file}: redirects input/output
 	 *  from/to a file. All fds are valid.

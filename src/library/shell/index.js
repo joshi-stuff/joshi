@@ -168,7 +168,7 @@ shell = shell.$;
  * An empty object where the output of the piped file descriptor will be stored
  * as a property.
  *
- * The names of the properties are `out` and `error` for file descriptors 1 and
+ * The names of the properties are `out` and `err` for file descriptors 1 and
  * 2, and the file descriptor number for the other.
  *
  * @return {object}
