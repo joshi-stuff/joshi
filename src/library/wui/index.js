@@ -204,6 +204,8 @@ wui.run = function (cb) {
 };
 
 /**
+ * Routes a key through all enabled widgets
+ *
  * @param {number} key
  * @returns {boolean}
  */
@@ -221,6 +223,11 @@ wui.send_key = function (key) {
 
 		if (widget.get_win() !== entry.win) {
 			throw new Error('Invalid widget state in window: ' + entry.id);
+		}
+
+		if (widget.is_disabled()) {
+			debug(widget.class.name + '.' + entry.id, 'skipped (disabled)');
+			return;
 		}
 
 		const handled = widget.send_key(key);

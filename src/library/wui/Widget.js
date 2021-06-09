@@ -22,6 +22,7 @@ function Widget(defaultProps, props) {
 	this._win = undefined;
 	this._win_size = undefined;
 	this._invalid = true;
+	this._disabled = false;
 	this._keymap = {};
 	this._listeners = {};
 
@@ -88,6 +89,15 @@ Widget.prototype = {
 	},
 
 	/**
+	 * Check whether the widget is disabled.
+	 *
+	 * @returns {boolean}
+	 */
+	is_disabled: function () {
+		return this._disabled;
+	},
+
+	/**
 	 * Merge some key mappings with current active keymap
 	 *
 	 * @example
@@ -130,6 +140,17 @@ Widget.prototype = {
 		}
 
 		return false;
+	},
+
+	/**
+	 * Disable widget so that it won't receive any keyboard input at all from
+	 * {@link module:wui.send_key}.
+	 *
+	 * @param {boolean} disabled
+	 * @see {module:wui.send_key}
+	 */
+	set_disabled: function (disabled) {
+		this._disabled = disabled;
 	},
 
 	/**
