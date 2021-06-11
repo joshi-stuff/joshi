@@ -206,9 +206,9 @@ There are exceptions though:
 
 ## Examples
 
-There are no examples available, but you can have a look at the
-[tests](./tests) and the [repl](./src/library/repl.js) module to see how the
-APIs can be used.
+There are some examples available: you can have a look at [examples](./examples)
+directory, the [tests](./tests), and the [repl](./src/library/repl.js) module to
+see how the APIs can be used.
 
 If you implement anything using `joshi` that is worth making public, please file
 an issue so that I can add it here.
