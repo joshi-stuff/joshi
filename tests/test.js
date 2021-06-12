@@ -7,7 +7,7 @@ const println2 = term.println2;
 
 const test = {};
 
-const TMP = '/tmp/joshi';
+const TMP = fs.temp_directory + '/joshi';
 
 var active_test = '?';
 var active_things = [];

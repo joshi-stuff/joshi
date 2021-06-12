@@ -142,7 +142,7 @@ test('is_file', function () {
 test('is_link', function () {
 	const LINK = tmp('is_link');
 
-	fs.symlink('/tmp', LINK);
+	fs.symlink(fs.temp_directory, LINK);
 
 	expect.is(true, fs.is_link(LINK));
 	expect.is(false, fs.is_link('/'));

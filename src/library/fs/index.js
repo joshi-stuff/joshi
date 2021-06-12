@@ -137,6 +137,8 @@ fs.copy_file = function (from, to, mode) {
 	}
 };
 
+fs.temp_directory = './tmp';
+
 /**
  * Create a temporary file with a random name
  *
@@ -156,7 +158,7 @@ fs.create_temp_file = function (contents, mode) {
 
 	const rnd = crypto.get_random_bytes(4);
 	const filename =
-		'/tmp/joshi_' +
+		fs.temp_directory+'/joshi_' +
 		proc.getpid().toString(16) +
 		'_' +
 		rnd[0].toString(16) +

@@ -137,12 +137,12 @@ test('exec > with dir', function () {
 
 	proc.fork(true, function () {
 		io.dup2(fd, 1);
-		proc.exec('pwd', { dir: '/tmp' });
+		proc.exec('pwd', { dir: fs.temp_directory });
 	});
 
 	io.close(fd);
 
-	expect.is('/tmp\n', fs.read_file(FILE));
+	expect.is(fs.temp_directory+'\n', fs.read_file(FILE));
 });
 
 test('exec > with env', function () {

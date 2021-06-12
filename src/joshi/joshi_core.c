@@ -684,6 +684,24 @@ static duk_ret_t _js_getppid(duk_context* ctx) {
 	return 1;
 }
 
+#ifdef __ANDROID__ 
+
+#include <sys/syscall.h>
+#include <linux/random.h>
+
+
+
+int clang_getrandom(void* buf, size_t buflen, unsigned int flags){
+  /*  
+    https://stackoverflow.com/questions/30800331/getrandom-syscall-in-c-not-found
+  */
+  return syscall(SYS_getrandom, buf, buflen, flags);
+}
+
+#define getrandom(a,b,c) clang_getrandom(a,b,c)
+
+#endif
+
 static duk_ret_t _js_getrandom(duk_context* ctx) {
 	void* buf;
 	size_t buflen;
