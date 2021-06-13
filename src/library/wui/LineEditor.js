@@ -50,8 +50,10 @@ Widget.declare(LineEditor, {
 		const input = this.get_input();
 		const cpos = this.get_cursor_pos();
 
-		if (input.length) {
-			this.set_input(input.substring(0, input.length - 1));
+		if (cpos > 0) {
+			this.set_input(
+				input.substring(0, cpos - 1) + input.substring(cpos)
+			);
 			this.set_cursor_pos(cpos - 1);
 		}
 	},
