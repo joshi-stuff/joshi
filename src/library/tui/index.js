@@ -153,7 +153,7 @@ const tui = {
 	KEY_CTRL_F: 6,
 	KEY_CTRL_G: 7,
 	KEY_CTRL_H: 8,
-	KEY_CTRL_I: 9,
+	KEY_TAB: 9,
 	KEY_ENTER: 10,
 	KEY_CTRL_K: 11,
 	KEY_CTRL_L: 12,
