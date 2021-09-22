@@ -1501,6 +1501,26 @@ static duk_ret_t _js_set_term_mode(duk_context* ctx) {
 	return 0;
 }
 
+#include "sha256.c"
+
+static duk_ret_t _js_sha256(duk_context* ctx) {
+	void* data;
+	size_t count;
+
+	data = duk_get_void_pt(ctx, 0);
+	count = duk_get_size_t(ctx, 1);
+
+	struct sha256_ctx sctx;
+	void* hash = duk_push_fixed_buffer(ctx, 32);
+
+	__sha256_init_ctx(&sctx);
+	__sha256_process_bytes(data, count, &sctx);
+	__sha256_finish_ctx(&sctx, hash);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _js_signal(duk_context* ctx) {
 	int sig = (int)duk_get_number(ctx, 0);
 
@@ -1621,7 +1641,8 @@ JOSHI_FN_DECL joshi_fn_decls[] = {
 	{ name: "read_file", func: _js_read_file, argc: 1 },
 	{ name: "require_so", func: _js_require_so, argc: 1 },
 	{ name: "set_term_mode", func: _js_set_term_mode, argc: 1 },
+	{ name: "sha256", func: _js_sha256, argc: 3 },
 	{ name: "signal", func: _js_signal, argc: 2 },
 };
 
-size_t joshi_fn_decls_count = 50;
+size_t joshi_fn_decls_count = 51;

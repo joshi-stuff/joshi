@@ -350,5 +350,6 @@ return {
 	read_file: CUSTOMIZED(1),
 	require_so: CUSTOMIZED(1),
 	set_term_mode: CUSTOMIZED(1),
+	sha256: CUSTOMIZED(2),
 	signal: CUSTOMIZED(2),
 };
