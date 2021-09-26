@@ -660,6 +660,8 @@ proc.unsetenv = function (name) {
  * @throws SysError
  */
 proc.waitpid = function (pid, options) {
+	pid = Number(pid);
+
 	if (options === undefined) {
 		options = 0;
 	}
