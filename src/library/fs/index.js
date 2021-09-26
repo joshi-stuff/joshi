@@ -28,7 +28,8 @@ const proc = require('proc');
  *
  * @typedef {object} TimeSpec
  * @property {number} access Last access time
- * @property {number} creation Creation time
+ * @property {number} change Change time
+ * @property {number} creation Creation time (same as change)
  * @property {number} modification Last modification time
  */
 
@@ -639,6 +640,7 @@ fs.stat = function (pathname) {
 		size: statbuf.st_size,
 		time: {
 			access: statbuf.st_atim.tv_sec,
+			change: statbuf.st_ctim.tv_sec,
 			creation: statbuf.st_ctim.tv_sec,
 			modification: statbuf.st_mtim.tv_sec,
 		},
