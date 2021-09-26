@@ -368,6 +368,7 @@ test('stat', function () {
 	const t = st.time;
 
 	expect.is(true, t.access >= NOW);
+	expect.is(true, t.change >= NOW);
 	expect.is(true, t.creation >= NOW);
 	expect.is(true, t.modification >= NOW);
 });
