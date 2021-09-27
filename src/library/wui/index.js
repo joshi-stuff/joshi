@@ -201,6 +201,14 @@ wui.redraw = function () {
 	refresh();
 };
 
+/**
+ * Force a relayout of registered windows (invoking the associated handlers).
+ *
+ * Note that this method is automatically invoked by {module:wui.run} whenever a
+ * {@link module:tui.KEY_RESIZE} event is detected.
+ *
+ * @returns {void}
+ * @see {@link module:wui.add_win}
  */
 wui.relayout = function () {
 	const size = tui.get_size(tui.stdscr);
