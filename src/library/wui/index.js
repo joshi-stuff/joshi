@@ -181,7 +181,26 @@ wui.init = function () {
 };
 
 /**
+ * Redraw the whole screen.
  *
+ * This method is provided for batch applications where interaction with the
+ * user's keyboard is not needed. In those apps, call this method whenever you
+ * want to update the screen, instead of relying on {@link module:wui.run}.
+ *
+ * Note that, when using this method instead of {@link module:wui.run} you won't
+ * detect {@link module:tui.KEY_RESIZE} events, thus the redraws may be
+ * incorrect if the size of the terminal changes.
+ *
+ * In order to avoid the former, you must provide some way to check for resizes
+ * at your application's level invoking {@link module:tui.getch}.
+ *
+ * @returns {void}
+ */
+wui.redraw = function () {
+	draw();
+	refresh();
+};
+
  */
 wui.relayout = function () {
 	const size = tui.get_size(tui.stdscr);
