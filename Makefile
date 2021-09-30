@@ -14,6 +14,7 @@ JSDOC = .docdash/node_modules/.bin/jsdoc
 # Main artifacts
 DOCS = build/jsdoc
 JOSHI = build/joshi/joshi
+JOSHI_DBUS = build/joshi/joshi_dbus.so
 JOSHI_TUI = build/joshi/joshi_tui.so
 
 # Dependency artifacts
@@ -28,6 +29,8 @@ JOSHI_OBJECTS = \
 	build/joshi/duktape.o \
 	build/joshi/joshi.o \
 	build/joshi/joshi_core.o 
+JOSHI_DBUS_OBJECTS = \
+	build/joshi/joshi_dbus.o
 JOSHI_TUI_OBJECTS = \
 	build/joshi/joshi_tui.o
 
@@ -35,7 +38,7 @@ JOSHI_TUI_OBJECTS = \
 #
 # External targets
 #
-compile: $(JOSHI) $(JOSHI_TUI)
+compile: $(JOSHI) $(JOSHI_DBUS) $(JOSHI_TUI)
 
 format: 
 	npx prettier --write 'specs/**/*.js' 'src/**/*.js' 'tests/**/*.js' 'examples/**/*.js'
@@ -64,6 +67,7 @@ install:
 
 	mkdir -p "$(PREFIX)/lib/joshi"
 	$(CP) -R src/library/* "$(PREFIX)/lib/joshi"
+	$(CP) $(JOSHI_DBUS) "$(PREFIX)/lib/joshi"
 	$(CP) $(JOSHI_TUI) "$(PREFIX)/lib/joshi"
 
 	mkdir -p "$(PREFIX)/lib/joshpec"
@@ -90,6 +94,10 @@ $(JOSHI): $(JOSHI_OBJECTS)
 	mkdir -p build/joshi
 	gcc $(JOSHI_OBJECTS) -lcrypt -ldl -lm -o $@ -Wl,--export-dynamic
 
+$(JOSHI_DBUS): $(JOSHI_DBUS_OBJECTS)
+	mkdir -p build/joshi
+	gcc $(JOSHI_DBUS_OBJECTS) -ldbus-1 -o $@ -shared
+
 $(JOSHI_TUI): $(JOSHI_TUI_OBJECTS)
 	mkdir -p build/joshi
 	gcc $(JOSHI_TUI_OBJECTS) -lcurses -o $@ -shared
@@ -105,6 +113,7 @@ $(DOCS): .docdash
 build/joshi/duktape.o: $(DUKTAPE_HEADERS)
 build/joshi/joshi.o: $(JOSHI_HEADERS)
 build/joshi/joshi_core.o: $(JOSHI_HEADERS)
+build/joshi/joshi_dbus.o: $(JOSHI_HEADERS)
 build/joshi/joshi_tui.o: $(JOSHI_HEADERS)
 
 
@@ -117,7 +126,7 @@ build/joshi/duktape.o: src/duktape/duktape.c
 
 build/joshi/%.o: src/joshi/%.c
 	@mkdir -p build/joshi
-	$(CC) -o $@ -Isrc/joshi -Isrc/duktape -c $< -fPIC
+	$(CC) -o $@ -I /usr/include/dbus-1.0 -I /usr/lib/dbus-1.0/include/ -I src/joshi -I src/duktape -c $< -fPIC
 
 
 #
@@ -125,10 +134,12 @@ build/joshi/%.o: src/joshi/%.c
 #
 fix-spec:
 	git checkout src/joshi/joshi_core.c
+	git checkout src/joshi/joshi_dbus.c
 	git checkout src/joshi/joshi_tui.c
 
 spec: 
 	JOSHI_LIB_DIR="$(realpath src/library)" $(JOSHPEC) ./specs/core
+	JOSHI_LIB_DIR="$(realpath src/library)" $(JOSHPEC) ./specs/dbus
 	JOSHI_LIB_DIR="$(realpath src/library)" $(JOSHPEC) ./specs/tui
 
 
