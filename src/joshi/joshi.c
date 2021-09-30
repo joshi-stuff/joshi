@@ -219,7 +219,7 @@ duk_ret_t joshi_dump_stack(duk_context* ctx) {
 
 						duk_enum(ctx, i, DUK_ENUM_OWN_PROPERTIES_ONLY);
 						while (duk_next(ctx, -1, 0)) {
-							fprintf(stderr, "%s ", duk_get_string(ctx, -1));
+							fprintf(stderr, "%s: ..., ", duk_get_string(ctx, -1));
 							duk_pop(ctx);  
 						}
 						duk_pop(ctx);
