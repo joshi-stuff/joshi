@@ -360,6 +360,94 @@ dbus.close = function (conn) {
 };
 
 /**
+ * Get children nodes of a D-Bus object
+ *
+ * @param {DBusConnection} conn The D-Bus connection
+ * @param {string} destination Destination process
+ * @param {string} path Object path
+ * @returns {string[]}
+ */
+dbus.get_children = function (conn, destination, path) {
+	const xml = dbus.call(
+		conn,
+		destination,
+		path,
+		'org.freedesktop.DBus.Introspectable',
+		'Introspect'
+	);
+
+	const regexp = new RegExp('<node name="([^"]+)"/>', 'g');
+	const nodes = [];
+	var node;
+
+	while ((node = regexp.exec(xml))) {
+		nodes.push(node[1]);
+	}
+
+	return nodes;
+};
+
+/**
+ * Get properties of a D-Bus object
+ *
+ * @param {DBusConnection} conn The D-Bus connection
+ * @param {string} destination Destination process
+ * @param {string} path Object path
+ * @param {string} iface Object interface
+ * @returns {object<string, *>}
+ */
+dbus.get_properties = function (conn, destination, path, iface) {
+	if (
+		!dbus.implements(
+			conn,
+			destination,
+			path,
+			'org.freedesktop.DBus.Properties'
+		)
+	) {
+		throw new Error(
+			'Object ' +
+				destination +
+				' at ' +
+				path +
+				' does not support properties'
+		);
+	}
+
+	return dbus.call(
+		conn,
+		destination,
+		path,
+		'org.freedesktop.DBus.Properties',
+		'GetAll',
+		dbus.STRING(iface)
+	);
+};
+
+/**
+ * Test if a D-Bus object implements an interface
+ *
+ * @param {DBusConnection} conn The D-Bus connection
+ * @param {string} destination Destination process
+ * @param {string} path Object path
+ * @param {string} iface Object interface
+ * @returns {boolean}
+ */
+dbus.implements = function (conn, destination, path, iface) {
+	const xml = dbus.call(
+		conn,
+		destination,
+		path,
+		'org.freedesktop.DBus.Introspectable',
+		'Introspect'
+	);
+
+	const regexp = new RegExp('<interface name="' + iface + '">');
+
+	return !!regexp.exec(xml);
+};
+
+/**
  * Open a connection to a well known bus
  *
  * @param {number} type
@@ -385,6 +473,47 @@ dbus.open = function (type) {
  */
 dbus.set_debug = function (_debug) {
 	debug = _debug;
+};
+
+/**
+ * Set a D-Bus object property
+ *
+ * @param {DBusConnection} conn The D-Bus connection
+ * @param {string} destination Destination process
+ * @param {string} path Object path
+ * @param {string} iface Object interface
+ * @param {string} property Property name
+ * @param {object} value A marshalled D-Bus message value
+ * @returns {void}
+ */
+dbus.set_property = function (conn, destination, path, iface, property, value) {
+	if (
+		!dbus.implements(
+			conn,
+			destination,
+			path,
+			'org.freedesktop.DBus.Properties'
+		)
+	) {
+		throw new Error(
+			'Object ' +
+				destination +
+				' at ' +
+				path +
+				' does not support properties'
+		);
+	}
+
+	return dbus.call(
+		conn,
+		destination,
+		path,
+		'org.freedesktop.DBus.Properties',
+		'Set',
+		dbus.STRING(iface),
+		dbus.STRING(property),
+		dbus.VARIANT(value)
+	);
 };
 
 /**
