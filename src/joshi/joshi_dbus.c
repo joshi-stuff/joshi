@@ -436,6 +436,12 @@ static duk_ret_t _js_call(duk_context* ctx) {
 	const char* method = duk_get_string(ctx, 5);
 	const int args_index = 6;
 
+	// Avoid NPEs
+	if (!destination) destination = "";
+	if (!path) path = "";
+	if (!iface) iface = "";
+	if (!method) method = "";
+
 	// Create message
 	DBusMessage* msg = dbus_message_new_method_call(destination, path, iface, method);
 
@@ -456,7 +462,6 @@ static duk_ret_t _js_call(duk_context* ctx) {
 	dbus_error_init(&err);
 
 	DBusMessage* reply = dbus_connection_send_with_reply_and_block(conn, msg, timeout, &err);
-
 	if (!reply) {
 		duk_push_error_object(ctx, DUK_ERR_ERROR, err.message);
 		dbus_error_free(&err);
