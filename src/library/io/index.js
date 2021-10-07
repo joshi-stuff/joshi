@@ -266,7 +266,7 @@ io.pipe = function () {
  * The poll() function shall identify those file descriptors on which an
  * application can read or write data, or on which certain events have occurred.
  *
- * @param {Pollfd} fds File descriptors and events to check
+ * @param {Pollfd[]} fds File descriptors and events to check
  * @param {number} [timeout=-1] Timeout in milliseconds or -1 to wait forever
  * @returns {number} Count of fds with events or 0 on timeout
  * @throws {SysError}
