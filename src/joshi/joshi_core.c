@@ -8,7 +8,9 @@
 #include <string.h>
 #include <sys/random.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
@@ -1377,6 +1379,38 @@ static duk_ret_t _js_atexit(duk_context* ctx) {
 	return 1;
 }
 
+static duk_ret_t _js_connect(duk_context* ctx) {
+	int type = duk_get_int(ctx, 0);
+	const char* address = duk_get_char_pt(ctx, 1);
+
+	// We only have one type for now, so ignore it
+	
+	errno = 0;
+	int sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+
+	if (sockfd == -1) {
+		joshi_throw_syserror(ctx);
+	}
+
+	struct sockaddr_un sa;
+
+	memset(&sa, 0, sizeof(sa));
+	sa.sun_family = AF_UNIX;
+	strncpy((char*)&(sa.sun_path), address, sizeof(sa.sun_path));
+
+	errno = 0;
+	int result = connect(sockfd, (struct sockaddr*) &sa, sizeof(sa));
+
+	if (result == -1) {
+		joshi_throw_syserror(ctx);
+	}
+
+	duk_push_int(ctx, sockfd);
+
+	joshi_mblock_free_all(ctx);
+	return 1;
+}
+
 static duk_ret_t _js_compile_function(duk_context* ctx) {
 	duk_compile(ctx, DUK_COMPILE_FUNCTION);
 
@@ -1637,12 +1671,13 @@ JOSHI_FN_DECL joshi_fn_decls[] = {
 	{ name: "write", func: _js_write, argc: 3 },
 	{ name: "atexit", func: _js_atexit, argc: 1 },
 	{ name: "compile_function", func: _js_compile_function, argc: 2 },
+	{ name: "connect", func: _js_connect, argc: 2 },
 	{ name: "printk", func: _js_printk, argc: 1 },
 	{ name: "read_file", func: _js_read_file, argc: 1 },
 	{ name: "require_so", func: _js_require_so, argc: 1 },
 	{ name: "set_term_mode", func: _js_set_term_mode, argc: 1 },
-	{ name: "sha256", func: _js_sha256, argc: 3 },
+	{ name: "sha256", func: _js_sha256, argc: 2 },
 	{ name: "signal", func: _js_signal, argc: 2 },
 };
 
-size_t joshi_fn_decls_count = 51;
+size_t joshi_fn_decls_count = 52;

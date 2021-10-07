@@ -1,5 +1,6 @@
 const fs = require('fs');
 const io = require('io');
+const proc = require('proc');
 
 const expect = require('./test.js').expect;
 const fail = require('./test.js').fail;
@@ -44,6 +45,24 @@ test('close > with fail_if_closed=false', function () {
 	const fd = io.truncate(FILE);
 	io.close(fd);
 	io.close(fd, false);
+});
+
+test('connect', function () {
+	const fd = io.connect(
+		io.AF_UNIX_STREAM,
+		'/run/user/' + proc.getuid() + '/pulse/cli'
+	);
+
+	io.write_string(fd, 'hello\n');
+
+	const buf = new Uint8Array(21);
+	io.read(fd, buf, buf.length);
+
+	const text = new TextDecoder().decode(buf);
+	log(text);
+	expect.is('Welcome to PulseAudio', text);
+
+	io.close(fd);
 });
 
 test('create', function () {

@@ -346,6 +346,7 @@ return {
 	/* Custom helper functions */
 	atexit: CUSTOMIZED(1),
 	compile_function: CUSTOMIZED(2),
+	connect: CUSTOMIZED(2),
 	printk: CUSTOMIZED(1),
 	read_file: CUSTOMIZED(1),
 	require_so: CUSTOMIZED(1),

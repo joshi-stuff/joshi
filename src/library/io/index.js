@@ -31,14 +31,17 @@ const encoder = new TextEncoder();
  * @see {@link module:io.POLLRDHUP}
  */
 
-const LF_CODE = '\n'.charCodeAt(0);
-
 /**
  * @exports io
  * @readonly
  * @enum {number}
  */
 const io = {
+	/* Socket types */
+
+	/** Unix socket (AF_UNIX) of type SOCK_STREAM */
+	AF_UNIX_STREAM: 0,
+
 	/* Poll flags */
 	POLLIN: 0x1,
 	POLLPRI: 0x2,
@@ -121,6 +124,38 @@ io.close = function (fd, fail_if_closed) {
 
 		return 0;
 	}
+};
+
+/**
+ * Create a socket and connect it to a specific address.
+ *
+ * @param {number} type
+ * Type of socket (one of the io.AF_* constants).
+ *
+ * @param {string} address
+ * Target address. Its structure depends on socket type:
+ *
+ *   - AF_UNIX_STREAM: a string pointing to the socket's path
+ *
+ * @returns {number} The file descriptor
+ * @throws {SysError}
+ * @see {module:io.AF_UNIX_STREAM}
+ */
+io.connect = function (type, address) {
+	switch (type) {
+		case io.AF_UNIX_STREAM:
+			if (typeof address !== 'string') {
+				throw new Error(
+					'Address for AF_UNIX_STREAM socket must be a string'
+				);
+			}
+			break;
+
+		default:
+			throw new Error('Invalid socket type: ' + type);
+	}
+
+	return j.connect(type, address);
 };
 
 /**
