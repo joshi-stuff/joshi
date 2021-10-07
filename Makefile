@@ -58,6 +58,7 @@ clean:
 
 install: 
 	mkdir -p "$(PREFIX)/bin"
+	rm -f "$(PREFIX)/bin/joshi"
 	$(CP) $(JOSHI) "$(PREFIX)/bin"
 
 	mkdir -p "$(PREFIX)/include/joshi"
