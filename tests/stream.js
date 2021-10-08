@@ -40,3 +40,19 @@ test('read_until', function () {
 
 	io.close(fd);
 });
+
+test('read_until > string delimiter', function () {
+	const FILE = tmp('read_until');
+
+	const fd = io.truncate(FILE);
+	io.write_string(fd, 'holi|||adios|||incomplete\n');
+	io.seek(fd, 0);
+
+	const sd = stream.create(fd);
+
+	expect.is('holi', stream.read_until(sd, '|||'));
+	expect.is('adios', stream.read_until(sd, '|||'));
+	expect.is(null, stream.read_until(sd, '|||'));
+
+	io.close(fd);
+});
