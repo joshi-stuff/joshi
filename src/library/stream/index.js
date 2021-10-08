@@ -43,9 +43,6 @@ stream.read_line = function (sd) {
 /**
  * Read available characters until a delimiter is found.
  *
- * Note that, for now, only character (as opposed to string) delimiters are
- * supported.
- *
  * @param {object} sd An opaque stream descriptor
  * @param {string} delim A one-char string containing the delimiter
  *
@@ -53,24 +50,41 @@ stream.read_line = function (sd) {
  * A string without the delimiter or null if EOF was found before the delimiter.
  */
 stream.read_until = function (sd, delim) {
-	// TODO: support string delimiters
-	if (delim.length !== 1) {
-		throw new Error('Only one-char delimiters are supported');
-	}
+	const delim_bytes = [];
 
-	delim = delim.charCodeAt(0);
+	for (var i = 0; i < delim.length; i++) {
+		delim_bytes.push(delim.charCodeAt(i));
+	}
 
 	const bytes = [];
 
 	while (true) {
 		while (sd._pushback.length) {
-			const b = sd._pushback.shift();
+			bytes.push(sd._pushback.shift());
 
-			if (b === delim) {
-				return decoder.decode(new Uint8Array(bytes));
+			if (bytes.length < delim_bytes.length) {
+				continue;
 			}
 
-			bytes.push(b);
+			var found = true;
+
+			for (var i = 0; i < delim_bytes.length; i++) {
+				if (
+					bytes[bytes.length - delim_bytes.length + i] !==
+					delim_bytes[i]
+				) {
+					found = false;
+					break;
+				}
+			}
+
+			if (found) {
+				return decoder.decode(
+					new Uint8Array(
+						bytes.slice(0, bytes.length - delim_bytes.length)
+					)
+				);
+			}
 		}
 
 		if (!feed(sd)) {
@@ -87,7 +101,7 @@ stream.read_until = function (sd, delim) {
  * @private
  */
 function feed(sd) {
-	const bread = io.read(sd._fd, sd._buffer, sd._buffer.length);
+	const bread = j.read(sd._fd, sd._buffer, sd._buffer.length);
 
 	if (bread === 0) {
 		return false;
