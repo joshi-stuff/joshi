@@ -260,6 +260,28 @@ test('read > with given count', function () {
 	expect.is(32, buf[0]);
 });
 
+test('read_available', function () {
+	const buf = new Uint8Array(65536);
+	const DATA = new Uint8Array([32, 33, 34, 35, 36, 37, 38, 38, 40, 41, 42]);
+
+	const fd = io.pipe();
+
+	io.write(fd[1], DATA);
+	const bread = io.read_available(fd[0], buf);
+
+	expect.is(DATA.length, bread);
+	expect.array_equals(DATA, buf.subarray(0, bread));
+
+	io.write(fd[1], DATA);
+	const bread = io.read_available(fd[0], buf);
+
+	expect.is(DATA.length, bread);
+	expect.array_equals(DATA, buf.subarray(0, bread));
+
+	io.close(fd[0]);
+	io.close(fd[1]);
+});
+
 test('read_fully', function () {
 	const FILE = tmp('read_fully');
 
