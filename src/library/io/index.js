@@ -351,6 +351,22 @@ io.read = function (fd, buf, count) {
 };
 
 /**
+ * Read as many bytes as possible from an open file up to a maximum of buffer
+ * size.
+ *
+ * @param {number} fd An open file desriptor
+ * @param {Uint8Array} buf Buffer to fill with read bytes
+ *
+ * @returns {number}
+ * The number of bytes read (with 0 meaning end of file).
+ *
+ * @throws {SysError}
+ */
+io.read_available = function (fd, buf) {
+	return j.read(fd, buf, buf.length);
+};
+
+/**
  * Read contents of a fd until it is exhausted and return them as an Uint8Array.
  *
  * @param {number} fd An open file desriptor
