@@ -430,6 +430,8 @@ proc.fork2 = function (getpid, fn) {
 		}
 
 		proc.exit(0);
+	} else {
+		proc.waitpid(pid);
 	}
 
 	var child_pid = undefined;
