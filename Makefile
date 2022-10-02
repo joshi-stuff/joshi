@@ -154,7 +154,7 @@ duktape: .duktape
 	curl https://duktape.org/duktape-$(DUKTAPE_VERSION).tar.xz -o .duktape/duktape.tar.xz
 	cd .duktape && xz --keep -d -v duktape.tar.xz 
 	cd .duktape && tar xf duktape.tar
-	python2 .duktape/duktape-$(DUKTAPE_VERSION)/tools/configure.py --output-directory src/duktape
+	python .duktape/duktape-$(DUKTAPE_VERSION)/tools/configure.py --output-directory src/duktape
 
 
 #
