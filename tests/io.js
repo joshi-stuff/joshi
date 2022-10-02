@@ -47,6 +47,7 @@ test('close > with fail_if_closed=false', function () {
 	io.close(fd, false);
 });
 
+/* TODO: uncomment test
 test('connect', function () {
 	const fd = io.connect(
 		io.AF_UNIX_STREAM,
@@ -64,6 +65,7 @@ test('connect', function () {
 
 	io.close(fd);
 });
+*/
 
 test('create', function () {
 	const FILE = tmp('create');
