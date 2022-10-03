@@ -121,7 +121,7 @@ fs.copy_file = function (from, to, mode) {
 	var fdTo;
 
 	try {
-		fdFrom = io.open(from);
+		fdFrom = io.open(from, 'r');
 		fdTo = io.truncate(to, mode);
 
 		const buf = new Uint8Array(4096);
