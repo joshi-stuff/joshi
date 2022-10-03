@@ -8,7 +8,7 @@
 #include "joshi_core.h"
 
 // This is patched by release script, don't touch
-#define VERSION "1.8.2"
+#define VERSION "1.8.2-next"
 
 char LIB_DIR[1024];
 
